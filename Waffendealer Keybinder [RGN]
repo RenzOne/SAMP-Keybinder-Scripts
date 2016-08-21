@@ -1,0 +1,922 @@
+SetBatchLines -1
+ListLines, off
+
+#Persistent
+#UseHook
+#NoEnv
+#SingleInstance force
+#IfWinActive, GTA:SA:MP
+#SingleInstance force
+#IfWinActive, GTA:SA:MP
+#include AHPi_0.3.7_R1.AHK
+#include Overlay.AHK
+#include Stats.AHK
+
+iniwrite, "", WD.ini, wd:, Kunde
+iniwrite, 0, WD.ini, wd:, Pakete
+iniwrite, 0, WD.ini, wd:, preis
+iniwrite, 0, WD.ini, wd:, Mats
+Iniwrite, "", WD.ini, Warenkorb:, sniperzahl
+Iniwrite, "", WD.ini, Warenkorb:, snipermats
+Iniwrite, "", WD.ini, Warenkorb:, riflezahl
+Iniwrite, "", WD.ini, Warenkorb:, riflemats
+Iniwrite, "", WD.ini, Warenkorb:, Shotgunzahl
+Iniwrite, "", WD.ini, Warenkorb:, Shotgunmats
+Iniwrite, "", WD.ini, Warenkorb:, mp5zahl
+Iniwrite, "", WD.ini, Warenkorb:, mp5mats
+Iniwrite, "", WD.ini, Warenkorb:, m4zahl
+Iniwrite, "", WD.ini, Warenkorb:, m4mats
+Iniwrite, "", WD.ini, Warenkorb:, Deaglezahl
+Iniwrite, "", WD.ini, Warenkorb:, Deaglemats
+
+SetParam("use_window", "1")
+SetParam("window", "GTA:SA:MP")
+
+gosub CreateOverlay
+return
+
+
+
+iniwrite, "", WD.ini, Kunde:, Kunde
+Iniwrite, "", WD.ini, Warenkorb:, sniperzahl
+Iniwrite, "", WD.ini, Warenkorb:, snipermats
+Iniwrite, "", WD.ini, Warenkorb:, riflezahl
+Iniwrite, "", WD.ini, Warenkorb:, riflemats
+Iniwrite, "", WD.ini, Warenkorb:, Shotgunzahl
+Iniwrite, "", WD.ini, Warenkorb:, Shotgunmats
+Iniwrite, "", WD.ini, Warenkorb:, mp5zahl
+Iniwrite, "", WD.ini, Warenkorb:, mp5mats
+Iniwrite, "", WD.ini, Warenkorb:, Deaglezahl
+Iniwrite, "", WD.ini, Warenkorb:, Deaglemats
+
++T::
+~t::
+Suspend On
+Hotkey, Enter, On
+Hotkey, Escape, On
+Hotkey, t, Off
+return
+
+~NumpadEnter::
+~Enter::
+Suspend Permit
+Suspend Off
+Hotkey, t, On
+Hotkey, Enter, Off
+Hotkey, Escape, Off
+return
+
+~Escape::
+Suspend Permit
+Suspend Off
+Hotkey, t, On
+Hotkey, Enter, Off
+Hotkey, Escape, Off
+return
+
+Run := 0
+
+:?:/an::
+Suspend Permit
+addChatmessage("Waffendealer Modus ist Aktiv!")
+Settimer, Mechatree, 100
+Suspend off
+return
+
+:?:/aus::
+Suspend Permit
+addChatmessage("Waffendealer Modus ist Inaktiv!")
+Settimer, Mechatree, off
+Suspend off
+return
+
+Mechatree:
+IniRead, Skill, wd.ini, wd:, Skill
+If(IsPlayerInRangeOfPoint(617.2246,890.9583,-36.1545, 1))
+{
+	 ReadStats_s(text)
+	 Mats := keyForEntry(text, "Materialien")
+	 RegExMatch(Mats,"(.*) \(\+(.*)\)",CargoMats)
+	 StringReplace, Handmats, CargoMats1, .
+	 StringReplace, Boxmats, CargoMats2, .
+	 Iniwrite, %Handmats%, wd.ini, wd:, Handmats
+	 Iniwrite, %Boxmats%, wd.ini, wd:, Boxmats
+	 Sendchat("/me | Gelagert!")
+	 Sendchat("/put mats " Handmats)
+	 
+	 Iniwrite, 0, wd.ini, wd:, Pakete
+	 sleep 2000
+}
+
+If(IsPlayerInRangeOfPoint(-1114.1655,-1621.3619,76.3739, 2)) ;SF Scheune
+{
+	If(Skill != "")
+	{
+		If(Skill == 5)
+		{
+				 Sendchat("/me | 22 Gekauft!")
+				 Sendchat("/materials get 22")
+		}
+		If(Skill == 4)
+		{
+				 Sendchat("/me | 19 Gekauft!")
+				 Sendchat("/materials get 19")
+		}
+		If(Skill == 3)
+		{
+				 Sendchat("/me | 17 Gekauft!")
+				 Sendchat("/materials get 17")
+		}
+		If(Skill == 2)
+		{
+				 Sendchat("/me | 16 Gekauft!")
+				 Sendchat("/materials get 16")
+		}
+		If(Skill == 1)
+		{
+				 Sendchat("/me | 15 Gekauft!")
+				 Sendchat("/materials get 15")
+		}
+		sleep 200
+		GetChatline(0,kauf)
+		IfInString, kauf,  Materials-Päckchen für 
+		{
+			 RegExMatch(kauf, " \* Du hast (.*) Materials-Päckchen für \$(.*) gekauft\.", sfpoint)
+			 StringReplace, checkmoney, sfpoint2, .
+			 IniRead, pakete, wd.ini, wd:, pakete
+			 IniRead, Ausgabe, wd.ini, wd:, Ausgabe
+			 pakete += sfpoint1
+			 Ausgabe += checkmoney
+			 Iniwrite, %ausgabe%, wd.ini, wd:, Ausgabe
+			 Iniwrite, %sfpoint1%, wd.ini, wd:, Pakete
+			 addChatmessage("Ausgabe: " Ausgabe " | Pakete: " sfpoint1 )
+		}
+		 ReadStats_s(text)
+		 Mats := keyForEntry(text, "Materialien")
+		 RegExMatch(Mats,"(.*) \(\+(.*)\)",CargoMats)
+		 StringReplace, Handmats, CargoMats1, .
+		 StringReplace, Boxmats, CargoMats2, .
+		 Iniwrite, %Handmats%, wd.ini, wd:, Handmats
+		 Iniwrite, %Boxmats%, wd.ini, wd:, Boxmats
+		 sleep 3000
+	}
+	else
+	{
+	addChatmessage("Erst Skill abfragen! (/skill [Leertaste])")
+	}
+}
+If(IsPlayerInRangeOfPoint(2471.0598,1905.9282,9.5254, 2)) ;LV Tauschen
+{
+	If(Skill != "")
+	{
+		If(Skill == 5)
+		{
+			 Sendchat("/me | Getauscht!")
+			 Sendchat("/materials deliver 22")
+		}
+		If(Skill == 4)
+		{
+			 Sendchat("/me | Getauscht!")
+			 Sendchat("/materials deliver 19")
+		}
+		If(Skill == 3)
+		{
+			 Sendchat("/me | Getauscht!")
+			 Sendchat("/materials deliver 17")
+		}
+		If(Skill == 2)
+		{
+			 Sendchat("/me | Getauscht!")
+			 Sendchat("/materials deliver 16")
+		}
+		If(Skill == 1)
+		{
+			 Sendchat("/me | Getauscht!")
+			 Sendchat("/materials deliver 15")
+		}
+		sleep 200
+		GetChatline(0,tausch)
+		IfInString, tausch, Auf der Baustelle wurden  
+		{
+			 RegExMatch(tausch, "Auf der Baustelle wurden dir (.*) Materials für deine (.*) Materials Päckchen gegeben.", lvpoint)
+			 IniRead, Pakete, wd.ini, wd:, Pakete
+			 addChatmessage("pakete vorher: " pakete)
+			 Pakete -= lvpoint2
+			 IniWrite, %pakete%, wd.ini, wd:, pakete
+		}
+		 ReadStats_s(text)
+		 Mats := keyForEntry(text, "Materialien")
+		 RegExMatch(Mats,"(.*) \(\+(.*)\)",CargoMats)
+		 StringReplace, Handmats, CargoMats1, .
+		 StringReplace, Boxmats, CargoMats2, .
+		 Iniwrite, %Handmats%, wd.ini, wd:, Handmats
+		 Iniwrite, %Boxmats%, wd.ini, wd:, Boxmats
+		 sleep 2000
+	}	 
+	else
+	{
+	addChatmessage("Erst Skill abfragen! (/skill [Leertaste])")
+	}
+}
+sleep 1050
+return
+
+^!F11::
+If(IsInChat())
+return
+if(WinActive("GTA:SA:MP"))
+if(!isInChat()){
+	Tempomat := !Tempomat
+	if(Tempomat){
+		SetTimer, Tempomat, 50
+		Geschw := GetVehicleSpeed()
+		AddChatMessage("{81DAF5}Deine Geschwindigkeit von {01FD38}" Geschw "{81DAF5}km/h wird gehalten") 
+		}
+	else{
+		SetTimer, Tempomat, Off
+		AddChatMessage("{81DAF5}Du musst wieder {01FD38}Manuell {81DAF5}beschleunigen. | Tempomat: {01FD38}Aus") 
+	if(!GetKeyState("W", "P"))
+	SendInput, {W Up}
+	}
+}
+return
+
+Tempomat:
+if(!WinActive("GTA:SA:MP") OR IsinChat()){
+if(!GetKeyState("W", "P"))
+SendInput, {W Up}
+return
+}
+if(GetVehicleSpeed() <= Geschw)
+SendInput, {W Down}
+else
+SendInput, {W Up}
+Return
+
+;------------------------------------------------------------------------------------------------------------------------
+
+!y::
+If(IsInChat() == 1)
+return
+SendInput, t/KundeID:{Space}
+Input, KundeID, V I M,{enter}
+Kundename := getPlayerNameByID(KundeID)
+addChatmessage("{FFFFFF}User: " Kundename " als Kunde gespeichert.")
+iniwrite, %KundeID%, WD.ini, Kunde:, Kunde
+SendInput {end}+{home}{Del}{Esc} 
+TextSetShown(waren_ov, 1)
+sleep 500
+return
+
+!Numpad0::
+If(IsInChat() == 1)
+return
+IniRead, Kunde, wd.ini, Kunde:, Kunde
+Sendchat("/sellgun " Kunde " Deagle")
+sleep 1050
+Sendchat("/sellgun " Kunde " Shotgun")
+sleep 1050
+Sendchat("/sellgun " Kunde " mp5")
+sleep 1050
+Sendchat("/sellgun " Kunde " m4")
+sleep 1050
+Sendchat("/sellgun " Kunde " rifle")
+return
+
+!Numpad1::
+If(IsInChat() == 1)
+return
+IniRead, Mats, wd.ini, Warenkorb:, Mats
+IniRead, Deaglezahl, wd.ini, Warenkorb:, Deaglezahl
+IniRead, preis, wd.ini, Warenkorb:, preis
+Deaglezahl++
+preis += 1500
+Mats += 137
+Iniwrite, %preis%, WD.ini, Warenkorb:, preis
+Iniwrite, %Deaglezahl%, WD.ini, Warenkorb:, Deaglezahl
+Iniwrite, %Mats%, WD.ini, Warenkorb:, Mats
+addChatmessage("{01FD38}[PDA] {FFFFFF}- {01FD38}Deagle {FFFFFF}hinzugefügt!")
+TextSetShown(waren_ov, 1)
+return
+
+!Numpad2::
+If(IsInChat() == 1)
+return
+IniRead, Mats, wd.ini, Warenkorb:, Mats
+IniRead, Shotgunzahl, wd.ini, Warenkorb:, Shotgunzahl
+IniRead, preis, wd.ini, Warenkorb:, preis
+Shotgunzahl++
+preis += 2000
+Mats += 182
+Iniwrite, %preis%, WD.ini, Warenkorb:, preis
+Iniwrite, %Shotgunzahl%, WD.ini, Warenkorb:, Shotgunzahl
+Iniwrite, %Mats%, WD.ini, Warenkorb:, Mats
+addChatmessage("{01FD38}[PDA] {FFFFFF}- {01FD38}Shotgun {FFFFFF}hinzugefügt!")
+TextSetShown(waren_ov, 1)
+return
+
+!Numpad3::
+If(IsInChat() == 1)
+return
+IniRead, Mats, wd.ini, Warenkorb:, Mats
+IniRead, preis, wd.ini, Warenkorb:, preis
+IniRead, mp5zahl, wd.ini, Warenkorb:, mp5zahl
+mp5zahl++
+preis += 3000
+Mats += 182
+Iniwrite, %preis%, WD.ini, Warenkorb:, preis
+Iniwrite, %mp5zahl%, WD.ini, Warenkorb:, mp5zahl
+Iniwrite, %Mats%, WD.ini, Warenkorb:, Mats
+addChatmessage("{01FD38}[PDA] {FFFFFF}- {01FD38}Mp5 {FFFFFF}hinzugefügt!")
+TextSetShown(waren_ov, 1)
+return
+
+!Numpad4::
+If(IsInChat() == 1)
+return
+IniRead, Mats, wd.ini, Warenkorb:, Mats
+IniRead, m4zahl, wd.ini, Warenkorb:, m4zahl
+IniRead, preis, wd.ini, Warenkorb:, preis
+m4zahl++
+preis += 5000
+Mats += 546
+Iniwrite, %m4zahl%, WD.ini, Warenkorb:, m4zahl
+Iniwrite, %preis%, WD.ini, Warenkorb:, preis
+Iniwrite, %Mats%, WD.ini, Warenkorb:, Mats
+addChatmessage("{01FD38}[PDA] {FFFFFF}- {01FD38}M4 {FFFFFF}hinzugefügt!")
+TextSetShown(waren_ov, 1)
+return
+
+!Numpad5::
+If(IsInChat() == 1)
+return
+IniRead, Mats, wd.ini, Warenkorb:, Mats
+IniRead, riflezahl, wd.ini, Warenkorb:, riflezahl
+IniRead, preis, wd.ini, Warenkorb:, preis
+riflezahl++
+preis += 4000
+Mats += 546
+Iniwrite, %riflezahl%, WD.ini, Warenkorb:, riflezahl
+Iniwrite, %preis%, WD.ini, Warenkorb:, preis
+Iniwrite, %Mats%, WD.ini, Warenkorb:, Mats
+addChatmessage("{01FD38}[PDA] {FFFFFF}- {01FD38}Rifle {FFFFFF}hinzugefügt!")
+TextSetShown(waren_ov, 1)
+return
+
+!Numpad6::
+If(IsInChat() == 1)
+return
+IniRead, Mats, wd.ini, Warenkorb:, Mats
+IniRead, sniperzahl, wd.ini, Warenkorb:, sniperzahl
+IniRead, preis, wd.ini, Warenkorb:, preis
+sniperzahl++
+preis += 175000
+Mats += 5460
+Iniwrite, %sniperzahl%, WD.ini, Warenkorb:, sniperzahl
+Iniwrite, %preis%, WD.ini, Warenkorb:, preis
+Iniwrite, %Mats%, WD.ini, Warenkorb:, Mats
+addChatmessage("{01FD38}[PDA] {FFFFFF}- {01FD38}Sniper {FFFFFF}hinzugefügt!")
+TextSetShown(waren_ov, 1)
+return
+
+!<::
+Suspend Permit
+Sendinput {enter}
+IniRead, Deaglezahl, wd.ini, Warenkorb:, Deaglezahl
+IniRead, mp5zahl, wd.ini, Warenkorb:, mp5zahl
+IniRead, Shotgunzahl, wd.ini, Warenkorb:, Shotgunzahl
+IniRead, m4zahl, wd.ini, Warenkorb:, m4zahl
+IniRead, riflezahl, wd.ini, Warenkorb:, riflezahl
+IniRead, Sniperzahl, wd.ini, Warenkorb:, Sniperzahl
+iniRead, Kunde, WD.ini, Kunde:, Kunde
+IniRead, Mats, wd.ini, Warenkorb:, Mats
+IniRead, Preis, wd.ini, Warenkorb:, preis
+Name := getPlayerNameByID(Kunde)
+Sendchat("Bestallung von " Name)
+sleep 1050
+bestellungString := "- Mats: " Mats " | Kosten: " preis " | "
+If(Deaglezahl != "")
+{
+	 bestellungString .= "Deagle " Deaglezahl "x | "
+}
+If(mp5zahl != "")
+{
+	 bestellungString .= "Mp5 " Mp5zahl "x | "
+}
+If(Shotgunzahl != "")
+{
+	 bestellungString .= "Shotgun " Shotgunzahl "x | "
+}
+If(m4zahl != "")
+{
+	 bestellungString .= "M4 " M4zahl "x | "
+}
+If(riflezahl != "")
+{
+	 bestellungString .= "Rifle " Riflezahl "x | "
+}
+If(Sniperzahl != "")
+{
+	 bestellungString .= "Sniper " sniperzahl "x | "
+}
+SendChat(bestellungString)
+sleep 1050
+Sendchat("Ist die Bestellung ok?")
+sleep 1050
+SendChat("Bitte bezahlen sie im voraus! (/pay " getUsername() " " preis ")")
+Suspend off
+return
+
+!e::
+IniRead, Deaglezahl, wd.ini, Warenkorb:, Deaglezahl
+IniRead, mp5zahl, wd.ini, Warenkorb:, mp5zahl
+IniRead, Shotgunzahl, wd.ini, Warenkorb:, Shotgunzahl
+IniRead, m4zahl, wd.ini, Warenkorb:, m4zahl
+IniRead, riflezahl, wd.ini, Warenkorb:, riflezahl
+IniRead, Sniperzahl, wd.ini, Warenkorb:, Sniperzahl
+iniRead, Kunde, WD.ini, Kunde:, Kunde
+IniRead, Mats, wd.ini, Warenkorb:, Mats
+IniRead, Preis, wd.ini, Warenkorb:, preis
+Einnahme += preis
+iniwrite, %Einnahme%, wd.ini, Stats:, Einnahme
+IniRead, verbleibende_Mats, wd.ini, Warenkorb:, verbleibende_Mats
+verbleibende_Mats -= Mats
+Iniwrite, %verbleibende_Mats%, wd.ini, Warenkorb:, verbleibende_Mats
+SendChat("/gtake Mats " Mats)
+iniwrite, 0, wd.ini, Stats:, Mats
+sleep 1050
+If(Deaglezahl != "")
+{
+	Loop % Deaglezahl
+	{
+		Counter++
+		SendChat("/Sellgun " Kunde " Deagle")
+		IfEqual, Counter, Deaglezahl
+		{
+			 break
+		}
+		Sleep 1050
+	}
+}
+else
+{
+	addChatmessage("{01FD38}[PDA] {FFFFFF}- " Kunde " bestellte keine Deagle")
+}
+If(mp5zahl != "")
+{
+	Counter++
+	Loop % mp5zahl
+	{
+		SendChat("/Sellgun " Kunde " mp5")
+		IfEqual, Counter, mp5zahl
+		{
+			 break
+		}
+		Sleep 1050
+	}
+}
+else
+{
+	addChatmessage("{01FD38}[PDA] {FFFFFF}- " Kunde " bestellte keine mp5")
+}
+If(Shotgunzahl != "")
+{
+	Loop % Shotgunzahl
+	{
+		Counter++
+		SendChat("/Sellgun " Kunde " Shotgun")
+		IfEqual, Counter, Shotgunzahl
+		{
+			 break
+		}
+		Sleep 1050
+	}
+}
+else
+{
+	addChatmessage("{01FD38}[PDA] {FFFFFF}- " Kunde " bestellte keine Shotgun")
+}
+If(m4zahl != "")
+{
+	Loop % m4zahl
+	{
+		Counter++
+		SendChat("/Sellgun " Kunde " m4")
+		IfEqual, Counter, m4zahl
+		{
+			 break
+		}
+		Sleep 1050
+	}
+}
+else
+{
+	addChatmessage("{01FD38}[PDA] {FFFFFF}- " Kunde " bestellte keine M4")
+}
+If(riflezahl != "")
+{
+	Loop % riflezahl
+	{
+		Counter++
+		SendChat("/Sellgun " Kunde " rifle")
+		IfEqual, Counter, riflezahl
+		{
+			 break
+		}
+		Sleep 1050
+	}
+}
+else
+{
+	addChatmessage("{01FD38}[PDA] {FFFFFF}- " Kunde " bestellte keine Rifle")
+}
+If(Sniperzahl != "")
+{
+	Loop % Sniperzahl
+	{
+		Counter++
+		SendChat("/Sellgun " Kunde " Sniper")
+		IfEqual, Counter, Sniperzahl
+		{
+			 break
+		}
+		Sleep 1050
+	}
+}
+else
+{
+	addChatmessage("{01FD38}[PDA] {FFFFFF}- " Kunde " bestellte keine Sniper")
+}
+goto clear
+return
+
+clear:
+:?:/clear::
+Suspend Permit
+Sendinput {enter}
+ReadStats_s(text)
+Mats := keyForEntry(text, "Materialien")
+RegExMatch(Mats,"(.*) \(\+(.*)\)",CargoMats)
+StringReplace, Handmats, CargoMats1, .
+StringReplace, Boxmats, CargoMats2, .
+iniwrite, "", WD.ini, Kunde:, Kunde
+iniwrite, "", WD.ini, warenkorb:, preis
+iniwrite, "", WD.ini, warenkorb:, Mats
+Iniwrite, "", WD.ini, Warenkorb:, sniperzahl
+Iniwrite, "", WD.ini, Warenkorb:, snipermats
+Iniwrite, "", WD.ini, Warenkorb:, riflezahl
+Iniwrite, "", WD.ini, Warenkorb:, riflemats
+Iniwrite, "", WD.ini, Warenkorb:, Shotgunzahl
+Iniwrite, "", WD.ini, Warenkorb:, Shotgunmats
+Iniwrite, "", WD.ini, Warenkorb:, mp5zahl
+Iniwrite, "", WD.ini, Warenkorb:, mp5mats
+Iniwrite, "", WD.ini, Warenkorb:, m4zahl
+Iniwrite, "", WD.ini, Warenkorb:, m4mats
+Iniwrite, "", WD.ini, Warenkorb:, Deaglezahl
+Iniwrite, "", WD.ini, Warenkorb:, Deaglemats
+addChatmessage("{01FD38}[PDA] - Warenkorb gecleared!")
+TextSetShown(waren_ov, 0)
+Suspend off
+return
+
+!q::
+If(IsInChat() == 1)
+return
+IF(!IsPlayerDriver())
+{
+	 Sendchat("/lock")
+	 sleep 1050
+}
+else IF(IsPlayerDriver())
+{
+	 SendChat("/carlock")
+	 sleep 1050
+}
+return
+
+:?:/wdad::
+Suspend Permit
+SendChat("/ad Waffendealer sucht Kunden! Komme auch gern zu euch! Pn")
+sleep 200
+GetChatline(0, adline)
+IfInString, adline, Sekunden deine nächste Werbung schalten!
+{
+	RegExMatch(adline,"    Du kannst erst in (.*) Sekunden deine nächste Werbung schalten!", timetoad)
+	Sektoad := timetoad1
+	Loop % Sektoload
+	{
+		 Sektoad--
+		 Sleep 1000
+	}
+	IFEqual, Sektoad, 30
+	{
+		 AddChatMessage("Die nächste Werbung kann in 30 Sek geschaltet werden.")
+	}
+}
+return
+
+!n::
+If(IsInChat() == 1)
+return
+Sendchat("/engine")
+sleep 1050
+Sendchat("/lock")
+sleep 1050
+Sendchat("/lights")
+return
+
+!0::
+If(IsInChat() == 1)
+return
+Sendchat("/gtake mats 1000")
+sleep 1050
+return
+
+!9::
+If(IsInChat() == 1)
+return
+ReadStats_s(text)
+Mats := keyForEntry(text, "Materialien")
+RegExMatch(Mats,"(.*) \(\+(.*)\)",CargoMats)
+StringReplace, Handmats, CargoMats1, .
+Sendchat("/put mats " Handmats)
+Return
+
+1::
+If(IsInChat() == 1)
+return
+SendChat("Brauchtst du waffen?")
+return
+
+2::
+If(IsInChat() == 1)
+return
+SendChat("Braucht ihr waffen?")
+return
+
+:?:/info::
+Suspend Permit
+Sendinput {enter}
+AddChatMessage("{FFFFFF}Numpad+ = {01FD38}Kunden ID Eintragen!")
+AddChatMessage("{FFFFFF}Numpad0 = {01FD38}Waffenpaket")
+AddChatMessage("{FFFFFF}Numpad1 = {01FD38}Deagle")
+AddChatMessage("{FFFFFF}Numpad2 = {01FD38}Shotgun")
+AddChatMessage("{FFFFFF}Numpad3 = {01FD38}mp5")
+AddChatMessage("{FFFFFF}Numpad4 = {01FD38}m4")
+AddChatMessage("{FFFFFF}Numpad5 = {01FD38}rifle")
+AddChatMessage("{FFFFFF}/show = {01FD38}Bestellung vorzeigen")
+AddChatMessage("{FFFFFF}/give = {01FD38}Bestellung übergeben")
+Suspend off
+return
+
+:?:/Skill::
+Suspend Permit
+Sendinput {enter}
+SendChat("/skill 9")
+sleep 100
+Getchatline(1, Chatln1)
+Getchatline(0, Chatln0)
+RegExMatch(Chatln1," Dein Skill als Waffenhändler\: (.*)\.",Skill)
+RegExMatch(Chatln0," Du musst noch(.*)Materialien verbauen\, um den nächsten Skill zu erreichen\.",Matsübrig)
+StringReplace, matsohne, Matsübrig1, .
+sleep 100
+IniWrite, %matsohne%, wd.ini, wd:, verbleibende_Mats
+IniWrite, %Skill1%, wd.ini, wd:, Skill
+suspend off
+return
+
+CreateOverlay:
+IniRead, wdx, wd.ini, Overlay:, wdx ; 5
+IniRead, wdy, wd.ini, Overlay:, wdy ; 200
+IniRead, Mapx, wd.ini, Overlay:, Mapx
+IniRead, Mapy, wd.ini, Overlay:, Mapy
+;Spieler/wd Overlay
+MainBox := BoxCreate(wdx,wdy,100,150,0xFF2D2D2D,True)
+sleep 50
+Main := BoxCreate(wdx,wdy,100,150,"",True)
+sleep 50
+MainBoxBorder := BoxSetBorder(Main,3,True)
+sleep 50
+MainBoxBorderColor := BoxSetBorderColor(MainBoxBorder,0xFF01FD38)
+sleep 50
+Trennung := LineCreate(wdx +5,wdy + 22,wdx +95,wdy + 22,2,0xFF01FD38,True)
+sleep 50
+Titel := TextCreate("Verdana", 6, False, False, wdx +7, wdy + 6, 0xFF01FD38, "WD Overlay | By Renz", False, True)
+sleep 50
+Stats := TextCreate("Verdana", 6, False, False, wdx +10, wdy +25, 0xFF01FD38, "", False, True)
+
+;Map Overlay
+Map_OV := TextCreate("Verdana", 6, true, false, Mapx, Mapy,0xFFFFFFFF, "", true, true)
+
+;Warenkorb Overlay
+waren_ov := TextCreate("Verdana", 6, true, false, wdx + 105, wdy,0xFFFFFFFF, "", true, true)
+return
+
+:?:/Ovon::
+suspend Permit
+Sendinput {enter}
+Settimer, OV, 200
+Goto CreateOverlay
+suspend off
+return
+
+:?:/Ovoff::
+Suspend Permit
+Sendinput {enter} 
+Settimer, OV, off
+DestroyAllVisual()
+Suspend off
+return
+
+OV:
+IniRead, Handmats, wd.ini, wd:, Handmats
+IniRead, Ausgabe, wd.ini, wd:, Ausgabe
+IniRead, Pakete, wd.ini, wd:, Pakete
+IniRead, Boxmats, wd.ini, wd:, Boxmats
+IniRead, Deaglezahl, wd.ini, Warenkorb:, Deaglezahl
+IniRead, mp5zahl, wd.ini, Warenkorb:, mp5zahl
+IniRead, Shotgunzahl, wd.ini, Warenkorb:, Shotgunzahl
+IniRead, m4zahl, wd.ini, Warenkorb:, m4zahl
+IniRead, riflezahl, wd.ini, Warenkorb:, riflezahl
+IniRead, Sniperzahl, wd.ini, Warenkorb:, Sniperzahl
+iniRead, Kunde, WD.ini, Kunde:, Kunde
+iniRead, Einnahme, WD.ini, Stats:, Einnahme
+IniRead, Mats, wd.ini, Warenkorb:, Mats
+IniRead, Skill, wd.ini, wd:, Skill
+IniRead, verbleibende_Mats, wd.ini, wd:, verbleibende_Mats
+Name := GetPlayerNamebyID(Toter)
+waffenstring := ""
+If(Kunde != "")
+{
+	If(Deaglezahl != "")
+	{
+		 waffenstring .= " Deagle " Deaglezahl "x `n"
+	}
+	If(mp5zahl != "")
+	{
+		 waffenstring .= " Mp5 " mp5zahl "x `n"
+	}
+	If(Shotgunzahl != "")
+	{
+		 waffenstring .= " Shotgun " Shotgunzahl "x `n"
+	}
+	If(m4zahl != "")
+	{
+		 waffenstring .= " M4 " m4zahl "x `n"
+	}
+	If(riflezahl != "")
+	{
+		 waffenstring .= " Rifle " riflezahl "x `n"
+	}
+	If(Sniperzahl != "")
+	{
+		 waffenstring .= " Sniper " Sniperzahl "x `n"
+	}
+	TextSetString(Stats, "{FFFFFF}HP/AR: " Round(getPlayerHealth()) "/" Round(getPlayerArmor()) "`nWD Skill: " Skill " `nSkillup in " verbleibende_Mats " Mats! `nMats(H): " Handmats "`nMats(B): " BoxMats " `nPakete: " Pakete "`nAusgaben: $" Ausgabe "`n" waffenstring)
+}
+else
+{
+	 TextSetString(Stats, "{FFFFFF}HP/AR: " Round(getPlayerHealth()) "/" Round(getPlayerArmor()) "`nWD Skill: " Skill " `nSkillup in " verbleibende_Mats " Mats! `nMats(H): " Handmats "`nMats(B): " BoxMats " `nPakete: " Pakete "`nAusgaben: $" Ausgabe "`n" waffenstring)
+}
+If(ShortCity == "")
+{
+TextSetString(Map_OV, "{01FD38}" getPlayerCity() ", " GetPlayerZone() "`n" RGN_Location())
+}
+else
+{
+TextSetString(Map_OV, "{01FD38}" ShortCity() ", " GetPlayerZone() "`n" RGN_Location() )
+}
+return
+
+:?:/moveinfo::
+Suspend Permit
+Sendinput {enter}
+addChatmessage("{FFFFFF}Welches {01FD38}Overlay {FFFFFF}möchtest du verschieben? ")
+addChatmessage("{FFFFFF}Mit {01FD38}/ovmove {FFFFFF}verschiebst du das {01FD38}Waffendealer Overlay")
+addChatmessage("{FFFFFF}Mit {01FD38}/Mapmove {FFFFFF}verschiebst du das {01FD38}Stadt/Gebiets Overlay")
+addChatmessage("{FFFFFF}Gewünschte Position mit {01FD38}/ovsave {FFFFFF}Speichern")
+suspend off
+return
+
+:?:/ovmove::
+Suspend Permit
+Sendinput {enter}
+Move := 1
+suspend off
+return
+
+:?:/Mapmove::
+Suspend Permit
+Sendinput {enter}
+MapMove := 1
+suspend off
+return
+
+:?:/warenmove::
+Suspend Permit
+Sendinput {enter}
+warenMove := 1
+suspend off
+return
+
+~up::
+If(Move == 1)
+{
+wdy--
+IniWrite, %wdy%, wd.ini, Overlay:, wdy
+TextSetPos(wdov, wdx, wdy)
+}
+If(MapMove == 1)
+{
+Mapy--
+IniWrite, %Mapy%, wd.ini, Overlay:, Mapy
+TextSetPos(Map_OV, Mapx, Mapy)
+}
+If(warenmove == 1)
+{
+warey--
+IniWrite, %warey%, wd.ini, Overlay:, warey
+TextSetPos(waren_OV, warex, warey)
+}
+return
+
+~down::
+If(Move == 1)
+{
+wdy++
+IniWrite, %wdy%, wd.ini, Overlay:, wdy
+TextSetPos(wdov, wdx, wdy)
+}
+If(MapMove == 1)
+{
+Mapy++
+IniWrite, %Mapy%, wd.ini, Overlay:, Mapy
+TextSetPos(Map_OV, Mapx, Mapy)
+}
+If(MapMove == 1)
+{
+warey++
+IniWrite, %warey%, wd.ini, Overlay:, warey
+TextSetPos(waren_OV, warex, warey)
+}
+return
+
+~Left::
+If(Move == 1)
+{
+wdx--
+IniWrite, %wdx%, wd.ini, Overlay:, wdx
+TextSetPos(wdov, wdx, wdy)
+}
+If(MapMove == 1)
+{
+Mapx--
+IniWrite, %Mapx%, wd.ini, Overlay:, Mapx
+TextSetPos(Map_OV, Mapx, Mapy)
+}
+If(MapMove == 1)
+{
+warex--
+IniWrite, %warex%, wd.ini, Overlay:, warex
+TextSetPos(waren_OV, warex, warey)
+}
+return
+
+~right::
+If(Move == 1)
+{
+wdx++
+IniWrite, %wdx%, wd.ini, Overlay:, wdx
+TextSetPos(wdov, wdx, wdy)
+}
+If(MapMove == 1)
+{
+Mapx++
+IniWrite, %Mapx%, wd.ini, Overlay:, Mapx
+TextSetPos(Map_OV, Mapx, Mapy)
+}
+If(warenMove == 1)
+{
+warex++
+IniWrite, %warex%, wd.ini, Overlay:, warex
+TextSetPos(waren_OV, warex, warey)
+}
+return
+
+:?:/ovsave::
+Suspend Permit
+Sendinput {enter}
+Move := 0
+MapMove := 0
+CarMove := 0
+warenMove := 0
+suspend off
+return
+
+:?:/desov::
+Suspend Permit
+Sendinput {enter}
+Settimer, OV, off
+DestroyAllVisual()
+suspend off
+return
