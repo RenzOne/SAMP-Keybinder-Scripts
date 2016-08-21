@@ -1,0 +1,1783 @@
+Version := "0.2"
+
+Motd := mysql.query(db, "SELECT MOTD FROM Leaderschaft")
+Filedelete, %A_Scriptdir%\Log.txt
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Keybinder gestartet! `n, %A_Scriptdir%\Log.txt
+
+#Persistent
+#UseHook
+#NoEnv
+#SingleInstance force
+#IfWinActive, GTA:SA:MP
+#include AHPi_0.3.7_R1.AHK
+#Include Overlay.ahk
+#Include mysql.ahk
+
+SetBatchLines -1
+ListLines, off
+
+DestroyAllVisual()
+
+SetParam("use_window", "1")
+SetParam("window", "GTA:SA:MP")
+
+
+Iniwrite, 0, Mecha.ini, Truck:, Tank
+Iniwrite, 0, Mecha.ini, Truck:, teile
+
+IniRead, Ref_Preis, Mecha.ini, Preise:, Ref_Preis
+IniRead, Rep_Preis, Mecha.ini, Preise:, Rep_Preis
+IniRead, Can_Preis, Mecha.ini, Preise:, Can_Preis
+IniRead, Tanken, Mecha.ini, Boxen:, Tanken
+IniRead, Arepon, Mecha.ini, Boxen:, Arepon
+IniRead, Arefon, Mecha.ini, Boxen:, Arefon
+IniRead, aCanon, Mecha.ini, Boxen:, aCanon
+IniRead, ABuy, Mecha.ini, Boxen:, ABuy
+
+IniRead, MainAktiv, Mecha.ini, Overlay-Boxen:, MainAktiv,0
+IniRead, DutyAktiv, Mecha.ini, Overlay-Boxen:, DutyAktiv,0
+IniRead, CarAktiv, Mecha.ini, Overlay-Boxen:, CarAktiv,0
+IniRead, LogAktiv, Mecha.ini, Overlay-Boxen:, LogAktiv,0
+IniRead, MapAktiv, Mecha.ini, Overlay-Boxen:, MapAktiv,0
+IniRead, OverlayAktiv, Mecha.ini, Overlay-Boxen:, OverlayAktiv
+
+IniRead, MainX, Mecha.ini, Overlay:, MainX, 5
+IniRead, Mainy, Mecha.ini, Overlay:, Mainy, 200
+IniRead, MainSize, Mecha.ini, Overlay:, MainSize, 6
+IniRead, carX, Mecha.ini, Overlay:, carX, 5
+IniRead, carY, Mecha.ini, Overlay:, CarY, 400
+IniRead, carSize, Mecha.ini, Overlay:, CarSize, 6
+IniRead, MapX, Mecha.ini, Overlay:, MapX, 5
+IniRead, MapY, Mecha.ini, Overlay:, MapY, 480
+IniRead, MapSize, Mecha.ini, Overlay:, MapSize, 6
+IniRead, LogX, Mecha.ini, Overlay:, LogX, 540
+IniRead, LogY, Mecha.ini, Overlay:, LogY, 500
+IniRead, LogSize, Mecha.ini, Overlay:, LogSize, 6
+IniRead, MemX, Mecha.ini, Overlay:, MemX, 540
+IniRead, MemY, Mecha.ini, Overlay:, MemY, 300
+IniRead, MemSize, Mecha.ini, Overlay:, MemSize, 6
+IniRead, DutyColormain, Mecha.ini, Overlay:, DutyColormain, FFFFFF
+IniRead, DutyColorvalue, Mecha.ini, Overlay:, DutyColorvalue, 2CC559
+IniRead, MainColormain, Mecha.ini, Overlay:, MainColormain, FFFFFF
+IniRead, MainColorvalue, Mecha.ini, Overlay:, MainColorvalue, 2CC559
+IniRead, carColormain, Mecha.ini, Overlay:, CarColormain, FFFFFF
+IniRead, carColorvalue, Mecha.ini, Overlay:, CarColorvalue, 2CC559
+IniRead, MapColormain, Mecha.ini, Overlay:, MapColormain, FFFFFF
+IniRead, MapColorvalue, Mecha.ini, Overlay:, MapColorvalue, 2CC559
+IniRead, ChatColormain, Mecha.ini, Overlay:, ChatColormain, FFFFFF
+IniRead, ChatColorvalue, Mecha.ini, Overlay:, ChatColorvalue, 2CC559
+IniRead, MemColormain, Mecha.ini, Overlay:, MemColormain, FFFFFF
+IniRead, MemColorvalue, Mecha.ini, Overlay:, MemColorvalue, 2CC559
+IniRead, LogColormain, Mecha.ini, Overlay:, LogColormain, FFFFFF
+IniRead, LogColorvalue, Mecha.ini, Overlay:, LogColorvalue, 2CC559
+IniRead, HpColor, Mecha.ini, Overlay:, HpColor, FF0000
+IniRead, ArmorColor, Mecha.ini, Overlay:, ArmorColor, 221BFF
+IniRead, OnDutyColor, Mecha.ini, Overlay:, OnDutyColor, 22FF00
+IniRead, OffDutyColor, Mecha.ini, Overlay:, OffDutyColor, FF0000
+IniRead, VehModePositivColor, Mecha.ini, Overlay:, VehModePositivColor, 22FF00
+IniRead, VehModeNegativColor, Mecha.ini, Overlay:, VehModeNegativColor, FF0000
+
+Name := getUserName()
+
+Aktiv := 0
+Duty := 0
+Buyed := 0
+Driver := IsPlayerDriver()
+inVeh := IsPlayerInAnyVehicle()
+RGBval:=RGB(Rval:=44,Gval:=197,Bval:=89)
+
+gosub CreateGUI
+gosub CreateOverlay
+
+global text_overlay:=-1
+Version := 0.1.2
+return
+
+CreateGUI:
+ini = %A_ScriptDir%\Mecha.ini
+ IfNotExist, %ini%
+ {
+     Loop, 8
+     {
+         IniWrite, %A_Space%, %ini%, Texte, Text%A_Index%
+     }
+ }
+
+ Loop, 8
+ {
+ IniRead, Hotkey%A_Index%, %ini%, Hotkeys, Hotkey%A_Index%
+ IniRead, Text%A_Index%, %ini%, Texte, Text%A_Index%
+ }
+ gosub, Hotkeydefine
+Gui, Add, Button, x11 y124 w150 h40 gSave, Speichern
+Gui, Add, Button, x+1 y124 w55 h40 gOWin, Overlay`nSettings
+Gui, Add, Edit, x11 y4 w70 h15 vRef_Preis, %Ref_Preis%
+Gui, Add, Edit, x11 y24 w70 h15 vRep_Preis, %Rep_Preis%
+Gui, Add, Edit, x11 y44 w70 h15 vCan_Preis, %Can_Preis%
+Gui, Add, Text, x81 y4  h15 , | - Refill Preis | Preis pro Liter
+Gui, Add, Text, x81 y24  h15 ,|  - Repair Preis
+Gui, Add, Text, x81 y44  h15 ,|  - Kanister Preis
+Gui, Add, CheckBox, x11 y64 w110 h15 vArepon Checked%Arepon%, Auto. Repair
+Gui, Add, CheckBox, x11 y84 w110 h15 vArefon Checked%Arefon%, Auto. Refill
+Gui, Add, CheckBox, x11 y104 w110 h15 vaCanon Checked%aCanon%, Auto. Kanister
+Gui, Add, CheckBox, x121 y104 w110 h15 , Warteliste
+Gui, Add, CheckBox, x121 y84 w110 h15 vTanken, Auto. Tanken
+Gui, Add, CheckBox, x121 y64 w110 h15 vABuy Checked%ABuy%, Auto. Kaufen
+
+Gui, Add, Tab, x241 y4 w230 h163 , Hotkeys|TextBinds|MOTD
+
+Gui, Add, Text, x311 y34  h15 , - Refill Anbieten (ID)
+Gui, Add, Text, x311 y+1  h15 , - Repair Anbieten (ID)
+Gui, Add, Text, x311 y+1  h15 , - BaseRefill Ref/Rep $1 (ID)
+Gui, Add, Text, x311 y+1  h15 , - Enter/Exit
+Gui, Add, Text, x311 y+1  h15 , - Carlock/Lock
+Gui, Add, Text, x311 y+1  h15 , - Engine
+Gui, Add, Text, x311 y+1  h15 , - ID Eingabe
+Gui, Add, Text, x311 y+1  h15 , - Platzhalter
+Gui, Add, Hotkey, x251 y34 w60 h15 vHotkey1, %Hotkey1%
+Gui, Add, Hotkey, x251 y+1 w60 h15 vHotkey2, %Hotkey2%
+Gui, Add, Hotkey, x251 y+1 w60 h15 vHotkey3, %Hotkey3%
+Gui, Add, Hotkey, x251 y+1 w60 h15 vHotkey4, %Hotkey4%
+Gui, Add, Hotkey, x251 y+1 w60 h15 vHotkey5, %Hotkey5%
+Gui, Add, Hotkey, x251 y+1 w60 h15 vHotkey6, %Hotkey6%
+Gui, Add, Hotkey, x251 y+1 w60 h15 vHotkey7, %Hotkey7%
+Gui, Add, Hotkey, x251 y+1 w60 h15 vHotkey8, %Hotkey8%
+
+Gui, Tab, TextBinds
+Gui, Add, Text, x251 y34 h120 , /id = Kunden ID Eintragen | /din = Drivein `n/hi = Was kann ich für sie...`n/ovon = Overlay An | /ovoff = Overlay Aus`n/rmc = ReserveCar | PLATZHALTER `n/mct = Teile Laden | /mcs = Sprit Laden
+Gui, Show, x541 y246 h180 w485, MechaBinder - | by Renz
+
+Gui, Tab, MOTD
+Gui, Add, Text, x275 y34 w160 h100 cBlack +Center, %Motd%
+Return
+
+Save:
+Gui, Submit, nohide
+Iniwrite, %Ref_Preis%, Mecha.ini, Preise:, Ref_Preis
+Iniwrite, %Tanken%, Mecha.ini, Boxen:, Tanken
+Iniwrite, %Rep_Preis%, Mecha.ini, Preise:, Rep_Preis
+Iniwrite, %Can_Preis%, Mecha.ini, Preise:, Can_Preis
+Iniwrite, %Arepon%, Mecha.ini, Boxen:, Arepon
+Iniwrite, %Arefon%, Mecha.ini, Boxen:, Arefon
+Iniwrite, %aCanon%, Mecha.ini, Boxen:, aCanon
+Iniwrite, %ABuy%, Mecha.ini, Boxen:, ABuy
+Loop, 8 {
+HHotkey := Hotkey%A_Index%
+IniWrite, %HHotkey%, %ini%, Hotkeys, Hotkey%A_Index%
+HTexte := Text%A_Index%
+IniWrite, %HTexte%, %ini%, Texte, Text%A_Index%
+}
+gosub, Hotkeydefine
+Reload
+return
+
+Hotkeydefine:
+ Loop, 8
+ {
+ HHotkey := Hotkey%A_Index%
+ Hotkey, ~%HHotkey%, Label%A_Index%, UseErrorlevel
+ }
+return
+
+
+Label1:
+If(IsInChat())
+return
+IniRead, Ref_Preis, Mecha.ini, Preise:, Ref_Preis
+IniRead, ID, Mecha.ini, Kunde:, ID
+brefKunde := getPlayerNAmebyID(ID)
+preis := 150*42
+Sendchat("/refill " brefKunde " 150 " preis)
+sleep 200
+GetChatline(0, MaxLiterline)
+IfInString, MaxLiterline, nur noch mit max.
+{
+	 RegExMatch(MaxLiterline, "max\. (.*) Liter betanken", Liter)
+	 MG_Preis := Ref_Preis*Liter1
+	 SendChat("/refill " brefKunde " " Liter1 " " MG_Preis)
+	 sleep 1050
+}
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - [Mecha] - %brefKunde% wurden %Liter1% Liter für $%MG_Preis% Verkauft! `n, %A_Scriptdir%\Log.txt
+sleep 1050
+return
+
+ Label2:
+If(IsInChat())
+return
+IniRead, Rep_Preis, Mecha.ini, Preise:, Rep_Preis
+IniRead, ID, Mecha.ini, Kunde:, ID
+brefKunde := getPlayerNAmebyID(ID)
+Sendchat("/repair " brefKunde " 400")
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - [Mecha] - %brefKunde%´s Fahrzeug wurde für %Rep_Preis% repariert! `n, %A_Scriptdir%\Log.txt
+sleep 1050
+return
+
+ Label3:
+If(IsInChat())
+return
+IniRead, ID, Mecha.ini, Kunde:, ID
+brefKunde := getPlayerNAmebyID(ID)
+preis := 150*42
+Sendchat("/refill " brefKunde " 150 " preis)
+sleep 200
+GetChatline(0, MaxLiterline)
+IfInString, MaxLiterline, nur noch mit max.
+{
+	 RegExMatch(MaxLiterline, "max\. (.*) Liter betanken", Liter)
+	 MG_Preis := 55*Liter1
+	 Sendchat("/refill " brefKunde " " Liter1 " 1")
+	 sleep 1050
+}
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - [Mecha] - %brefKunde%´s Fahrzeug wurde für %Rep_Preis% repariert! `n, %A_Scriptdir%\Log.txt
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - [Mecha] - %brefKunde% wurden %Liter1% Liter für $%MG_Preis% Verkauft! `n, %A_Scriptdir%\Log.txt
+Sleep 1050
+return
+
+ Label4:
+If(IsInChat())
+return
+addchatmessage("{" ChatColorMain "}[{" ChatColorvalue "}PDA{" ChatColorMain "}] - Fahrzeug: " getVehicleModelName() "{" ChatColorMain "} | Fahrzeug DL: {" ChatColorvalue "}" getVehicleHealth())
+	SendChat("/engine")
+	 sleep 1050
+If(A_Hour > 19 && getVehicleLightState() == 0)
+{
+	 SendChat("/lights")
+	 addchatmessage("{" ChatColorMain "}[{" ChatColorvalue "}PDA{" ChatColorMain "}] - Licht wurde {" ChatColorvalue "}Aktiviert!")
+}
+sleep 1050
+return
+
+ Label5:
+If(IsInChat() == 1)
+return
+IF(!IsPlayerDriver())
+{
+	 Sendchat("/lock")
+	 sleep 1050
+}
+else IF(IsPlayerDriver())
+{
+	 SendChat("/carlock")
+	 sleep 1050
+}
+return
+
+ Label6:
+if(IsInChat() == 1)
+return
+Inside := getPlayerInteriorId()
+If(Inside)
+{
+SendChat("/exit")
+}
+else If(!Inside)
+{
+Sendchat("/enter")
+}
+return
+
+ Label7:
+if(IsInChat() == 1)
+return
+return
+
+ Label8:
+if(IsInChat() == 1)
+return
+return
+
+GuiClose:
+ExitApp
+return
+
+Owin:
+2Open:
+IniRead, MainX, Mecha.ini, Overlay:, MainX, 5
+IniRead, Mainy, Mecha.ini, Overlay:, Mainy, 200
+IniRead, MainSize, Mecha.ini, Overlay:, MainSize, 6
+IniRead, carX, Mecha.ini, Overlay:, carX, 5
+IniRead, carY, Mecha.ini, Overlay:, CarY, 400
+IniRead, carSize, Mecha.ini, Overlay:, CarSize, 6
+IniRead, MapX, Mecha.ini, Overlay:, MapX, 5
+IniRead, MapY, Mecha.ini, Overlay:, MapY, 480
+IniRead, MapSize, Mecha.ini, Overlay:, MapSize, 6
+IniRead, LogX, Mecha.ini, Overlay:, LogX, 540
+IniRead, LogY, Mecha.ini, Overlay:, LogY, 500
+IniRead, LogSize, Mecha.ini, Overlay:, LogSize, 6
+IniRead, MemX, Mecha.ini, Overlay:, MemX, 540
+IniRead, MemY, Mecha.ini, Overlay:, MemY, 300
+IniRead, MemSize, Mecha.ini, Overlay:, MemSize, 6
+IniRead, DutyColormain, Mecha.ini, Overlay:, DutyColormain, FFFFFF
+IniRead, DutyColorvalue, Mecha.ini, Overlay:, DutyColorvalue, 2CC559
+IniRead, MainColormain, Mecha.ini, Overlay:, MainColormain, FFFFFF
+IniRead, MainColorvalue, Mecha.ini, Overlay:, MainColorvalue, 2CC559
+IniRead, carColormain, Mecha.ini, Overlay:, CarColormain, FFFFFF
+IniRead, carColorvalue, Mecha.ini, Overlay:, CarColorvalue, 2CC559
+IniRead, MapColormain, Mecha.ini, Overlay:, MapColormain, FFFFFF
+IniRead, MapColorvalue, Mecha.ini, Overlay:, MapColorvalue, 2CC559
+IniRead, ChatColormain, Mecha.ini, Overlay:, ChatColormain, FFFFFF
+IniRead, ChatColorvalue, Mecha.ini, Overlay:, ChatColorvalue, 2CC559
+IniRead, MemColormain, Mecha.ini, Overlay:, MemColormain, FFFFFF
+IniRead, MemColorvalue, Mecha.ini, Overlay:, MemColorvalue, 2CC559
+IniRead, LogColormain, Mecha.ini, Overlay:, LogColormain, FFFFFF
+IniRead, LogColorvalue, Mecha.ini, Overlay:, LogColorvalue, 2CC559
+IniRead, MainAktiv, Mecha.ini, Overlay-Boxen:, MainAktiv,0
+IniRead, DutyAktiv, Mecha.ini, Overlay-Boxen:, DutyAktiv,0
+IniRead, CarAktiv, Mecha.ini, Overlay-Boxen:, CarAktiv,0
+IniRead, LogAktiv, Mecha.ini, Overlay-Boxen:, LogAktiv,0
+IniRead, MapAktiv, Mecha.ini, Overlay-Boxen:, MapAktiv,0
+IniRead, OverlayAktiv, Mecha.ini, Overlay-Boxen:, OverlayAktiv
+IniRead, HpColor, Mecha.ini, Overlay:, HpColor, FF0000
+IniRead, ArmorColor, Mecha.ini, Overlay:, ArmorColor, 221BFF
+IniRead, OnDutyColor, Mecha.ini, Overlay:, OnDutyColor, 22FF00
+IniRead, OffDutyColor, Mecha.ini, Overlay:, OffDutyColor, FF0000
+IniRead, VehModePositivColor, Mecha.ini, Overlay:, VehModePositivColor, 22FF00
+IniRead, VehModeNegativColor, Mecha.ini, Overlay:, VehModeNegativColor, FF0000
+IniRead, PlayerColor, Mecha.ini, Overlay:, PlayerColor, 2CC559
+
+ 
+;Create Color Dialog GUI
+Gui  2: Add, Text, x0 y10 w40 h15 +Right, Red
+Gui  2: Add, Text, x0 y30 w40 h15 +Right, Green
+Gui  2: Add, Text, x0 y50 w40 h15 +Right, Blue
+Gui  2: Add, Slider, x40 y10 w190 h15 AltSubmit +NoTicks +Range0-255 vsR gSliderSub, %Rval%
+Gui  2: Add, Slider, x40 y30 w190 h15 AltSubmit +NoTicks +Range0-255 vsG gSliderSub, %Gval%
+Gui  2: Add, Slider, x40 y50 w190 h15 AltSubmit +NoTicks +Range0-255 vsB gSliderSub, %Bval%
+Gui  2: Add, Edit, x230 y10 w45 h15 gEditSub veR +Limit3 +Number, %Rval%
+Gui  2: Add, UpDown, Range0-255 vuR gUpDownSub, %Rval%
+Gui  2: Add, Edit, x230 y30 w45 h15 gEditSub veG +Limit3 +Number, %Gval%
+Gui  2: Add, UpDown, Range0-255 vuG gUpDownSub, %Gval%
+Gui  2: Add, Edit, x230 y50 w45 h15 gEditSub veB +Limit3 +Number, %Bval%
+Gui  2: Add, UpDown, Range0-255 vuB gUpDownSub, %Bval%
+Gui  2: Add, Progress, x285 y2 w60 h106 +Border Background%RGBval% vpC
+Gui  2: Add, Text, x285 y2 w60 h106 +Border vtP cWhite +BackgroundTrans CWhite, Preview
+Gui  2: Add, Button, x10 y80 w106 h20 vbS gButtonSub, Copy to Clipboard
+Gui  2: Add, Button, x+3 y80 w106 h20 gsave2, Overlay Speichern
+
+
+Gui 2: Add, Edit, x350 y4 w50 h15 vChatColorMain, %ChatColorMain%
+Gui 2: Add, Text, x+1 y4 h15 , Keybinder Chat Farbe (Sätze, Titel ect. Farbe)
+
+Gui 2: Add, Edit, x350 y24 w50 h15 vChatColorValue, %ChatColorvalue%
+Gui 2: Add, Text, x+1 y24 h15 , Keybinder Chat Farbe (Werte,Namen ect. Farbe)
+
+Gui 2: Add, Text, x350 y+2 h15 +center , |---------------------Allgemeine Farben im Overlay----------------------|
+
+Gui 2: Add, Edit, x350 y61 w50 h15 vHpColor, %HpColor%
+Gui 2: Add, Text, x+1 y61 w110 h15 , HP
+
+Gui 2: Add, Edit, x490 y61 w50 h15 vArmorColor, %ArmorColor%
+Gui 2: Add, Text, x+1 y61 w110 h15 , Armor 
+
+Gui 2: Add, Edit, x350 y78 w50 h15 vOnDutyColor, %OnDutyColor%
+Gui 2: Add, Text, x+1 y78 w110 h15 , OnDuty 
+
+Gui 2: Add, Edit, x490 y78 w50 h15 vOffdutyColor, %OffDutyColor%
+Gui 2: Add, Text, x+1 y78 w110 h15 , OffDuty 
+
+Gui 2: Add, Edit, x350 y95 w50 h15 vVehModePositivColor, %VehModePositivColor%
+Gui 2: Add, Text, x+1 y95 w110 h15 , Licht an, Motor An
+
+Gui 2: Add, Edit, x490 y95 w50 h15 vVehModeNegativColor, %VehModeNegativColor%
+Gui 2: Add, Text, x+1 y95 w110 h15 , Licht Aus, Motor Aus 
+
+
+Gui  2: Add, GroupBox, x11 y114 w125 h120 , Duty - Overlay Settings
+Gui  2: Add, Edit, x21 y134 w35 h15 vDutyX, %DutyX%
+Gui  2: Add, Edit, x21 y+1 w35 h15 vDutyY, %DutyY%
+Gui  2: Add, Edit, x21 y+1 w35 h15 vDutySize, %DutySize%
+Gui  2: Add, Edit, x21 y+1 w35 h15 vDutyColormain, %DutyColormain%
+Gui  2: Add, Edit, x21 y+1 w35 h15 vDutyColorvalue, %DutyColorvalue%
+Gui  2: Add, Text, x56 y134 w50 h15 , - XPos
+Gui  2: Add, Text, x56 y+1 w50 h15 , - YPos
+Gui  2: Add, Text, x56 y+1 w40 h15 , - Size
+Gui  2: Add, Text, x56 y+1 h15 , - Color (Main)
+Gui  2: Add, Text, x56 y+1 h15 , - Color (Werte)
+Gui 2: Add, CheckBox, x21 y+2 h15 vDutyAktiv Checked%DutyAktiv%, Overlay Aktivieren?
+
+Gui  2: Add, GroupBox, x135 y114 w125 h120 , Veh. - Overlay Settings
+Gui  2: Add, Edit, x145 y134 w35 h15 vcarX, %carX%
+Gui  2: Add, Edit, x145 y+1 w35 h15 vcary, %cary%
+Gui  2: Add, Edit, x145 y+1 w35 h15 vcarSize, %carSize%
+Gui  2: Add, Edit, x145 y+1 w35 h15 vcarcolormain, %carcolormain%
+Gui  2: Add, Edit, x145 y+1 w35 h15 vcarcolorvalue, %carcolorvalue%
+Gui  2: Add, Text, x175 y134 w50 h15 , - XPos
+Gui  2: Add, Text, x175 y+1 w50 h15 , - YPos
+Gui  2: Add, Text, x175 y+1 w40 h15 , - Size
+Gui  2: Add, Text, x175 y+1 h15 , - Color (Main)
+Gui  2: Add, Text, x175 y+1 h15 , - Color (Werte)
+Gui 2: Add, CheckBox, x145 y+2 h15 vcarAktiv Checked%carAktiv%, Overlay Aktivieren?
+
+Gui  2: Add, GroupBox, x258 y114 w125 h120 , Map - Overlay Settings
+Gui  2: Add, Edit, x266 y134 w35 h15 vMapX, %MapX%
+Gui  2: Add, Edit, x266 y+1 w35 h15 vMapY, %MapY%
+Gui  2: Add, Edit, x266 y+1 w35 h15 vMapSize, %MapSize%
+Gui  2: Add, Edit, x266 y+1 w35 h15 vMapColormain, %MapColormain%
+Gui  2: Add, Edit, x266 y+1 w35 h15 vMapColorvalue, %MapColorvalue%
+Gui  2: Add, Text, x306 y134 w50 h15 , - XPos
+Gui  2: Add, Text, x306 y+1 w50 h15 , - YPos
+Gui  2: Add, Text, x306 y+1 w40 h15 , - Size
+Gui  2: Add, Text, x306 y+1  h15 , - Color (Main)
+Gui  2: Add, Text, x306 y+1  h15 , - Color (Werte)
+Gui 2: Add, CheckBox, x266 y+2 h15 vMapAktiv Checked%MapAktiv%, Overlay Aktivieren?
+
+Gui  2: Add, GroupBox, x383 y114 w125 h120 , Log - Overlay Settings
+Gui  2: Add, Edit, x393 y134 w35 h15 vLogX, %LogX%
+Gui  2: Add, Edit, x393 y+1 w35 h15 vLogY, %LogY%
+Gui  2: Add, Edit, x393 y+1 w35 h15 vLogSize, %LogSize%
+Gui  2: Add, Edit, x393 y+1 w35 h15 vLogColormain, %LogColormain%
+Gui  2: Add, Edit, x393 y+1 w35 h15 vLogColorvalue, %LogColorvalue%
+Gui  2: Add, Text, x433 y134 w50 h15 , - XPos
+Gui  2: Add, Text, x433 y+1 w50 h15 , - YPos
+Gui  2: Add, Text, x433 y+1 w40 h15 , - Size
+Gui  2: Add, Text, x433 y+1  h15 , - Color (Main)
+Gui  2: Add, Text, x433 y+1  h15 , - Color (Werte)
+Gui 2: Add, CheckBox, x393 y+2 h15 vLogAktiv Checked%LogAktiv%, Overlay Aktivieren?
+
+Gui  2: Add, GroupBox, x508 y114 w125 h120 , Main - Overlay Settings
+Gui  2: Add, Edit, x518 y134 w35 h15 vMainX, %MainX%
+Gui  2: Add, Edit, x518 y+1 w35 h15 vMainY, %MainY%
+Gui  2: Add, Edit, x518 y+1 w35 h15 vMainSize, %MainSize%
+Gui  2: Add, Edit, x518 y+1 w35 h15 vMainColormain, %MainColormain%
+Gui  2: Add, Edit, x518 y+1 w35 h15 vMainColorvalue, %MainColorvalue%
+Gui  2: Add, Text, x558 y134 w50 h15 , - XPos
+Gui  2: Add, Text, x558 y+1 w50 h15 , - YPos
+Gui  2: Add, Text, x558 y+1 w40 h15 , - Size
+Gui  2: Add, Text, x558 y+1  h15 , - Color (Main)
+Gui  2: Add, Text, x558 y+1  h15 , - Color (Werte)
+Gui 2: Add, CheckBox, x518 y+2 h15 vMainAktiv Checked%MainAktiv%, Overlay Aktivieren?
+
+Gui  2: Add, GroupBox, x633 y114 w135 h135 , Org - Ausgabe Settings
+Gui  2: Add, Edit, x643 y134 w35 h15 vMemX, %MemX%
+Gui  2: Add, Edit, x643 y+1 w35 h15 vMemY, %MemY%
+Gui  2: Add, Edit, x643 y+1 w35 h15 vMemSize, %MemSize%
+Gui  2: Add, Edit, x643 y+1 w35 h15 vMemolormain, %MemColormain%
+Gui  2: Add, Edit, x643 y+1 w35 h15 vMemColorvalue, %MemColorvalue%
+Gui  2: Add, Edit, x643 y+1 w35 h15 vPlayerColor, %PlayerColor%
+Gui  2: Add, Text, x683 y134 w50 h15 , - XPos
+Gui  2: Add, Text, x683 y+1 w50 h15 , - YPos
+Gui  2: Add, Text, x683 y+1 w40 h15 , - Size
+Gui  2: Add, Text, x683 y+1  h15 , - Color (Main)
+Gui  2: Add, Text, x683 y+1  h15 , - Color (Werte)
+Gui  2: Add, Text, x683 y+1  h15 , - Color (Member)
+Gui 2: Add, CheckBox, x643 y+2 h15 vMemberAktiv Checked%MemberAktiv%, Overlay Aktivieren?
+
+Gui 2: Font, S13
+Gui  2: Add, Text, x0 y+5 w760 h30 +Center cRed, Das Overlay kann derzeit noch nicht Ingame verschoben werden!
+
+Gui 2: Font, S6
+Gui  2: Add, Text, x0 y+1 w760 h50 +Center cBlack, XPos = Waagerecht (Links,Rechts) | YPos = Senkrecht (Hoch,Runter) | Size = Grösse | Color = Farbe (ARGB-Code)
+Gui  2: Add, Text, x715 y285 h50 +Left cBlack, Written by Renz
+
+Gui 2: Font, S6
+Gui 2: Add, CheckBox, x650 y5 h15 vOverlayAktiv Checked%OverlayAktiv%, Overlay Aktivieren?
+Gui 2: Add, CheckBox, x650 y+2 h15 vDefaultColorMain Checked%DefaultColorMain%, Default Color (Sätze, ect.)
+Gui 2: Add, CheckBox, x650 y+2 h15 vDefaultColorvalue Checked%DefaultColorvalue%, Default Color (Werte, ect.)
+Gui 2: Add, CheckBox, x650 y+2 h15 vDefaultX Checked%DefaultX%, Default XPos (Alle Ov´s)
+Gui 2: Add, CheckBox, x650 y+2 h15 vDefaultY Checked%DefaultY%, Default YPos (Alle Ov´s)
+Gui 2: Add, CheckBox, x650 y+2 h15 vDefaultSize Checked%DefaultSize%, Default Size (Alle Ov´s)
+
+Gui  2: Show, w780 h300, Overlay Sektion
+return
+
+EditSub:
+	GuiControlGet,Rval,,eR
+	GuiControlGet,Gval,,eG
+	GuiControlGet,Bval,,eB
+	gosub set
+	GuiControl,,uR,%Rval%
+	GuiControl,,uG,%Gval%
+	GuiControl,,uB,%Bval%
+	GuiControl,,sR,%Rval%
+	GuiControl,,sG,%Gval%
+	GuiControl,,sB,%Bval%
+return
+ 
+UpDownSub:
+	GuiControlGet,Rval,,uR
+	GuiControlGet,Gval,,uG
+	GuiControlGet,Bval,,uB
+	gosub set
+	GuiControl,,eR,%Rval%
+	GuiControl,,eG,%Gval%
+	GuiControl,,eB,%Bval%
+	GuiControl,,sR,%Rval%
+	GuiControl,,sG,%Gval%
+	GuiControl,,sB,%Bval%
+return
+ 
+SliderSub:
+	GuiControlGet,Rval,,sR
+	GuiControlGet,Gval,,sG
+	GuiControlGet,Bval,,sB
+	gosub set
+	GuiControl,,eR,%Rval%
+	GuiControl,,eG,%Gval%
+	GuiControl,,eB,%Bval%
+	GuiControl,,uR,%Rval%
+	GuiControl,,uG,%Gval%
+	GuiControl,,uB,%Bval%
+return
+ 
+set:
+	RGBval:=RGB(Rval,Gval,Bval)
+	ToolTip Red: %Rval%`nGreen: %Gval%`nBlue: %Bval%`nHex: %RGBval%
+	SetTimer, RemoveToolTip, 375
+	GuiControl,+Background%RGBval%,pC
+return
+ 
+RemoveToolTip:
+	SetTimer, RemoveToolTip, Off 
+	ToolTip
+return
+ 
+ButtonSub:
+	StringReplace,Clipboard,RGBval,0x
+Return
+
+save2:
+Gui  2: Submit, Nohide
+IniWrite, %HpColor%, Mecha.ini, Overlay:, HpColor
+IniWrite, %PlayerColor%, Mecha.ini, Overlay:, PlayerColor
+IniWrite, %ArmorColor%, Mecha.ini, Overlay:, ArmorColor
+IniWrite, %OnDutyColor%, Mecha.ini, Overlay:, OnDutyColor
+IniWrite, %OffDutyColor%, Mecha.ini, Overlay:, OffDutyColor
+IniWrite, %VehModePositivColor%, Mecha.ini, Overlay:, VehModePositivColor
+IniWrite, %VehModeNegativColor%, Mecha.ini, Overlay:, VehModeNegativColor
+IniWrite, %Sposi%, Mecha.ini, Overlay:, SPosi
+IniWrite, %maco%, Mecha.ini, Overlay:, maco
+IniWrite, %seco%, Mecha.ini, Overlay:, seco
+IniWrite, %MainX%, Mecha.ini, Overlay:, MainX
+IniWrite, %Mainy%, Mecha.ini, Overlay:, Mainy
+IniWrite, %MainSize%, Mecha.ini, Overlay:, MainSize
+IniWrite, %DutyColormain%, Mecha.ini, Overlay:, DutyColormain
+IniWrite, %DutyColorvalue%, Mecha.ini, Overlay:, DutyColorvalue
+IniWrite, %carX%, Mecha.ini, Overlay:, carX
+IniWrite, %carY%, Mecha.ini, Overlay:, CarY
+IniWrite, %carSize%, Mecha.ini, Overlay:, CarSize
+IniWrite, %carColormain%, Mecha.ini, Overlay:, CarColormain
+IniWrite, %carColorvalue%, Mecha.ini, Overlay:, CarColorvalue
+IniWrite, %MapX%, Mecha.ini, Overlay:, MapX
+IniWrite, %MapY%, Mecha.ini, Overlay:, MapY
+IniWrite, %MapSize%, Mecha.ini, Overlay:, MapSize
+IniWrite, %LogX%, Mecha.ini, Overlay:, LogX
+IniWrite, %LogY%, Mecha.ini, Overlay:, LogY
+IniWrite, %LogSize%, Mecha.ini, Overlay:, LogSize
+IniWrite, %MemX%, Mecha.ini, Overlay:, MemX
+IniWrite, %MemY%, Mecha.ini, Overlay:, MemY
+IniWrite, %MemSize%, Mecha.ini, Overlay:, MemSize
+IniWrite, %DefaultX%, Mecha.ini, Overlay-Boxen:, DefaultX
+IniWrite, %DefaultY%, Mecha.ini, Overlay-Boxen:, DefaultY
+IniWrite, %DefaultSize%, Mecha.ini, Overlay-Boxen:, DefaultSize
+IniWrite, %MapColormain%, Mecha.ini, Overlay:, MapColormain
+IniWrite, %MapColorvalue%, Mecha.ini, Overlay:, MapColorvalue
+IniWrite, %ChatColormain%, Mecha.ini, Overlay:, ChatColormain
+IniWrite, %ChatColorvalue%, Mecha.ini, Overlay:, ChatColorvalue
+IniWrite, %LogColormain%, Mecha.ini, Overlay:, LogColormain
+IniWrite, %LogColorvalue%, Mecha.ini, Overlay:, LogColorvalue
+IniWrite, %MemColormain%, Mecha.ini, Overlay:, MemColormain
+IniWrite, %MEmColorvalue%, Mecha.ini, Overlay:, MemColorvalue
+IniWrite, %MainAktiv%, Mecha.ini, Overlay-Boxen:, MainAktiv
+IniWrite, %DutyAktiv%, Mecha.ini, Overlay-Boxen:, DutyAktiv
+IniWrite, %CarAktiv%, Mecha.ini, Overlay-Boxen:, CarAktiv
+IniWrite, %LogAktiv%, Mecha.ini, Overlay-Boxen:, LogAktiv
+IniWrite, %MapAktiv%, Mecha.ini, Overlay-Boxen:, MapAktiv
+IniWrite, %DefaultColorMain%, Mecha.ini, Overlay-Boxen:, DefaultColorMain
+IniWrite, %DefaultColorvalue%, Mecha.ini, Overlay-Boxen:, DefaultColorvalue
+IniWrite, %OverlayAktiv%, Mecha.ini, Overlay-Boxen:, OverlayAktiv
+Reload
+return
+
+Gui2Close:
+ExitApp
+Return
+
+CreateOverlay:
+IniRead, MainX, Mecha.ini, Overlay:, MainX
+IniRead, Mainy, Mecha.ini, Overlay:, Mainy
+IniRead, MainSize, Mecha.ini, Overlay:, MainSize
+IniRead, carX, Mecha.ini, Overlay:, carX
+IniRead, carY, Mecha.ini, Overlay:, CarY
+IniRead, carSize, Mecha.ini, Overlay:, CarSize
+IniRead, MapX, Mecha.ini, Overlay:, MapX
+IniRead, MapY, Mecha.ini, Overlay:, MapY
+IniRead, MapSize, Mecha.ini, Overlay:, MapSize
+IniRead, DutyX, Mecha.ini, Overlay:, DutyX
+IniRead, DutyY, Mecha.ini, Overlay:, DutyY
+IniRead, DutySize, Mecha.ini, Overlay:, DutySize
+IniRead, MemX, Mecha.ini, Overlay:, MemX
+IniRead, MemY, Mecha.ini, Overlay:, MemY
+IniRead, MemSize, Mecha.ini, Overlay:, MemSize
+IniRead, LogX, Mecha.ini, Overlay:, LogX
+IniRead, LogY, Mecha.ini, Overlay:, LogY
+IniRead, LogSize, Mecha.ini, Overlay:, LogSize
+IniRead, OverlayAktiv, Mecha.ini, Overlay-Boxen:, OverlayAktiv
+If(OverlayAktiv == 1)
+{
+Member_ov := TextCreate("Arial", MemSize, 0, 0, MemX, Memy, 0xFFFFFFFF, "", 1, 0)
+Main_ov := TextCreate("Arial", MainSize, 0, 0, MainX, Mainy, 0xFFFFFFFF, "", 1, 0)
+Duty_ov := TextCreate("Arial", DutySize, 0, 0, DutyX, DutyY, 0xFFFFFFFF, "", 1, 0)
+Car_ov := TextCreate("Arial", CarSize, 0, 0, carX, CarY, 0xFFFFFFFF, "", 1, 0)
+Map_ov := TextCreate("Arial", MApSize, 0, 0, MapX, MapY, 0xFFFFFFFF, "", 1, 0)
+Log_ov := TextCreate("Verdana", LogSize,0,0, LogX, LogY, 0xFFFFFFFF, "", 1,0)
+}
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - [KB] - Overlay wurde erstellt! `n, %A_Scriptdir%\Log.txt
+return
+
+:?:/Duty::
+Suspend Permit
+Name := getUsername()
+Sendinput {enter}
+addChatmessage("{" ChatColormain "}[{" ChatColorvalue "}PDA{" ChatColormain "}] - Mechaniker Modus ist {" ChatColorvalue "}Aktiv!")
+Settimer, Mechatree, 100
+TextSetShown(Main_ov, 1)
+TextSetShown(Car_ov, 1)
+TextSetShown(Map_ov, 1)
+TextSetShown(Member_ov, 1)
+IniWrite, 1, Mecha.ini, Checklist:, Duty
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - [Mecha] - Schicht beginn (OnDuty)! `n, %A_Scriptdir%\Log.txt
+suspend off
+return
+
+:?:/offduty::
+Suspend Permit
+addChatmessage("{" ChatColormain "}[{" ChatColorvalue "}PDA{" ChatColormain "}] - Mechaniker Modus ist {FF0101}Inaktiv!")
+Settimer, Mechatree, off
+TextSetShown(Main_ov, 1)
+TextSetShown(Car_ov, 1)
+TextSetShown(Map_ov, 1)
+TextSetShown(Member_ov, 1)
+global Duty := 0
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - [Mecha] - Schicht beendet (OffDuty)! `n, %A_Scriptdir%\Log.txt
+Suspend off
+return
+
+Mechatree:
+IniRead, ChatColormain, Mecha.ini, Overlay:, ChatColormain
+IniRead, ChatColorvalue, Mecha.ini, Overlay:, ChatColorvalue
+IniRead, Ref_Preis, Mecha.ini, Preise:, Ref_Preis
+IniRead, Can_Preis, Mecha.ini, Preise:, Can_Preis
+IniRead, Arepon, Mecha.ini, Boxen:, Arepon
+IniRead, Arefon, Mecha.ini, Boxen:, Arefon
+IniRead, aCanon, Mecha.ini, Boxen:, aCanon
+IniRead, Ovon, Mecha.ini, Boxen:, Ovon
+IniRead, ABuy, Mecha.ini, Boxen:, ABuy
+GetChatline(1,Mecha1)
+GetChatline(0,Mecha)
+IfInString, Mecha, BENUTZUNG:
+{
+	 return
+}
+IfInString, Mecha, %Name%
+{
+	 return
+}
+IfInString, Mecha, * KFZ-Mechaniker
+{
+	 return
+}
+IfInString, Mecha, die Reparatur seines Wagens für $
+{
+	 return
+}
+IfInString, Mecha, fängt an, das Auto von
+{
+	 return
+}
+IfInString, Mecha, Automatische reperatur annahme wurde blockiert, bis der vorgang abgeschlossen ist.
+{
+	 return
+}
+IfInString, Mecha, reparieren
+{
+	 return
+}
+IfInString, Mecha, Rep
+{
+	IfNotInString, MEcha, Das Fahrzeug ist vollständig
+	{
+		If(Arepon == 1)
+		{
+			RegExMatch(Mecha, "(.*) sagt:",repkunde)
+			Kunde := repkunde1
+			if(Kunde != getUsername())
+			{
+			 	addChatmessage("{" ChatColorMain "}[{" ChatColorvalue "}PDA{" ChatColorMain "}] - Drücke die {" ChatColorvalue "}#{" ChatColorMain "} Taste um {" ChatColorvalue "}" Kunde " {" ChatColorMain "}zu reparieren.")
+				KeyWait, #, D T10 V
+				If !ERRORLEVEL
+				{
+				SendChat("/repair " Kunde " " Rep_Preis)
+				IniRead, teile, Mecha.ini, Truck:, teile
+				teile--
+				Iniwrite, %teile%, Mecha.ini, Truck:, teile
+				Buyed := 0
+				sleep 1050
+				}
+			}
+		}
+	}
+}
+else IfInString, Mecha, Repair
+{
+	IfNotInString, MEcha, Das Fahrzeug ist vollständig
+	{
+		If(Arepon == 1)
+		{
+			RegExMatch(Mecha, "(.*) sagt:",repkunde)
+			Kunde := repkunde1
+			if(Kunde != getUsername())
+			{
+			 	addChatmessage("{" ChatColorMain "}[{" ChatColorvalue "}PDA{" ChatColorMain "}] - Drücke die {" ChatColorvalue "}#{" ChatColorMain "} Taste um {" ChatColorvalue "}" Kunde " {" ChatColorMain "}zu reparieren.")
+				KeyWait, #, D T10 V
+				If !ERRORLEVEL
+				{
+				 SendChat("/repair " Kunde " " Rep_Preis)
+				 IniRead, teile, Mecha.ini, Truck:, teile
+				 teile--
+				 Iniwrite, %teile%, Mecha.ini, Truck:, teile
+				 Buyed := 0
+				 sleep 1050
+				}
+			}
+		}
+	}
+}
+else IfInString, Mecha, Ref
+{
+	If(Arefon == 1)
+	{
+		RegExMatch(Mecha, "(.*) sagt:", TankKunde)
+		Kunde := TankKunde1
+		If(Kunde != getUsername())
+		{
+			 IniWrite, %Kunde%, Mecha.ini, Kunde:, Kunde 
+			 gosub checkfuel
+		}
+		else
+		{
+			return
+		}
+		Buyed := 0
+		 sleep 1050
+	}
+}
+else IfInString, Mecha, Refill
+{
+	If(Arefon == 1)
+	{
+		RegExMatch(Mecha, "(.*) sagt:", TankKunde)
+		Kunde := TankKunde1
+		If(Kunde != getUsername())
+		{
+			 IniWrite, %Kunde%, Mecha.ini, Kunde:, Kunde 
+			 gosub checkfuel
+		}
+		else
+		{
+			return
+		}
+		Buyed := 0
+		 sleep 1050
+	}
+}
+else IfInString, Mecha, fill
+{
+	If(Arefon == 1)
+	{
+		RegExMatch(Mecha, "(.*) sagt:", TankKunde)
+		Kunde := TankKunde1
+		If(Kunde != getUsername())
+		{
+			 IniWrite, %Kunde%, Mecha.ini, Kunde:, Kunde 
+			 gosub checkfuel
+		}
+		else
+		{
+			return
+		}
+		Buyed := 0
+		 sleep 1050
+	}
+}
+else IfInString, Mecha, Tanken
+{
+	If(Arefon == 1)
+	{
+		RegExMatch(Mecha, "(.*) sagt:", TankKunde)
+		Kunde := TankKunde1
+		If(Kunde != getUsername())
+		{
+			 IniWrite, %Kunde%, Mecha.ini, Kunde:, Kunde 
+			 gosub checkfuel
+		}
+		else
+		{
+			return
+		}
+		Buyed := 0
+		 sleep 1050
+	}
+}
+else IfInString, Mecha, beides
+{
+    If(Arefon == 1 && Arepon == 1)
+	{
+		 RegExMatch(Mecha, "(.*) sagt:", TankKunde)
+		 Kunde := TankKunde1
+		 If(Kunde != getUsername())
+		 {
+			addChatmessage("{" ChatColorMain "}[{" ChatColorvalue "}PDA{" ChatColorMain "}] - Drücke die {" ChatColorvalue "}#{" ChatColorMain "} Taste um {" ChatColorvalue "}" Kunde " {" ChatColorMain "}zu reparieren.")
+			KeyWait, #, D T10 V
+			If !ERRORLEVEL
+			{
+			 SendChat("/repair " Kunde " " Rep_Preis)
+			}
+			 IniWrite, %Kunde%, Mecha.ini, Kunde:, Kunde 
+			FileAppend , %A_Hour%:%A_Min%:%A_Sec% - [Mecha] - %Kunde%´s Fahrzeug wurde für $%Rep_Preis% repariert. `n, %A_Scriptdir%\Log.txt
+			 gosub checkfuel
+		 }
+		 else
+		 {
+			 return
+		 }
+		 sleep 1050
+	}
+	
+}
+else IfInString, Mecha, Kanister
+{     
+	If(Acanon == 1)
+	{
+	   	RegExMatch(Mecha, "(.*) sagt:", Kanister)
+		If(Kunde != getUsername())
+		{
+			 Sendchat("/Sellfuel " Kanister1 " " Can_Preis )
+			sql = 
+			(
+				 select Kanister_Verkauft,
+						Einnahmen_gesamt
+				   from Member_Statistik
+				  WHERE Member_Name = "%Name%"
+			)
+			rec := mysql.query(db, sql) 
+
+			StringSplit, array, rec, |  
+
+			Can     := array1
+			Einnahme       := array2
+			
+			Can += 1
+			Einnahme += Can_Preis
+			
+			sql = 
+			(
+				UPDATE Member_Statistik
+				   SET Kanister_Verkauft = "%Can%",
+				   Einnahmen_gesamt = "%Einnahme%"
+				 WHERE Member_Name = "%Name%"
+			)
+			result := mysql.query(db, sql)
+			addChatmessage("{" ChatColorMain "}[KB] - Verkauf geloggt")
+		}
+		else
+		{
+			 return
+		}
+		FileAppend , %A_Hour%:%A_Min%:%A_Sec% - [Mecha] - Kanister an %Kunde% für $%Can_Preis% Verkauft.`n, %A_Scriptdir%\Log.txt
+		addChatmessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - Kanister Verkauf geloggt")
+		Sleep 1050
+	}
+}
+else IfInString, Mecha, Litern Benzin betankt
+{
+		RegExMatch(Mecha, " Auto mit (.*) Litern Benzin .* Summe von \$(.*) wird .* ", Verkauft)
+		Menge  := Verkauft1
+		StringReplace, newgewinn, Verkauft2, .
+		Name  := getUsername()
+		IniWrite, "", Mecha.ini, Kunde:, Kunde 
+		IniRead, Tank, Mecha.ini, Truck:, Tank
+		Tank -= Menge 
+		IniWrite, %Tank%, Mecha.ini, Truck:, Tank
+		
+		sql = 
+		(
+			 select Benzin_Verkauft,
+					Einnahmen_gesamt
+			   from Member_Statistik
+			  WHERE Member_Name = "%Name%"
+		)
+
+		rec := mysql.query(db, sql) 
+
+		StringSplit, array, rec, |  
+
+		Benzin     := array1
+		Einnahme       := array2
+		
+		Benzin += Verkauft1
+		Einnahme += newgewinn
+		
+		sql = 
+		(
+			UPDATE Member_Statistik
+			   SET Benzin_Verkauft = "%Benzin%",
+				   Einnahmen_gesamt = "%Einnahme%"
+			 WHERE Member_Name = "%Name%"
+		)
+
+		result := mysql.query(db, sql)
+		addChatmessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - Benzin Verkauf geloggt")
+		FileAppend , %A_Hour%:%A_Min%:%A_Sec% - [Mecha] - Es wurden an %Kunde%, %Verkauft1%L für $ %newgewinn%`n, %A_Scriptdir%\Log.txt
+}
+else IfInString, Mecha1, Du erhältst 
+{
+		RegExMatch(Mecha1, "Du erhältst \$(.*) von (.*) \(ID (.*)\)\.", TG)
+		StringReplace, Trinkgeld, TG1, ., A
+		IniRead, Tg_Einnahmen, Mecha.ini, Einnahmen:, Tg_Einnahmen
+		Tg_Einnahmen += Trinkgeld
+		IniWrite, %Tg_Einnahmen%, Mecha.ini, Kunde:, Tg_Einnahmen
+		Tg_Einnahmen =
+		FileAppend , %A_Hour%:%A_Min%:%A_Sec% - [Mecha] - Trinkgeld erhalten von %TG2%, $Trinkgeld`n, %A_Scriptdir%\Log.txt
+		Sleep 3050
+}
+else IfInString, Mecha, Fahrzeug wird schon an 
+{
+		RegExMatch(Mecha1, "Dieses Fahrzeug wird schon an (.*) vermietet\!", Rent)
+		SendChat("/Number " Rent1)
+		sleep 150
+		GetChatline(0,Number)
+		IfInString, Number, Ph:
+		{
+			RegExMatch(Number ,"Name: (.*)\, Ph: (.*)", unrent)
+			Sendchat("/sms " unrent2 " Kannst du bitte /Unrent machen, ich bräuchte das Fahrzeug: " getVehicleModelName() " vom RentCar(" getPlayerCity() ")")
+		}
+		Sleep 3050
+}
+else IfInString, Mecha, Das Fahrzeug ist vollständig repariert.
+{
+	sql = 
+		(
+			 select Repairs_gesamt,
+					Einnahmen_gesamt
+			   from Member_Statistik
+			  WHERE Member_Name = "%Name%"
+		)
+
+		rec := mysql.query(db, sql) 
+
+		StringSplit, array, rec, |  
+
+		Reps     := array1
+		Einnahme       := array2
+		
+		Reps += 1
+		Einnahme += newgewinn
+		
+		sql = 
+		(
+			UPDATE Member_Statistik
+			   SET Repairs_gesamt = "%Reps%",
+			   Einnahmen_gesamt = "%Einnahme%"
+			 WHERE Member_Name = "%Name%"
+		)
+
+		result := mysql.query(db, sql)
+		addChatmessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - Repair Verkauf geloggt")
+		FileAppend , %A_Hour%:%A_Min%:%A_Sec% - [Mecha] - %Kunde%´s Fahrzeug wurde für $%Rep_Preis% repariert`n, %A_Scriptdir%\Log.txt
+}
+else If(IsPlayerInRangeOfPoint(-1005.1555,-694.6499,31.7057,6) && Buyed == 0)
+{
+	If(ABuy == 1)
+	{
+		gosub loadfuel
+		sleep 4000
+	}
+}
+else If(IsPlayerInRangeOfPoint(-1038.6166,-586.8609,31.6998,8))
+{
+		 Sendchat("/gate")
+		FileAppend , %A_Hour%:%A_Min%:%A_Sec% - [Mecha] - Mechaniker Depot Tor geöffnet!`n, %A_Scriptdir%\Log.txt
+		 Sleep 4000
+	}
+if(Tanken==1 && IsPlayerDriver())
+		{
+            if(IsPlayerInRangeOfPoint(1004.0354,-939.3308,42.1797,5))
+            {
+                    if(IsPlayerinanyvehicle() == 1 )
+					if(IPD := 1)
+                    {		
+							addChatMessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - {" ChatColorMain "}Möchtest du Tanken? Drücke {" ChatColorvalue "}#{" ChatColorMain "} zum bestätigen.")
+							KeyWait, #, D T5
+							If !Errorlevel
+							{	
+								addchatmessage("Tankstelle: "getPlayerZone())
+								SendChat("/fill")
+								sleep, 3000
+								SendChat("/get fuel")
+							}
+							else
+							{
+							 addChatMessage("Keine bestätigung erhalten! Tankvorgang abgebrochen.")
+							}
+						sleep 20000
+                    }
+            }
+            if(IsPlayerInRangeOfPoint(1944.8086,-1773.6176,13.1606,5))
+            {
+                    if(IsPlayerinanyvehicle() == 1 )
+					if(IPD := 1)
+                    {
+							addChatMessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - {" ChatColorMain "}Möchtest du Tanken? Drücke {" ChatColorvalue "}#{" ChatColorMain "} zum bestätigen.")
+							KeyWait, #, D T5
+							If !Errorlevel
+							{	
+								addchatmessage("Tankstelle: "getPlayerZone())
+								SendChat("/fill")
+								sleep, 3000
+								SendChat("/get fuel")
+							}
+							else
+							{
+							 addChatMessage("Keine bestätigung erhalten! Tankvorgang abgebrochen.")
+							}
+						sleep 20000
+                    }
+            }
+            if(IsPlayerInRangeOfPoint(2639.0801,1105.7590,10.8203,5))
+            {
+                    if(IsPlayerinanyvehicle() == 1 )
+					if(IPD := 1)
+                    {
+							addChatMessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - {" ChatColorMain "}Möchtest du Tanken? Drücke {" ChatColorvalue "}#{" ChatColorMain "} zum bestätigen.")
+							KeyWait, #, D T5
+							If !Errorlevel
+							{	
+								addchatmessage("Tankstelle: "getPlayerZone())
+								SendChat("/fill")
+								sleep, 3000
+								SendChat("/get fuel")
+							}
+							else
+							{
+							 addChatMessage("Keine bestätigung erhalten! Tankvorgang abgebrochen.")
+							}
+						sleep 20000
+                    }
+            }
+            if(IsPlayerInRangeOfPoint(2114.0857,920.0013,10.5910,5))
+            {
+                    if(IsPlayerinanyvehicle() == 1 )
+					if(IPD := 1)
+                    {
+							addChatMessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - {" ChatColorMain "}Möchtest du Tanken? Drücke {" ChatColorvalue "}#{" ChatColorMain "} zum bestätigen.")
+							KeyWait, #, D T5
+							If !Errorlevel
+							{	
+								addchatmessage("Tankstelle: "getPlayerZone())
+								SendChat("/fill")
+								sleep, 3000
+								SendChat("/get fuel")
+							}
+							else
+							{
+							 addChatMessage("Keine bestätigung erhalten! Tankvorgang abgebrochen.")
+							}
+						sleep 20000
+                    }
+            }
+            if(IsPlayerInRangeOfPoint(2147.4446,2747.6521,10.5920,5))
+            {
+                    if(IsPlayerinanyvehicle() == 1 )
+					if(IPD := 1)
+                    {
+							addChatMessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - {" ChatColorMain "}Möchtest du Tanken? Drücke {" ChatColorvalue "}#{" ChatColorMain "} zum bestätigen.")
+							KeyWait, #, D T5
+							If !Errorlevel
+							{	
+								addchatmessage("Tankstelle: "getPlayerZone())
+								SendChat("/fill")
+								sleep, 3000
+								SendChat("/get fuel")
+							}
+							else
+							{
+							 addChatMessage("Keine bestätigung erhalten! Tankvorgang abgebrochen.")
+							}
+						sleep 20000
+                    }
+            }
+            if(IsPlayerInRangeOfPoint(2202.0085,2474.5103,10.5773,5))
+            {
+                    if(IsPlayerinanyvehicle() == 1 )
+					if(IPD := 1)
+                    {
+							addChatMessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - {" ChatColorMain "}Möchtest du Tanken? Drücke {" ChatColorvalue "}#{" ChatColorMain "} zum bestätigen.")
+							KeyWait, #, D T5
+							If !Errorlevel
+							{	
+								addchatmessage("Tankstelle: "getPlayerZone())
+								SendChat("/fill")
+								sleep, 3000
+								SendChat("/get fuel")
+							}
+							else
+							{
+							 addChatMessage("Keine bestätigung erhalten! Tankvorgang abgebrochen.")
+							}
+						sleep 20000
+                    }
+            }
+			if(IsPlayerInRangeOfPoint(-736.3005,2742.9827,46.9891,5))
+            {
+                    if(IsPlayerinanyvehicle() == 1 )
+					if(IPD := 1)
+                    {
+							addChatMessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - {" ChatColorMain "}Möchtest du Tanken? Drücke {" ChatColorvalue "}#{" ChatColorMain "} zum bestätigen.")
+							KeyWait, #, D T5
+							If !Errorlevel
+							{	
+								addchatmessage("Tankstelle: "getPlayerZone())
+								SendChat("/fill")
+								sleep, 3000
+								SendChat("/get fuel")
+							}
+							else
+							{
+							 addChatMessage("Keine bestätigung erhalten! Tankvorgang abgebrochen.")
+							}
+						sleep 20000
+                    }
+            }
+            if(IsPlayerInRangeOfPoint(-1328.9005,2677.5923,49.8199,5))
+            {
+                    if(IsPlayerinanyvehicle() == 1 )
+					if(IPD := 1)
+                    {
+							addChatMessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - {" ChatColorMain "}Möchtest du Tanken? Drücke {" ChatColorvalue "}#{" ChatColorMain "} zum bestätigen.")
+							KeyWait, #, D T5
+							If !Errorlevel
+							{	
+								addchatmessage("Tankstelle: "getPlayerZone())
+								SendChat("/fill")
+								sleep, 3000
+								SendChat("/get fuel")
+							}
+							else
+							{
+							 addChatMessage("Keine bestätigung erhalten! Tankvorgang abgebrochen.")
+							}
+						sleep 20000
+                    }
+            }
+            if(IsPlayerInRangeOfPoint(70.5293,1219.1754,18.5799,5))
+            {
+                    if(IsPlayerinanyvehicle() == 1 )
+					if(IPD := 1)
+                    {
+							addChatMessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - {" ChatColorMain "}Möchtest du Tanken? Drücke {" ChatColorvalue "}#{" ChatColorMain "} zum bestätigen.")
+							KeyWait, #, D T5
+							If !Errorlevel
+							{	
+								addchatmessage("Tankstelle: "getPlayerZone())
+								SendChat("/fill")
+								sleep, 3000
+								SendChat("/get fuel")
+							}
+							else
+							{
+							 addChatMessage("Keine bestätigung erhalten! Tankvorgang abgebrochen.")
+							}
+						sleep 20000
+                    }
+            }
+            if(IsPlayerInRangeOfPoint( 615.4907,1689.9753,6.7566,5))
+            {
+                    if(IsPlayerinanyvehicle() == 1 )
+					if(IPD := 1)
+                    {
+							addChatMessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - {" ChatColorMain "}Möchtest du Tanken? Drücke {" ChatColorvalue "}#{" ChatColorMain "} zum bestätigen.")
+							KeyWait, #, D T5
+							If !Errorlevel
+							{	
+								addchatmessage("Tankstelle: "getPlayerZone())
+								SendChat("/fill")
+								sleep, 3000
+								SendChat("/get fuel")
+							}
+							else
+							{
+							 addChatMessage("Keine bestätigung erhalten! Tankvorgang abgebrochen.")
+							}
+						sleep 20000
+                    }
+            }
+            if(IsPlayerInRangeOfPoint(1598.0482,2199.4724,10.5925 ,5))
+            {
+                    if(IsPlayerinanyvehicle() == 1 )
+					if(IPD := 1)
+                    {
+							addChatMessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - {" ChatColorMain "}Möchtest du Tanken? Drücke {" ChatColorvalue "}#{" ChatColorMain "} zum bestätigen.")
+							KeyWait, #, D T5
+							If !Errorlevel
+							{	
+								addchatmessage("Tankstelle: "getPlayerZone())
+								SendChat("/fill")
+								sleep, 3000
+								SendChat("/get fuel")
+							}
+							else
+							{
+							 addChatMessage("Keine bestätigung erhalten! Tankvorgang abgebrochen.")
+							}
+						sleep 20000
+                    }
+            }
+            if(IsPlayerInRangeOfPoint( -1471.8784,1863.9641,32.3972,5))
+            {
+                    if(IsPlayerinanyvehicle() == 1 )
+					if(IPD := 1)
+                    {
+							addChatMessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - {" ChatColorMain "}Möchtest du Tanken? Drücke {" ChatColorvalue "}#{" ChatColorMain "} zum bestätigen.")
+							KeyWait, #, D T5
+							If !Errorlevel
+							{	
+								addchatmessage("Tankstelle: "getPlayerZone())
+								SendChat("/fill")
+								sleep, 3000
+								SendChat("/get fuel")
+							}
+							else
+							{
+							 addChatMessage("Keine bestätigung erhalten! Tankvorgang abgebrochen.")
+							}
+						sleep 20000
+                    }
+            }
+            if(IsPlayerInRangeOfPoint(-2026.3326,155.4140,29.0391,5))
+            {
+                    if(IsPlayerinanyvehicle() == 1 )
+					if(IPD := 1)
+                    {
+							addChatMessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - {" ChatColorMain "}Möchtest du Tanken? Drücke {" ChatColorvalue "}#{" ChatColorMain "} zum bestätigen.")
+							KeyWait, #, D T5
+							If !Errorlevel
+							{	
+								addchatmessage("Tankstelle: "getPlayerZone())
+								SendChat("/fill")
+								sleep, 3000
+								SendChat("/get fuel")
+							}
+							else
+							{
+							 addChatMessage("Keine bestätigung erhalten! Tankvorgang abgebrochen.")
+							}
+						sleep 20000
+                    }
+            }
+            if(IsPlayerInRangeOfPoint(-1676.5333,413.2540,6.9505,5))
+            {
+                    if(IsPlayerinanyvehicle() == 1 )
+					if(IPD := 1)
+                    {
+							addChatMessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - {" ChatColorMain "}Möchtest du Tanken? Drücke {" ChatColorvalue "}#{" ChatColorMain "} zum bestätigen.")
+							KeyWait, #, D T5
+							If !Errorlevel
+							{	
+								addchatmessage("Tankstelle: "getPlayerZone())
+								SendChat("/fill")
+								sleep, 3000
+								SendChat("/get fuel")
+							}
+							else
+							{
+							 addChatMessage("Keine bestätigung erhalten! Tankvorgang abgebrochen.")
+							}
+						sleep 20000
+                    }
+            }
+            if(IsPlayerInRangeOfPoint(-2407.9282,976.3934,45.0646,5))
+            {
+                    if(IsPlayerinanyvehicle() == 1 )
+					if(IPD := 1)
+                    {
+							addChatMessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - {" ChatColorMain "}Möchtest du Tanken? Drücke {" ChatColorvalue "}#{" ChatColorMain "} zum bestätigen.")
+							KeyWait, #, D T5
+							If !Errorlevel
+							{	
+								addchatmessage("Tankstelle: "getPlayerZone())
+								SendChat("/fill")
+								sleep, 3000
+								SendChat("/get fuel")
+							}
+							else
+							{
+							 addChatMessage("Keine bestätigung erhalten! Tankvorgang abgebrochen.")
+							}
+						sleep 20000
+                    }
+            }
+            if(IsPlayerInRangeOfPoint( -2244.2161,-2560.7793,31.6916,5))
+            {
+                    if(IsPlayerinanyvehicle() == 1 )
+					if(IPD := 1)
+                    {
+							addChatMessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - {" ChatColorMain "}Möchtest du Tanken? Drücke {" ChatColorvalue "}#{" ChatColorMain "} zum bestätigen.")
+							KeyWait, #, D T5
+							If !Errorlevel
+							{	
+								addchatmessage("Tankstelle: "getPlayerZone())
+								SendChat("/fill")
+								sleep, 3000
+								SendChat("/get fuel")
+							}
+							else
+							{
+							 addChatMessage("Keine bestätigung erhalten! Tankvorgang abgebrochen.")
+							}
+						sleep 20000
+                    }
+            }
+            if(IsPlayerInRangeOfPoint( -1608.4758,-2719.3704,48.3096,5))
+            {
+                    if(IsPlayerinanyvehicle() == 1 )
+					if(IPD := 1)
+                    {
+							addChatMessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - {" ChatColorMain "}Möchtest du Tanken? Drücke {" ChatColorvalue "}#{" ChatColorMain "} zum bestätigen.")
+							KeyWait, #, D T5
+							If !Errorlevel
+							{	
+								addchatmessage("Tankstelle: "getPlayerZone())
+								SendChat("/fill")
+								sleep, 3000
+								SendChat("/get fuel")
+							}
+							else
+							{
+							 addChatMessage("Keine bestätigung erhalten! Tankvorgang abgebrochen.")
+							}
+						sleep 20000
+                    }
+            }
+            if(IsPlayerInRangeOfPoint( -90.6088,-1168.8462,2.1866,5))
+            {
+                    if(IsPlayerinanyvehicle() == 1 )
+					if(IPD := 1)
+                    {
+							addChatMessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - {" ChatColorMain "}Möchtest du Tanken? Drücke {" ChatColorvalue "}#{" ChatColorMain "} zum bestätigen.")
+							KeyWait, #, D T5
+							If !Errorlevel
+							{	
+								addchatmessage("Tankstelle: "getPlayerZone())
+								SendChat("/fill")
+								sleep, 3000
+								SendChat("/get fuel")
+							}
+							else
+							{
+							 addChatMessage("Keine bestätigung erhalten! Tankvorgang abgebrochen.")
+							}
+						sleep 20000
+                    }
+            }
+            if(IsPlayerInRangeOfPoint( 653.4886,-565.2499,16.1065,5))
+            {
+                    if(IsPlayerinanyvehicle() == 1 )
+					if(IPD := 1)
+                    {
+							addChatMessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - {" ChatColorMain "}Möchtest du Tanken? Drücke {" ChatColorvalue "}#{" ChatColorMain "} zum bestätigen.")
+							KeyWait, #, D T5
+							If !Errorlevel
+							{	
+								addchatmessage("Tankstelle: "getPlayerZone())
+								SendChat("/fill")
+								sleep, 3000
+								SendChat("/get fuel")
+							}
+							else
+							{
+							 addChatMessage("Keine bestätigung erhalten! Tankvorgang abgebrochen.")
+							}
+						sleep 20000
+                    }
+            }
+            if(IsPlayerInRangeOfPoint( 1380.9998,458.0788,19.7261,5))
+            {
+                    if(IsPlayerinanyvehicle() == 1 )
+					if(IPD := 1)
+                    {
+							addChatMessage("{" ChatColorMain "}[{" ChatColorvalue "}KB{" ChatColorMain "}] - {" ChatColorMain "}Möchtest du Tanken? Drücke {" ChatColorvalue "}#{" ChatColorMain "} zum bestätigen.")
+							KeyWait, #, D T5
+							If !Errorlevel
+							{	
+								addchatmessage("Tankstelle: "getPlayerZone())
+								SendChat("/fill")
+								sleep, 3000
+								SendChat("/get fuel")
+							}
+							else
+							{
+							 addChatMessage("Keine bestätigung erhalten! Tankvorgang abgebrochen.")
+							}
+						sleep 20000
+                    }
+            }	
+		}
+return
+
+
+
+;Antiflood: Achtung! Unterlasse das Spammen, sonst wirst du automatisch gekickt (mindestens 1 Sekunde Abstand).
+
+!0::
+IF(IsInChat() == 1)
+return
+global Aktiv := 0
+global Buyed := 0
+addChatmessage("{" ChatColorMain "}[{" ChatColorMain "}PDA{" ChatColorMain "}] - A.R.R.S. Aktiv!")
+SendChat("Der nächste bitte, Rep o. Repair schreiben!!!")
+return
+
+:?:/ovoff::
+Suspend Permit
+IniRead, Ovon, Mecha.ini, Boxen:, Ovon
+If(Ovon == 1)
+{
+addChatmessage("{" ChatColorMain "}[{" ChatColorMain "}PDA{" ChatColorMain "}] - Destroy Overlay")
+TextSetShown(Main_ov, 0)
+TextSetShown(Car_ov, 0)
+TextSetShown(Log_ov, 1)
+TextSetShown(Map_ov, 0)
+TextSetShown(Member_ov, 0)
+DestroyAllVisual()
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - [KB] - Overlay Zerstört!`n, %A_Scriptdir%\Log.txt
+goto CreateOverlay
+}
+Suspend off
+return
+
+:?:/ovon::
+Suspend Permit
+IniRead, Ovon, Mecha.ini, Boxen:, Ovon
+If(Ovon == 1)
+{
+addChatmessage("{" ChatColorMain "}[{" ChatColorMain "}PDA{" ChatColorMain "}] - OV Aktiv")
+TextSetShown(Main_ov, 1)
+TextSetShown(Car_ov, 1)
+TextSetShown(Log_ov, 1)
+TextSetShown(Map_ov, 1)
+TextSetShown(Member_ov, 1)
+Settimer, Overlay, 300
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - [KB] - Overlay Eingeblendet!`n, %A_Scriptdir%\Log.txt
+}
+Suspend off
+return
+
+Checkfuel:
+IniRead, Ref_Preis, Mecha.ini, Preise:, Ref_Preis
+Iniread, Kunde, Mecha.ini, Kunde:, Kunde
+	preis := 150*35
+	Sendchat("/refill " Kunde " 150 " preis)
+	sleep 200
+	GetChatline(0, MaxLiterline)
+	IfInString, MaxLiterline, nur noch mit max.
+	{
+		 RegExMatch(MaxLiterline, "max\. (.*) Liter betanken", Liter)
+		 Preis := Ref_Preis*Liter1
+		 Sendchat("/refill " Kunde " " Liter1 " " Preis)
+		 sleep 1050
+	}
+	Sleep 1050
+return
+
+loadfuel:
+If(IsInChat())
+return
+Sendchat("/mcload fuel")
+sleep 200
+getchatline(0, fuelline)
+IfInString, fuelline,  Liter Benzin 
+{
+	 RegExMatch(fuelline, "\(Preis: \$6\/Liter\, max\. (.*) Liter\)\!", spritladen)
+	 StringReplace, fuel, spritladen1, .
+	 Sendchat("/mcload fuel " fuel)
+	 Iniwrite, %fuel%, Mecha.ini, Truck:, Tank
+}
+sleep 1050
+Sendchat("/mcload spareparts")
+sleep 200
+getchatline(0, partsline)
+IfInString, partsline, Ersatzteile  
+{
+	 RegExMatch(partsline, "\(Preis: \$80\/Stück\, max\. (.*) Stück\)\!", teile)
+	 Sendchat("/mcload Spareparts " teile1)
+	 Iniwrite, %teile1%, Mecha.ini, Truck:, Teile
+	 sleep 150
+}
+Buyed := 1
+Psprit := fuel*6
+Pteile := teile1*80
+Psprit += Pteile
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - [KB] - %teile1% Teile und %fuel% Liter Benzin für $%Psprit%`n, %A_Scriptdir%\Log.txt
+sleep 10000
+return
+
+!4::
+If(IsInChat())
+return
+Sendchat("/mcinfo")
+sleep 250
+info := getDialogText()
+StringMid, ladung, info, 50
+StringLeft, Var, ladung, 43
+addChatmessage("{" ChatColorMain "}[{" ChatColorMain "}PDA{" ChatColorMain "}] - " Var)
+Send {Enter}
+return
+
+:?:/rmc::
+Suspend Permit
+ SendChat("/reservecar")
+	 Sleep 1050
+ Sendinput {enter}
+	 Sleep 1050
+ Sendinput {enter}
+	 sleep 100
+ addchatmessage("{" ChatColorMain "}[{" ChatColorMain "}PDA{" ChatColorMain "}] - Fahrzeug: {" ChatColorMain "}"getVehicleModelName() "{" ChatColorMain "} Reserviert.")
+	 sleep 200
+ SendChat("/engine")
+	 sleep 1050
+ SendChat("/lock")
+ If(A_Hour > 19 && getVehicleLightState() == 0)
+ {
+ SendChat("/lights")
+ addchatmessage("{" ChatColorMain "}[{" ChatColorMain "}PDA{" ChatColorMain "}] - Licht wurde {" ChatColorMain "}Aktiviert!")
+ }
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - [Mecha] - Utility Truck Resaviert`n, %A_Scriptdir%\Log.txt
+sleep 1050
+Suspend off
+return
+
+:?:/hi::
+Suspend Permit
+SendChat("Guten Tag, Wie kann ich ihnen behilflich sein? [Rep, Ref, Beides, Kanister] schreiben.")
+Suspend off
+return
+
+
+bittewarten:
+Iniread, Kunde, Mecha.ini, Kunde:, Kunde
+If(Kunde != "-")
+{
+	Random , warten, 1, 4
+		 1 := "Bitte warten sie, ich bediene bereits einen Kunden!"
+		 2 := "Nur noch einen Moment der Repair von " Kunde " ist im vollen gange."
+		 3 := "Einer nach dem anderen! Es kann nur immer einer Repariert werden!"
+		 4 := "Warten sie bitte!"
+		 5 := "Ich werde mich nach meinem Aktuellen Kunden Sofort um sie kümmern!"
+	SendChat(%warten%)
+	sleep 3050
+}
+return
+
+
+;---------------------------OVERLAY!!!
+
+Overlay:
+IniRead, HpColor, Mecha.ini, Overlay:, HpColor
+IniRead, ArmorColor, Mecha.ini, Overlay:, ArmorColor
+IniRead, OnDutyColor, Mecha.ini, Overlay:, OnDutyColor
+IniRead, OffDutyColor, Mecha.ini, Overlay:, OffDutyColor
+IniRead, VehModePositivColor, Mecha.ini, Overlay:, VehModePositivColor
+IniRead, VehModeNegativColor, Mecha.ini, Overlay:, VehModeNegativColor
+IniRead, MainAktiv, Mecha.ini, Overlay-Boxen:, MainAktiv
+IniRead, DutyAktiv, Mecha.ini, Overlay-Boxen:, DutyAktiv
+IniRead, CarAktiv, Mecha.ini, Overlay-Boxen:, CarAktiv
+IniRead, MapAktiv, Mecha.ini, Overlay-Boxen:, MapAktiv
+IniRead, MainColormain, Mecha.ini, Overlay:, MainColormain
+IniRead, MainColorvalue, Mecha.ini, Overlay:, MainColorvalue
+IniRead, DutyColormain, Mecha.ini, Overlay:, DutyColormain
+IniRead, DutyColorvalue, Mecha.ini, Overlay:, DutyColorvalue
+IniRead, carColormain, Mecha.ini, Overlay:, CarColormain
+IniRead, carColorvalue, Mecha.ini, Overlay:, CarColorvalue
+IniRead, MapColormain, Mecha.ini, Overlay:, MapColormain
+IniRead, MapColorvalue, Mecha.ini, Overlay:, MapColorvalue
+IniRead, Tg_Einnahmen, Mecha.ini, Einnahmen:, Tg_Einnahmen
+IniRead, Duty, Mecha.ini, Checklist:, Duty
+IniRead, Truck, Mecha.ini, Truck:, Tank
+IniRead, teile, Mecha.ini, Truck:, teile
+if(Duty == 1) 
+{
+	DutyString := "{" MainColormain "}DutyStatus: {" OnDutyColor "}OnDuty" 
+}
+else 
+{
+ 	DutyString := "{" MainColormain "}DutyStatus: {" OffDutyColor "}OffDuty"
+}
+If(db == 1)
+{
+	mysqlString := "{" MainColormain "}Verbindung {" OnDutyColor "} Aktiv" 
+}
+else
+{
+	mysqlString := "{" MainColormain "}Verbindung {" OffDutyColor "}Inaktiv"
+}
+If(Duty == 1)
+{
+	 Iniread, Tank, Mecha.ini, Truck:, Tank
+	 Iniread, teile, Mecha.ini, Truck:, teile
+	TextSetString(Duty_ov, "{" DutyColormain "}Benzin: {" DutyColorvalue "}" Tank "{" DutyColormain "}L `nSpareparts: {" DutyColorvalue "}" teile "{" DutyColormain "}Stk.`nCallsystem: {" DutyColorvalue "}Folgt!")
+}
+If(IsPlayerInAnyVehicle() == 1)
+{
+	CarString := "{" CarColormain "}Model: {" CarColorvalue "}" getVehicleModelName() "{" CarColormain "}(DL:{" CarColorvalue "}" getVehicleHealth() ")`n"
+	If(!getVehicleLockState())
+	 CarString .= "{" CarColormain "}Lock-Status: {" VehModeNegativColor "}Offen! `n"
+	If(getVehicleLockState())
+	 CarString .= "{" CarColormain "}Lock-Status: {" VehModePositivColor "}Abgeschlossen `n"
+	If(getVehicleEngineState())
+	 CarString .= "{" CarColormain "}Motor-Status: {" VehModeNegativColor "}An! `n"
+	If(!getVehicleEngineState())
+	 CarString .= "{" CarColormain "}Motor-Status: {" VehModePositivColor "}Aus! `n"
+	If(getVehicleLightState())
+	 CarString .= "{" CarColormain "}Licht-Status: {" VehModePositivColor "}An `n"
+	If(!getVehicleLightState())
+	 CarString .= "{" CarColormain "}Licht-Status: {" VehModeNegativColor "}Aus `n`n"
+} 
+else
+{
+	 CarString := "{" CarColormain "}->Fahrzeug`nSie befinden sich nicht in einem Fahrzeug!"
+}
+If(MainAktiv == 1)
+{
+	 PlayerString := "{" HpColor "}HP{" MainColormain "}/{" ArmorColor "}AR{" MainColormain "}: {" HpColor "}" getPlayerHealth() "{" MainColormain "}/{" ArmorColor "}" getPlayerArmor() ""
+	 TextSetString(Main_ov, DutyString "`n" mysqlString "`n" PlayerString)
+}
+If(CarAktiv == 1)
+{
+	 TextSetString(Car_ov, "" CarString )
+}
+If(MapAktiv == 1)
+{
+	 TextSetString(Map_ov, "{" MapColormain "}" GetPlayerZone() "{" MapColormain "}({" MapColorValue "}" ShortCity() "{" MapColormain "})" )
+}
+return 
+
+
+:?:/id::
+Suspend Permit
+SendInput, KundenID: {Space}
+Input, KID, M V T10, {Space}
+IniWrite, %KID%, Mecha.ini, Kunde:, ID
+SendInput, {end}+{home}{Del}{Esc} 
+Username := getPlayerNAmebyID(KID)
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - [Mecha] - %Username% als Partner Eingetragen.`n, %A_Scriptdir%\Log.txt
+Suspend off
+Return
+
+:?:/mcs::
+Suspend Permit
+SendInput, Sprit: {Space}
+Input, tank, M V T10, {Space}
+SendChat("/mcload fuel " tank)
+IniWrite, %tank%, Mecha.ini, Truck:, tank
+ptank := tank*6
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - [Mecha] - %tank% Liter Benzin für $%ptank% gekauft`n, %A_Scriptdir%\Log.txt
+SendInput, {end}+{home}{Del}{Esc} 
+Suspend off
+Return
+
+:?:/mct::
+Suspend Permit
+SendInput Teile: {Space}
+Input, teile, M V T10, Space
+SendChat("/mcload spareparts " teile)
+pteile := teile*80
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - [Mecha] - %teile% Ersatzteile für $%pteile% gekauft`n, %A_Scriptdir%\Log.txt
+IniWrite, %teile%, Mecha.ini, Truck:, Teile
+SendInput, {end}+{home}{Del}{Esc} 
+Suspend off
+Return
+
+:?:/din::
+Suspend Permit
+SendChat("/Drivein")
+sleep 150
+Send {down}
+sleep 50
+Send {down}
+sleep 50
+Send {Enter}
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - [Mecha] - Drivein (Kosten: $12)`n, %A_Scriptdir%\Log.txt
+Suspend off
+return
+
+Log:
+IniRead, LogColormain, Mecha.ini, Overlay:, LogColormain
+IniRead, LogColorvalue, Mecha.ini, Overlay:, LogColorvalue
+;GetScreenSpecs(Wide, heigth)
+;weite := Wide / 3.3
+;Hoch := heigth / 2
+If(Log_Aktiv == 1)
+{
+	Loop
+	{
+	FileRead, LogVar, %A_Scriptdir%\Log.txt
+	Log_Array := StrSplit(LogVar , "`n") 
+	Länge := Log_Array.Length()
+	eins := Länge - 1
+	zwei := Länge - 2
+	drei := Länge - 3
+	vier := Länge - 4
+	fünf := Länge - 5
+	Sechs := Länge - 6
+	sieben := Länge - 7
+	acht := Länge - 8
+	neun := Länge - 9
+	If(LogAktiv == 1)
+	{
+		 TextSetString(Log_Ov,"{" LogColormain "}|{" LogColorvalue "}>{" LogColormain "}---------------Log von " getUsername() "---------------{" LogColorvalue "}<{" LogColormain "}|`n" Log_Array[neun] "`n" Log_Array[acht] "`n" Log_Array[sieben] "`n" Log_Array[sechs] "`n" Log_Array[fünf] "`n" Log_Array[vier] "`n" Log_Array[Drei] "`n" Log_Array[zwei] "`n" Log_Array[eins] "`n" Log_Array[länge] "`n|{" LogColorvalue "}>{" LogColormain "}-------------------------------------------------by_Renz{" LogColorvalue "}<{" LogColormain "}|")
+	}
+	else
+	{
+		 Break
+	}
+	sleep 500
+	}
+	suspend off
+	return
+}
+Return
+
+:?:/oMem::
+Suspend Permit
+IniRead, PlayerColor, Mecha.ini, Overlay:, PlayerColor
+IniRead, MemColormain, Mecha.ini, Overlay:, MemColormain
+IniRead, MemColorvalue, Mecha.ini, Overlay:, MemColorvalue
+PCol := "0x" PlayerColor "FF"
+FileRead, MemVar, %A_Scriptdir%\Memberliste.txt
+Member_Array := StrSplit(MemVar , "`n") 
+Länge := Member_Array.Length()
+Loop % Länge
+{
+	Zahl++ 
+	RegExMatch(Member_Array[Zahl], "(.*)\|(.*)", Mem)
+	Name := Mem1
+	Rang := Mem2
+	ID := getPlayerIDbyName(NAme)
+	If(ID != -1)
+	{
+		 addChatmessage("{" MemColormain "}({" MemColorvalue "}" Rang "{" MemColormain "}) Name: {" MemColorvalue "}" Name "{" MemColormain "}({" MemColorvalue "}" ID "{" MemColormain "})")
+		 setplayercolor(ID,PCol)
+	}
+	If(Zahl => Länge)
+	{
+		 Zahl := 0
+		 Rang =
+		 Name = 
+		 ID = 
+		 Pcol =
+		 Break
+	}
+sleep 150
+}
+Suspend Off
+return
