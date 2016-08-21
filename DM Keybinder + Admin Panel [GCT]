@@ -1,0 +1,3419 @@
+
+Iniread, 0, Main.ini, Checkboxen:, Prokauf
+Iniread, 0, Main.ini, Checkboxen:, Proverkauf
+Iniread, 0, Main.ini, Checkboxen:, Matsladen
+Iniread, 0, Main.ini, Checkboxen:, Matsabladen
+Iniread, 0, Main.ini, Checkboxen:, FarmerDuty
+Iniread, 0, Main.ini, Checkboxen:, Farmerengine
+IniRead, Overlay_Status , Main.ini, Checkboxen:, Overlay_Status
+Iniread, Lokal_Robber_GangZoneMess, Main.ini, Checkboxen:, Lokal_Robber_GangZoneMess
+Iniread, GangZone_KillMess, Main.ini, Messages:, GangZone_KillMess
+Iniread, Frak_Robber_KMess, Main.ini, Checkboxen:, Frak_Robber_KMess
+Iniread, Frak_Robber_DeadMess, Main.ini, Checkboxen:, Frak_Robber_DeadMess
+Iniread, Gang_Armor, Main.ini, Checkboxen:,Gang_Armor
+Iniread, Gang_Deagle, Main.ini, Checkboxen:, Gang_Deagle
+Iniread, Gang_Shotgun, Main.ini, Checkboxen:, Gang_Shotgun
+Iniread, Gang_Mp5, Main.ini, Checkboxen:, Gang_Mp5
+Iniread, Gang_Ak47, Main.ini, Checkboxen:, Gang_Ak47
+Iniread, Gang_M4, Main.ini, Checkboxen:, Gang_M4
+Iniread, Gang_Rifle, Main.ini, Checkboxen:, Gang_Rifle
+Iniread, Gang_Sniper, Main.ini, Checkboxen:, Gang_Sniper
+Iniread, Gang_Katana, Main.ini, Checkboxen:, Gang_Katana
+Iniread, Gang_Baseball, Main.ini, Checkboxen:, Gang_Baseball
+Iniread, Gang_KillMess, Main.ini, Messages:, Gang_KillMess
+Iniread, Gang_DeathMess, Main.ini, Messages:, Gang_DeathMess
+Iniread, Admin_ATAA, Main.ini, Checkboxen:,Admin_ATAA
+Iniread, Admin_Sup_OV, Main.ini, Checkboxen:,Admin_Sup_OV
+Iniread, Admin_Sup_Hi, Main.ini, Messages:,Admin_Sup_Hi
+Iniread, Admin_Sup_wkt, Main.ini, Messages:,Admin_Sup_wkt
+Iniread, Admin_Sup_nwf, Main.ini, Messages:,Admin_Sup_nwf
+Iniread, Admin_Sup_nd, Main.ini, Messages:,Admin_Sup_nd
+Iniread, Admin_Sup_bye, Main.ini, Messages:,Admin_Sup_bye
+Iniread, Cop_AEquip , Main.ini, Checkboxen:, Cop_AEquip
+Iniread, Cop_AGate , Main.ini, Checkboxen:, Cop_AGate
+Iniread, Cop_Sirene , Main.ini, Checkboxen:, Cop_Sirene
+Iniread, Lokal_Cop_KMess , Main.ini, Checkboxen:, Lokal_Cop_KMess
+Iniread, Dep_Cop_KMess , Main.ini, Checkboxen:, Dep_Cop_KMess
+Iniread, Dep_Cop_DeadMess , Main.ini, Checkboxen:, Dep_Cop_DeadMess
+Iniread, Cop_KillMess , Main.ini, Messages:, Cop_KillMess
+Iniread, Cop_DeathMess , Main.ini, Messages:, Cop_DeathMess
+Iniread, Lokal_Robber_KMess , Main.ini, Checkboxen:, Lokal_Robber_KMess
+Iniread, Keybinder_Color1 , Main.ini, Farben:, Keybinder_Color1,FFFFFF
+Iniread, Keybinder_Color2 , Main.ini, Farben:, Keybinder_Color2,2CC559
+Iniread, Cop_Ov_Color1 , Main.ini, Farben:, Cop_Ov_Color1,FFFFFF
+Iniread, Cop_Ov_Color2 , Main.ini, Farben:, Cop_Ov_Color2,2CC559
+Iniread, Admin_Ov_Color1, Main.ini, Farben:,Admin_Ov_Color1,FFFFFF
+Iniread, Admin_Ov_Color2, Main.ini, Farben:,Admin_Ov_Color2,2CC559
+Iniread, Gang_Ov_Color1, Main.ini, Farben:, Gang_Ov_Color1,FFFFFF
+Iniread, Gang_Ov_Color2, Main.ini, Farben:, Gang_Ov_Color2,2CC559
+Iniread, FBI_Ov_Color1, Main.ini, Farben:, FBI_Ov_Color1,FFFFFF
+Iniread, FBI_Ov_Color2, Main.ini, Farben:, FBI_Ov_Color2,2CC559
+Iniread, Hitmen_Ov_Color1, Main.ini, Farben:, Hitmen_Ov_Color1,FFFFFF
+Iniread, Hitmen_Ov_Color2, Main.ini, Farben:, Hitmen_Ov_Color2,2CC559
+FormatTime,Datum,,dd-MM-yyyy HH:mm:ss
+lastlog = %Datum%
+RegRead Username, HKEY_CURRENT_USER, Software\SAMP, PlayerName
+DB_Name := imp_read("Nutzer", Username, "Name")
+If(Username == DB_Name)
+{
+MsgBox , 36, GCT-Name, Guten Tag ist %Username% dein GCT Ingame-Name?
+IfMsgBox Yes
+{
+CheckBlack := imp_read("Nutzer", Username, "Blacklisted")
+If(CheckBlack == 1)
+{
+Exitapp
+}
+else
+{
+imp_write("Nutzer", Username, "Online", "1")
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - GCT-Binder | Name wurde korrekt eingetragen.`n, %A_Scriptdir%\Log.txt
+gosub Checkupdate
+}
+}
+else IfMsgBox No
+{
+MsgBox, Trage deinen Richtigen Namen in den SAMP-Client ein und Starte den Keybinder und SAMP neu.`nDer Keybinder wird nun geschlossen.
+Exitapp
+}
+}
+else
+{
+MsgBox,36,Datenbank Account erstellen?, Es wurde kein Account von dir Namens %Username% gefunden.`nMÃ¶chtest du einen erstellen?.
+IfMsgBox Yes
+{
+MsgBox , 36, AGBs, Nutzungsbedingung, Lieber User,`n`nUm den GCT-Binder zu benutzen, musst du bestaetigen, dass dieser deine IP speichert um Missbrauch vorzubeugen. (Falls jemand der Blacklist entkommen will oder sich zugang zur Datenbank verschaffen will). Wenn du ja drueckst erlaubst du dies.
+IFMsgBox Yes
+{
+imp_create_row("Nutzer", Username)
+imp_write("Nutzer", Username, "Blacklisted", "0")
+imp_write("Nutzer", Username, "Register", "" lastlog "")
+imp_write("Nutzer", Username, "Online", "1")
+imp_write("Nutzer", Username, "IP", "" GetIP() "")
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - GCT-Binder | AGBÂ´s Akzeptiert`n, %A_Scriptdir%\Log.txt
+gosub Checkupdate
+}
+else
+{
+Exitapp
+}
+}
+else
+{
+Exitapp
+}
+}
+return
+Checkupdate:
+version := 23
+Filedelete,update.bat
+UrlDownloadToFile,http://ni841016_1.vweb20.nitrado.net/GCT-Binder/Version.txt, versionsupdate.txt
+FileRead, newver, versionsupdate.txt
+FileDelete, versionsupdate.txt
+if (version < newver)
+{
+newververfÃ¼gbar := 1
+MsgBox, 4,Aktuelle Version, Lieber %Username%,`n`nEs ist eine aktuellere Version deines Keybinders verfÃ¼gbar, (Version %newver%).`nMÃ¶chtest du diese jetzt herunterladen?
+IfMsgBox, Yes
+{
+MsgBox, 64, Update Download, Das Update wird nun heruntergeladen ,dies kann bis zu 20 Sekunden dauern..., 3
+Urldownloadtofile,http://www.SAMP-Binder.Net/GCT-Binder.exe, %A_ScriptName%.new
+BatchFile=
+		(
+		Ping 127.0.0.1
+		Del "%A_ScriptName%"
+		Rename "%A_ScriptName%.new" "%A_ScriptName%"
+		cd "%A_ScriptFullPath%"
+		"%A_ScriptName%"
+		Del update.bat
+)
+FileDelete,update.bat
+FileAppend,%BatchFile%,update.bat
+MsgBox, 64, Update ausfÃ¼hren, Das Update wird nun ausgefÃ¼hrt...bitte warten..., 3
+Run,update.bat,,hide
+Exitapp
+}
+}
+else
+{
+gosub Start
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - GCT-Binder | Aktuellste Version des Binders vorhanden!`n, %A_Scriptdir%\Log.txt
+}
+return
+Start:
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - GCT-Binder | Keybinder wurde geladen`n, %A_Scriptdir%\Log.txt
+Status := UrlDownloadToVar("http://ni841016_1.vweb20.nitrado.net/GCT-Binder/Status.txt")
+Offline := UrlDownloadToVar("http://ni841016_1.vweb20.nitrado.net/GCT-Binder/Offline.txt")
+MOTD := UrlDownloadToVar("http://ni841016_1.vweb20.nitrado.net/GCT-Binder/MOTD.txt")
+Filedelete, %A_Scriptdir%\Log.txt
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\gametexts.txt
+FileAppend,, %A_MyDocuments%\GTA San Andreas User Files\SAMP\gametexts.txt
+IfNotExist, %A_Scriptdir%\Logs
+{
+FileCreateDir, %A_Scriptdir%\Logs
+}
+If(Offline == 1)
+{
+MsgBox,32,Gct-Binder v%Version%.0,Der Keybinder wurde abgeschaltet.`n`nInfo: %Status%`n`nMehr Infos bekommst du unter http://Samp-Binder.Net oder im Gct-Forum.
+Exitapp
+}
+Settimer, Chatlog, 100
+Settimer, Death, 100
+Settimer, Overlay, 250
+Settimer, Gametextinject, 250
+SetParam("use_window", "1")
+SetParam("window", "GTA:SA:MP")
+RGBval:=RGB(Rval:=44,Gval:=197,Bval:=89)
+Lieferrant_Duty := 0
+DestroyAllVisual()
+Cop_Waffen := 0
+go := 0
+gosub, Hotkeydefine
+gosub, CreateOverlay
+gosub, CreateGUI
+return
+CreateGUI:
+IniRead, Anwalt_Bis, Main.ini,  Allgemein:, Anwalt_Bis,0
+IniRead, Kills, Main.ini,  Allgemein:, Kills,0
+IniRead, Tode, Main.ini , Allgemein:, Tode,0
+IniRead, GZ_Kills, Main.ini , Allgemein:, GZ_Kills,0
+IniRead, GZ_Tode, Main.ini , Allgemein:, GZ_Tode,0
+IniRead, Killstreak, Main.ini , Allgemein:, Killstreak,0
+IniRead, GZ_Point, Main.ini , Allgemein:, GZ_Point,0
+IniRead, Zinsen, Main.ini,  Allgemein:, Zinsen,0
+IniRead, Drogen_Gekauft, Main.ini , Allgemein:, Drogen_Gekauft,0
+IniRead, Geldsack_Einnahmen, Main.ini,  Allgemein:, Geldsack_Einnahmen,0
+IniRead, XP_Einnahmen, Main.ini,  Allgemein:, XP_Einnahmen,0
+IniRead, GeldsÃ¤cke, Main.ini, Allgemein:, GeldsÃ¤cke,0
+IniRead, Prods_Einnahmen, Main.ini , Einnahmen:, Prods_Einnahmen,0
+IniRead, Bauer_Einnahmen, Main.ini,  Einnahmen:, Bauer_Einnahmen,0
+IniRead, Hrobs, Main.ini,  Crime:, Hrobs,0
+IniRead, LRobs, Main.ini , Crime:, LRobs,0
+IniRead, TRobs, Main.ini , Crime:, TRobs,0
+IniRead, BRobs, Main.ini , Crime:, BRobs,0
+IniRead, ATMRobs, Main.ini , Crime:, ATMRobs,0
+IniRead, HRob_lost, Main.ini,  Verlust:, HRob_lost,0
+IniRead, Bauer_Touren, Main.ini, Jobs:, Bauer_Touren,0
+IniRead, Prods_Gekauft, Main.ini , Jobs:, Prods_Gekauft,0
+IniRead, Prods_Verkauft, Main.ini , Jobs:, Prods_Verkauft,0
+IniRead, Taschendieb_Einnahmen, Main.ini,  Jobs:, Taschendieb_Einnahmen,0
+IniRead, Prod_Ausgaben, Main.ini, Ausgaben:, Prod_Ausgaben,0
+IniRead, Drogen_Ausgaben, Main.ini , Ausgaben:, Drogen_Ausgaben,0
+IniRead, Werbe_Ausgaben, Main.ini,  Ausgaben:, Werbe_Ausgaben,0
+IniRead, Prods_Ausgaben, Main.ini , Ausgaben:, Prods_Ausgaben,0
+IniRead, Anwalt_Ausgaben, Main.ini,  Ausgaben:, Anwalt_Ausgaben,0
+IniRead, Waffen_Ausgabe, Main.ini, Ausgaben:, Waffen_Ausgabe,0
+IniRead, Pdays, Main.ini , Paydays:, Pdays,0
+IniRead, Pxp, Main.ini , Paydays:, Pxp,0
+IniRead, Psumme, Main.ini , Paydays:, Psumme,0
+IniRead, Drogen_Verloren, Main.ini,  Verlust:, Drogen_Verloren,0
+IniRead, Drogen_Verloren_in_Geld, Main.ini,  Verlust:, Drogen_Verloren_in_Geld,0
+IniRead, Admin_Ticket_Anzahl, Main.ini,  A_Stats:, Admin_Ticket_Anzahl,0
+IniRead, GeldsÃ¤cke, Main.ini, Allgemein:, GeldsÃ¤cke
+Prods_Gewinn := Prods_Einnahmen - Prod_Ausgaben
+Loop, 93
+{
+IniRead, Hotkey%A_Index%, Main.ini, Hotkeys, Hotkey%A_Index%
+IniRead, Text%A_Index%, Main.ini, Texte, Text%A_Index%
+}
+gosub Hotkeydefine
+Iniwrite, Nicht Besetzt, Main.ini, Sup_Channels:,Channel_1_Kunde
+Iniwrite, Nicht Besetzt, Main.ini, Sup_Channels:,Channel_2_Kunde
+Iniwrite, Nicht Besetzt, Main.ini, Sup_Channels:,Channel_3_Kunde
+Iniwrite, Nicht Besetzt, Main.ini, Sup_Channels:,Channel_4_Kunde
+Iniwrite, Nicht Besetzt, Main.ini, Sup_Channels:,Channel_5_Kunde
+IniRead, Lokal_Robber_GangZoneMess , Main.ini, Checkboxen:, Lokal_Robber_GangZoneMess
+IniRead, Frak_Robber_GangZoneMess , Main.ini, Checkboxen:, Frak_Robber_GangZoneMess
+IniRead, Frak_Robber_KMess , Main.ini, Checkboxen:, Frak_Robber_KMess
+IniRead, Lokal_Robber_KMess , Main.ini, Checkboxen:, Lokal_Robber_KMess
+IniRead, Frak_Robber_DeadMess , Main.ini, Checkboxen:, Frak_Robber_DeadMess
+IniRead, Auto_Anwalt , Main.ini, Checkboxen:, Auto_Anwalt
+IniRead, Gang_Armor , Main.ini, Checkboxen:,Gang_Armor
+IniRead, Gang_Deagle , Main.ini, Checkboxen:, Gang_Deagle
+IniRead, Gang_Shotgun , Main.ini, Checkboxen:, Gang_Shotgun
+IniRead, Gang_Mp5 , Main.ini, Checkboxen:, Gang_Mp5
+IniRead, Gang_Ak47 , Main.ini, Checkboxen:, Gang_Ak47
+IniRead, Gang_M4 , Main.ini, Checkboxen:, Gang_M4
+IniRead, Gang_Rifle , Main.ini, Checkboxen:, Gang_Rifle
+IniRead, Gang_Sniper , Main.ini, Checkboxen:, Gang_Sniper
+IniRead, Gang_Katana , Main.ini, Checkboxen:, Gang_Katana
+IniRead, Gang_Baseball , Main.ini, Checkboxen:, Gang_Baseball
+IniRead, Prokauf , Main.ini, Checkboxen:, Prokauf
+IniRead, Proverkauf , Main.ini, Checkboxen:, Proverkauf
+IniRead, Matsladen , Main.ini, Checkboxen:, Matsladen
+IniRead, Matsabladen , Main.ini, Checkboxen:, Matsabladen
+IniRead, FarmerDuty , Main.ini, Checkboxen:, FarmerDuty
+IniRead, Farmerengine , Main.ini, Checkboxen:, Farmerengine
+IniRead, Admin_ATAA, Main.ini, Checkboxen:,Admin_ATAA
+IniRead, Gang_Ov , Main.ini, Checkboxen:, Gang_Ov
+IniRead, Admin_Sup_OV, Main.ini, Checkboxen:,Admin_Sup_OV
+IniRead, Laufscript, Main.ini, Checkboxen:,Laufscript
+IniRead, Overlay_Status, Main.ini, Checkboxen:,Overlay_Status
+IniRead, Gang_KillMess , Main.ini, Messages:, Gang_KillMess
+IniRead, GangZone_KillMess , Main.ini, Messages:, GangZone_KillMess
+IniRead, Gang_DeathMess , Main.ini, Messages:, Gang_DeathMess
+IniRead, Admin_Sup_Hi, Main.ini, Messages:,Admin_Sup_Hi
+IniRead, Admin_Sup_wkt, Main.ini, Messages:,Admin_Sup_wkt
+IniRead, Admin_Sup_nd, Main.ini, Messages:,Admin_Sup_nd
+IniRead, Admin_Sup_bye, Main.ini, Messages:,Admin_Sup_bye
+IniRead, Gang_Ov_Color1 , Main.ini, Farben:, Gang_Ov_Color1
+IniRead, Gang_Ov_Color2 , Main.ini, Farben:, Gang_Ov_Color2
+IniRead, Admin_Ov_Color1, Main.ini, Farben:,Admin_Ov_Color1
+IniRead, Admin_Ov_Color2, Main.ini, Farben:,Admin_Ov_Color2
+IniRead, Keybinder_Color1 , Main.ini, Farben:, Keybinder_Color1
+IniRead, Keybinder_Color2 , Main.ini, Farben:, Keybinder_Color2
+IniRead, Waffen_Ausgabe, Main.ini, Ausgaben:, Waffen_Ausgabe,0
+Gui, -Caption
+Gui, Add, Button, x21 y360 w105 h20 +BackgroundTrans gsave, Speichern
+Gui, Add, Button, x+5 y360 w105 h20 +BackgroundTrans gforum, Forum
+Gui, Add, Button, x+5 y360 w105 h20 +BackgroundTrans gucp, Binder-UCP
+Gui, Add, Button, x+5 y360 w105 h20 +BackgroundTrans gts, GCT-TS3
+Gui, Add, Button, x+5 y360 w105 h20 +BackgroundTrans gserver, GCT-Join
+Gui, Add, Text, x430 y5 +BackgroundTrans gMove vMove, [Move]
+Gui, Add, Text, x+3 y5 +BackgroundTrans gReload , [Reload]
+Gui, Add, Text, x+3 y5 +BackgroundTrans gMinimieren , [Minimize]
+Gui, Add, Text, x+3 y5 +BackgroundTrans gSlideout , [Close]
+Gui, Add, Text, x500 y385 +BackgroundTrans, Version %version%.0 | Â© Renz
+Gui, Add, Text, x21 y385 w540 h15 +BackgroundTrans, %MOTD%
+Gui, Add, Text, x5 y5  h15 +BackgroundTrans, Keybinder Status: %status%!
+Gui, Add, Tab, x21 y44 w540 h310 , Robber|Admin|Binds|Hotkeys|Optionen|Color Picker
+Admin_rank := imp_read("IsAdmin", Username, "rang")
+If(Admin_rank != "-1")
+{
+If(Admin_rank == 1)
+ARang := "Trial-Supporter"
+else If(Admin_rank == 2)
+ARang := "Supporter"
+else If(Admin_rank == 3)
+ARang := "Server-Moderator"
+else If(Admin_rank == 4)
+ARang := "Full-Admin"
+else If(Admin_rank == 5)
+ARang := "Teamleiter"
+else If(Admin_rank == 6)
+ARang := "Projektleiter"
+Gui, Tab, Admin
+Gui, Font, s12
+Gui, Add, Text, x120 y70 h15 +BackgroundTrans +Center , Herzlich Willkommen, %ARang% %Username%
+Gui, Font, s8
+Gui, Add, Listbox, x31 y94 w140 h135 +BackgroundTrans ,/lk = /lastkills|/ld = /lastdeaths|/lbel = Mute(15 Min.)|/mbel = Mute(50 Min.)|/sbel = /Mute(120 Min.)|/unm = /unmute|/surf = Kwarn+Slap|/aca = /amute|/fsup = ForceSup|/rsup = Releasesup|/fr = /freeze|/ufr = /unfreeze|/clc = /clearchat|/cad = /clearad|/multi = /CheckMultiacc|/probs = Bei Fragen etc.|/oon = O-Chat An!|/ooff = O-Chat Aus!|/reall = repawnvehs all
+Gui, Add, Edit, x121 y234 w330 h15 vAdmin_Sup_wkt, %Admin_Sup_wkt%
+Gui, Add, Edit, x121 y+1 w330 h15 vAdmin_Sup_nwf, %Admin_Sup_nwf%
+Gui, Add, Edit, x121 y+1 w330 h15 vAdmin_Sup_nd, %Admin_Sup_nd%
+Gui, Add, Edit, x121 y+1 w330 h15 vAdmin_Sup_bye, %Admin_Sup_bye%
+Gui, Add, Text, x31 y234 w150 h15 +BackgroundTrans , Was kann ich...
+Gui, Add, Text, x31 y+1 w150 h15 +BackgroundTrans , Weitere Fragen?
+Gui, Add, Text, x31 y+1 w150 h15 +BackgroundTrans , Noch da?
+Gui, Add, Text, x31 y+1 w150 h15 +BackgroundTrans , Verabschiedung
+Gui, Add, Text, x401 y94 w80 h15 +BackgroundTrans ,/C1 - #C1 Open
+Gui, Add, Text, x401 y+1 w80 h15 +BackgroundTrans ,/C2 - #C2 Open
+Gui, Add, Text, x401 y+1 w80 h15 +BackgroundTrans ,/C3 - #C3 Open
+Gui, Add, Text, x401 y+1 w80 h15 +BackgroundTrans ,/C4 - #C4 Open
+Gui, Add, Text, x401 y+1 w80 h15 +BackgroundTrans ,/C5 - #C5 Open
+Gui, Add, Hotkey, x401 y+1 w35 h15 +BackgroundTrans vHotkey7,%Hotkey7%
+Gui, Add, Text, x+3 w90 h15 +BackgroundTrans ,- /Ticketlist
+Gui, Add, CheckBox, x401 y+1 h15 +BackgroundTrans vAdmin_ATAA Checked%Admin_ATAA% +BackgroundTrans, Auto. Ticket Annahme?
+If(Admin_rank => 3)
+{
+Gui, Add, Button, x220 y315 w150 h25 , Verwaltung
+}
+}
+else
+{
+Gui, Tab, Admin
+Gui, Font, s16
+Gui, Add, Text, x201 y170 +BackgroundTrans cRed ,Zugriff Verwehrt!
+Gui, Font, s8
+}
+Gui, Tab, Robber
+Gui, Add, Text, x500 y385 +BackgroundTrans, Version %version%.0 | Â© Renz
+Gui, Add, Text, x21 y385 w540 h15 +BackgroundTrans, %MOTD%
+Gui, Add, Text, x5 y5  h15 +BackgroundTrans, Keybinder Status: %status%!
+Gui, Add, Text, x41 y75 w90 h15   +BackgroundTrans, GangZone Nachricht
+Gui, Add, Edit, x131 y75 w270 h15 vGangZone_KillMess, %GangZone_KillMess%
+Gui, Add, Text, x41 y91 w90 h15   +BackgroundTrans, Killnachricht
+Gui, Add, Edit, x131 y91 w270 h15 vGang_KillMess, %Gang_KillMess%
+Gui, Add, Text, x41 y107 w90 h15   +BackgroundTrans, TodesNachricht
+Gui, Add, Edit, x131 y107 w270 h15 vGang_DeathMess, %Gang_DeathMess%
+Gui, Add, CheckBox, x40 y140 w10 h12  vAuto_Anwalt Checked%Auto_Anwalt%,
+Gui, Add, Text, x+2 y140 h15   +BackgroundTrans, Auto. David Boies bis $
+Gui, Add, Edit, x+2 y140 w50 h15   vAnwalt_Bis, %Anwalt_Bis%
+Gui, Add, CheckBox, x40 y158 w10 h12  vLaufscript Checked%Laufscript%,
+Gui, Add, Text, x+2 w90 h12  +BackgroundTrans, Laufscript Aktiv?
+Gui, Add, CheckBox, x404 y75 w10 h12  vLokal_Robber_GangZoneMess Checked%Lokal_Robber_GangZoneMess%,
+Gui, Add, Text, x+2 y75 w90 h15   +BackgroundTrans, L - Chat
+Gui, Add, CheckBox, x474 y75 w10 h12  vFrak_Robber_GangZoneMess Checked%Frak_Robber_GangZoneMess%,
+Gui, Add, Text, x+2 y75 w90 h15   +BackgroundTrans, G - Chat
+Gui, Add, CheckBox, x404 y92 w10 h12  vLokal_Robber_KMess Checked%Lokal_Robber_KMess%,
+Gui, Add, Text, x+2 y92 w90 h15   +BackgroundTrans, L - Chat
+Gui, Add, CheckBox, x474 y92 w10 h12  vFrak_Robber_KMess Checked%Frak_Robber_KMess%,
+Gui, Add, Text, x+2 y92 w90 h15   +BackgroundTrans, G - Chat
+Gui, Add, CheckBox, x404 y109 w10 h12 vFrak_Robber_DeadMess Checked%Frak_Robber_DeadMess%,
+Gui, Add, Text, x+2 y109 w90 h15   +BackgroundTrans, G - Chat
+Gui, Add, CheckBox, x40 y255 w14 h14 vGang_Armor Checked%Gang_Armor% ,
+Gui, Add, Text, x+2 y255 h15 +BackgroundTrans , Armor
+Gui, Add, CheckBox, x40 y271 w14 h14 vGang_Deagle Checked%Gang_Deagle% ,
+Gui, Add, Text, x+2 y271 h14 +BackgroundTrans , Deagle
+Gui, Add, CheckBox, x40 y287 w14 h14 vGang_Shotgun Checked%Gang_Shotgun% ,
+Gui, Add, Text, x+2 y287 h14 +BackgroundTrans , Shotgun
+Gui, Add, CheckBox, x40 y303 w14 h14 vGang_Mp5 Checked%Gang_Mp5% ,
+Gui, Add, Text, x+2 y303 h14 +BackgroundTrans , Mp5
+Gui, Add, CheckBox, x40 y319 w14 h14 vGang_Ak47 Checked%Gang_Ak47% ,
+Gui, Add, Text, x+2 y319 h14 +BackgroundTrans , Ak47
+Gui, Add, CheckBox, x100 y255 w14 h14 vGang_M4 Checked%Gang_M4% ,
+Gui, Add, Text, x+2 y255 h14 +BackgroundTrans , M4
+Gui, Add, CheckBox, x100 y271 w14 h14 vGang_Rifle Checked%Gang_Rifle% ,
+Gui, Add, Text, x+2 y271 h14 +BackgroundTrans , Rifle
+Gui, Add, CheckBox, x100 y287 w14 h14 vGang_Sniper Checked%Gang_Sniper% ,
+Gui, Add, Text, x+2 y287 h14 +BackgroundTrans , Sniper
+Gui, Add, CheckBox, x100 y303 w14 h14 vGang_Katana Checked%Gang_Katana% ,
+Gui, Add, Text, x+2 y303 h14 +BackgroundTrans , Katana
+Gui, Add, CheckBox, x100 y319 w14 h14 vGang_Baseball Checked%Gang_Baseball% ,
+Gui, Add, Text, x+2 y319 h14 +BackgroundTrans , Baseball Bat
+Gui, Add, Hotkey, x40 y240 w60 h15 vHotkey47, %Hotkey47%
+Gui, Add, Text, x+3 y240 h15 , Waffenpaket Kaufen
+Gui, Add, Text, x470 y145 w70 h170 +BackgroundTrans ,Variablen`n `n<Opfer>`n<Streak>`n<wanteds>`n<HP>`n<AR>`n<Zone>`n<City>`n<Kills>`n<Tode>`n<KD>`n
+Gui, Add, Text, x230 y134 +BackgroundTrans,[-Crime-]`nKills/Tode: %Kills%/%Tode% `nGZ-Kills/Tode: %GZ_Kills%/%GZ_Tode%`nLaden-Robs: %LRobs%`nHaus-Robs: %HRobs%`nATM-Robs: %ATMRobs%`nB-Robs: %BRobs%`nTransporter-Robs: %TRobs%
+Gui, Add, Text, x+10 y134 +BackgroundTrans, [-Einnahmen-]`nGeld: $%Geldsack_Einnahmen%`nXP: %XP_Einnahmen%`nGeldsÃ¤cke: %GeldsÃ¤cke%
+Gesamt_Ausgabe_Kosten := Anwalt_Ausgaben+Werbe_Ausgaben+Waffen_Ausgabe
+Gui, Add, Text, y+10 +BackgroundTrans, [-Ausgaben-]`nAnwaltkosten: $%Anwalt_Ausgaben%`nWerbekosten: $%Werbe_Ausgaben%`nWaffenkosten: $%Waffen_Ausgabe%`nGesamt: $%Gesamt_Ausgabe_Kosten%
+Gui, Tab, Binds
+Gui, Add, Hotkey, x31 y100 w50 h15 +BackgroundTrans vHotkey48, %Hotkey48%
+Gui, Add, Text, x+2 y100 h15 +BackgroundTrans ,= BegrÃ¼ÃŸung
+Gui, Add, Hotkey, x31 y116 w50 h15 +BackgroundTrans vHotkey49, %Hotkey49%
+Gui, Add, Text, x+2 y116 h15 +BackgroundTrans ,= Verabschiedung
+Gui, Add, Hotkey, x31 y132 w50 h15 +BackgroundTrans vHotkey50, %Hotkey50%
+Gui, Add, Text, x+2 y132  h15 +BackgroundTrans ,= /Members
+Gui, Add, Hotkey, x31 y148 w50 h15 +BackgroundTrans vHotkey51, %Hotkey51%
+Gui, Add, Text, x+2 y148 h15 +BackgroundTrans ,= Gegner anzeigen
+Gui, Add, Hotkey, x31 y164 w50  h15 +BackgroundTrans vHotkey52, %Hotkey52%
+Gui, Add, Text, x+2 y164  h15 +BackgroundTrans ,= /f Backup Inc
+Gui, Add, Hotkey, x31 y180 w50 h15 +BackgroundTrans vHotkey53, %Hotkey53%
+Gui, Add, Text, x+2 y180 h15 +BackgroundTrans ,= /g Backup Inc
+Gui, Add, Hotkey, x31 y196 w50 h15 +BackgroundTrans vHotkey54, %Hotkey54%
+Gui, Add, Text, x+2 y196 h15 +BackgroundTrans ,= Verkaufe Drogen
+Gui, Add, Hotkey, x31 y212 w50 h15 +BackgroundTrans vHotkey55, %Hotkey55%
+Gui, Add, Text, x+2 y212 h15 +BackgroundTrans ,= /AD | Verkaufe Drogen
+Gui, Add, Hotkey, x31 y228 w50 h15 +BackgroundTrans vHotkey56, %Hotkey56%
+Gui, Add, Text, x+2 y228 h15 +BackgroundTrans ,= /Antwort an Letzte Pn
+Gui, Add, Hotkey, x31 y244 w50  h15 +BackgroundTrans vHotkey57, %Hotkey57%
+Gui, Add, Text, x+2 y244 h15 +BackgroundTrans ,= /showfinances [ID]
+Gui, Add, Hotkey, x31 y260 w50  h15 +BackgroundTrans vHotkey58, %Hotkey58%
+Gui, Add, Text, x+2 y260  h15 +BackgroundTrans ,= /spawnchange
+Gui, Add, Hotkey, x31 y276 w50  h15 +BackgroundTrans vHotkey59, %Hotkey59%
+Gui, Add, Text, x+2 y276  h15 +BackgroundTrans ,= /fahrzeugradio
+Gui, Add, Hotkey, x31 y292 w50  h15 +BackgroundTrans vHotkey60, %Hotkey60%
+Gui, Add, Text, x+2 y292 h15 +BackgroundTrans ,= /Contract [Betrag] [ID]
+Gui, Add, Hotkey, x31 y308 w50  h15 +BackgroundTrans vHotkey91, %Hotkey91%
+Gui, Add, Text, x+2 y308 h15 +BackgroundTrans ,= Lock/Carlock
+Gui, Add, Hotkey, x31 y324 w50  h15 +BackgroundTrans vHotkey92, %Hotkey92%
+Gui, Add, Text, x+2 y324 h15 +BackgroundTrans ,= Alles Einzahlen
+Gui, Add, Hotkey, x210 y100 w50  h15 +BackgroundTrans vHotkey61, %Hotkey61%
+Gui, Add, Text, x+2 y100 h15 +BackgroundTrans ,= /g Suche Anwalt
+Gui, Add, Hotkey, x210 y116 w50  h15 +BackgroundTrans vHotkey62, %Hotkey62%
+Gui, Add, Text, x+2 y116 h15 +BackgroundTrans ,= /g Unter Beschuss
+Gui, Add, Hotkey, x210 y132 w50  h15 +BackgroundTrans vHotkey63, %Hotkey63%
+Gui, Add, Text, x+2 y132 h15 +BackgroundTrans ,= Wantedlevel
+Gui, Add, Hotkey, x210 y148 w50  h15 +BackgroundTrans vHotkey64, %Hotkey64%
+Gui, Add, Text, x+2 y148 h15 +BackgroundTrans ,= /HP + Ort
+Gui, Add, Hotkey, x210 y164 w50  h15 +BackgroundTrans vHotkey65, %Hotkey65%
+Gui, Add, Text, x+2 y164 h15 +BackgroundTrans ,= /g Gegner hier
+Gui, Add, Hotkey, x210 y180 w50  h15 +BackgroundTrans vHotkey66, %Hotkey66%
+Gui, Add, Text, x+2 y180 h15 +BackgroundTrans ,= /g Hilfe kommt
+Gui, Add, Hotkey, x210 y196 w50  h15 +BackgroundTrans vHotkey67, %Hotkey67%
+Gui, Add, Text, x+2 y196 h15 +BackgroundTrans ,= /g Meine Position
+Gui, Add, Hotkey, x210 y212 w50  h15 +BackgroundTrans vHotkey68, %Hotkey68%
+Gui, Add, Text, x+2 y212 h15 +BackgroundTrans ,= /g Brauche Backup
+Gui, Add, Hotkey, x210 y228 w50  h15 +BackgroundTrans vHotkey69, %Hotkey69%
+Gui, Add, Text, x+2 y228 h15 +BackgroundTrans ,= /g Keine Hilfe mehr
+Gui, Add, Hotkey, x210 y244 w50  h15 +BackgroundTrans vHotkey70, %Hotkey70%
+Gui, Add, Text, x+2 y244 h15 +BackgroundTrans ,= /g Wo sind Gegner?
+Gui, Add, Hotkey, x210 y260 w50  h15 +BackgroundTrans vHotkey71, %Hotkey71%
+Gui, Add, Text, x+2 y260 h15 +BackgroundTrans ,= /Countdown (3 Sek.)
+Gui, Add, Hotkey, x210 y276 w50  h15 +BackgroundTrans vHotkey72, %Hotkey72%
+Gui, Add, Text, x+2 y276 h15 +BackgroundTrans ,= /g [HP]-[ID]-[WÂ´s]-[Ping]
+Gui, Add, Hotkey, x210 y292 w50  h15 +BackgroundTrans vHotkey73, %Hotkey73%
+Gui, Add, Text, x+2 y292 h15 +BackgroundTrans ,= /g Bin fast Down
+Gui, Add, Hotkey, x210 y308 w50  h15 +BackgroundTrans vHotkey89, %Hotkey89%
+Gui, Add, Text, x+2 y308 h15 +BackgroundTrans ,= Platzhalter
+Gui, Add, Hotkey, x210 y324 w50  h15 +BackgroundTrans vHotkey90, %Hotkey90%
+Gui, Add, Text, x+2 y324 h15 +BackgroundTrans ,= Platzhalter
+Gui, Add, Hotkey, x390 y100 w50  h15 +BackgroundTrans vHotkey74, %Hotkey74%
+Gui, Add, Text, x+2 y100 h15 +BackgroundTrans ,= /g KD Ausgabe
+Gui, Add, Hotkey, x390 y116 w50  h15 +BackgroundTrans vHotkey75, %Hotkey75%
+Gui, Add, Text, x+2 y116 h15 +BackgroundTrans ,= /Usedrugs
+Gui, Add, Hotkey, x390 y132 w50  h15 +BackgroundTrans vHotkey76, %Hotkey76%
+Gui, Add, Text, x+2 y132 h15 +BackgroundTrans ,= /put Drugs [Menge]
+Gui, Add, Hotkey, x390 y148 w50  h15 +BackgroundTrans vHotkey77, %Hotkey77%
+Gui, Add, Text, x+2 y148 h15 +BackgroundTrans ,= /take Drugs 10
+Gui, Add, Hotkey, x390 y164 w50  h15 +BackgroundTrans vHotkey78, %Hotkey78%
+Gui, Add, Text, x+2 y164 h15 +BackgroundTrans ,= /Conquer
+Gui, Add, Hotkey, x390 y180 w50  h15 +BackgroundTrans vHotkey79, %Hotkey79%
+Gui, Add, Text, x+2 y180 h15 +BackgroundTrans ,= /ctf
+Gui, Add, Hotkey, x390 y196 w50  h15 +BackgroundTrans vHotkey80, %Hotkey80%
+Gui, Add, Text, x+2 y196 h15 +BackgroundTrans ,= Grp Cars Respawn
+Gui, Add, Hotkey, x390 y212 w50  h15 +BackgroundTrans vHotkey81, %Hotkey81%
+Gui, Add, Text, x+2 y212 h15 +BackgroundTrans ,= Armor
+Gui, Add, Hotkey, x390 y228 w50  h15 +BackgroundTrans vHotkey82, %Hotkey82%
+Gui, Add, Text, x+2 y228 h15 +BackgroundTrans ,= Deagle
+Gui, Add, Hotkey, x390 y244 w50  h15 +BackgroundTrans vHotkey83, %Hotkey83%
+Gui, Add, Text, x+2 y244 h15 +BackgroundTrans ,= Shotgun
+Gui, Add, Hotkey, x390 y260 w50  h15 +BackgroundTrans vHotkey84, %Hotkey84%
+Gui, Add, Text, x+2 y260 h15 +BackgroundTrans ,= MP5
+Gui, Add, Hotkey, x390 y276 w50  h15 +BackgroundTrans vHotkey85, %Hotkey85%
+Gui, Add, Text, x+2 y276 h15 +BackgroundTrans ,= AK47
+Gui, Add, Hotkey, x390 y292 w50  h15 +BackgroundTrans vHotkey86, %Hotkey86%
+Gui, Add, Text, x+2 y292 h15 +BackgroundTrans ,= M4
+Gui, Add, Hotkey, x390 y308 w50  h15 +BackgroundTrans vHotkey87, %Hotkey87%
+Gui, Add, Text, x+2 y308 h15 +BackgroundTrans ,= Rifle
+Gui, Add, Hotkey, x390 y324 w50  h15 +BackgroundTrans vHotkey88, %Hotkey88%
+Gui, Add, Text, x+2 y324 h15 +BackgroundTrans ,= Sniper
+Gui, Tab, Hotkeys
+Gui, Add, Text, x30 y80 h15 +Center +BackgroundTrans, Hier kannst du dir Hotkeys festlegen um sie Ingame zu benutzen.
+Gui, Add, Hotkey, x31 y130 w60 h15 vHotkey8, %Hotkey8%
+Gui, Add, Hotkey, x31 y+1 w60 h15 vHotkey9, %Hotkey9%
+Gui, Add, Hotkey, x31 y+1 w60 h15 vHotkey10, %Hotkey10%
+Gui, Add, Hotkey, x31 y+1 w60 h15 vHotkey11, %Hotkey11%
+Gui, Add, Hotkey, x31 y+1 w60 h15 vHotkey12, %Hotkey12%
+Gui, Add, Hotkey, x31 y+1 w60 h15 vHotkey13, %Hotkey13%
+Gui, Add, Hotkey, x31 y+1 w60 h15 vHotkey14, %Hotkey14%
+Gui, Add, Hotkey, x31 y+1 w60 h15 vHotkey15, %Hotkey15%
+Gui, Add, Hotkey, x31 y+1 w60 h15 vHotkey16, %Hotkey16%
+Gui, Add, Hotkey, x31 y+1 w60 h15 vHotkey17, %Hotkey17%
+Gui, Add, Hotkey, x31 y+1 w60 h15 vHotkey18, %Hotkey18%
+Gui, Add, Hotkey, x31 y+1 w60 h15 vHotkey19, %Hotkey19%
+Gui, Add, Edit, x95 y130 w170 h15 +BackgroundTrans vText8, %Text8%
+Gui, Add, Edit, x95 y+1 w170 h15 +BackgroundTrans  vText9, %Text9%
+Gui, Add, Edit, x95 y+1 w170 h15 +BackgroundTrans  vText10, %Text10%
+Gui, Add, Edit, x95 y+1 w170 h15 +BackgroundTrans  vText11, %Text11%
+Gui, Add, Edit, x95 y+1 w170 h15 +BackgroundTrans  vText12, %Text12%
+Gui, Add, Edit, x95 y+1 w170 h15 +BackgroundTrans  vText13, %Text13%
+Gui, Add, Edit, x95 y+1 w170 h15 +BackgroundTrans  vText14, %Text14%
+Gui, Add, Edit, x95 y+1 w170 h15 +BackgroundTrans  vText15, %Text15%
+Gui, Add, Edit, x95 y+1 w170 h15 +BackgroundTrans  vText16, %Text16%
+Gui, Add, Edit, x95 y+1 w170 h15 +BackgroundTrans  vText17, %Text17%
+Gui, Add, Edit, x95 y+1 w170 h15 +BackgroundTrans  vText18, %Text18%
+Gui, Add, Edit, x95 y+1 w170 h15 +BackgroundTrans  vText19, %Text19%
+Gui, Add, Hotkey, x290 y130 w60 h15 vHotkey20, %Hotkey20%
+Gui, Add, Hotkey, x290 y+1 w60 h15 vHotkey21, %Hotkey21%
+Gui, Add, Hotkey, x290 y+1 w60 h15 vHotkey22, %Hotkey22%
+Gui, Add, Hotkey, x290 y+1 w60 h15 vHotkey23, %Hotkey23%
+Gui, Add, Hotkey, x290 y+1 w60 h15 vHotkey24, %Hotkey24%
+Gui, Add, Hotkey, x290 y+1 w60 h15 vHotkey25, %Hotkey25%
+Gui, Add, Hotkey, x290 y+1 w60 h15 vHotkey26, %Hotkey26%
+Gui, Add, Hotkey, x290 y+1 w60 h15 vHotkey27, %Hotkey27%
+Gui, Add, Hotkey, x290 y+1 w60 h15 vHotkey28, %Hotkey28%
+Gui, Add, Hotkey, x290 y+1 w60 h15 vHotkey29, %Hotkey29%
+Gui, Add, Hotkey, x290 y+1 w60 h15 vHotkey30, %Hotkey30%
+Gui, Add, Hotkey, x290 y+1 w60 h15 vHotkey31, %Hotkey31%
+Gui, Add, Edit, x355 y130 w170 h15 +BackgroundTrans vText20, %Text20%
+Gui, Add, Edit, x355 y+1 w170 h15 +BackgroundTrans  vText21, %Text21%
+Gui, Add, Edit, x355 y+1 w170 h15 +BackgroundTrans  vText22, %Text22%
+Gui, Add, Edit, x355 y+1 w170 h15 +BackgroundTrans  vText23, %Text23%
+Gui, Add, Edit, x355 y+1 w170 h15 +BackgroundTrans  vText24, %Text24%
+Gui, Add, Edit, x355 y+1 w170 h15 +BackgroundTrans  vText25, %Text25%
+Gui, Add, Edit, x355 y+1 w170 h15 +BackgroundTrans  vText26, %Text26%
+Gui, Add, Edit, x355 y+1 w170 h15 +BackgroundTrans  vText27, %Text27%
+Gui, Add, Edit, x355 y+1 w170 h15 +BackgroundTrans  vText28, %Text28%
+Gui, Add, Edit, x355 y+1 w170 h15 +BackgroundTrans  vText29, %Text29%
+Gui, Add, Edit, x355 y+1 w170 h15 +BackgroundTrans  vText30, %Text30%
+Gui, Add, Edit, x355 y+1 w170 h15 +BackgroundTrans  vText31, %Text31%
+Gui,Tab, Optionen
+Gui, Add, Text, x30 y90  h15 +Center +BackgroundTrans, Prod. Fahrer
+Gui, Add, CheckBox, x30 y+3  h15 vProd_Auto_duty Checked%vProd_Auto_duty%, Auto. Duty
+Gui, Add, CheckBox, x30 y+3  h15 vProkauf Checked%Prokauf%, Auto. Prods Kaufen
+Gui, Add, CheckBox, x30 y+3  h15 vProverkauf Checked%Proverkauf%, Auto. Prods Verkaufen
+Gui, Add, Hotkey, x30 y174 w45 h15 vHotkey32, %Hotkey32%,
+Gui, Add, Text, x+5 y174 w90 h15 +Center +BackgroundTrans, Prods. Verkaufen
+Gui, Add, Text, x30 y200 w150 h150 +BackgroundTrans, Prod. Fahrer - Statistik `n`nGekauft: %Prods_Gekauft%`nVerkauft: %Prods_Verkauft%`nAusgabe: %Prod_Ausgaben%`nEinnahme: %Prods_Einnahmen%`nGewinn: %Prods_Gewinn%
+Gui, Add, Text, x225 y90 h15 +Center +BackgroundTrans, Mats - Transporter
+Gui, Add, CheckBox, x225 y+3  h15 vMatsladen Checked%Matsladen%, Auto. Mats - Laden
+Gui, Add, CheckBox, x225 y+3  h15 vMatsabladen Checked%Matsabladen%, Auto. Mats - Abladen
+Gui, Add, Text, x225 y200 w150 h150 +BackgroundTrans, Mats. Fahrer - Statistik`n`n Folgt...
+Gui, Add, Text, x400 y90 h15 +Center +BackgroundTrans, Farmer
+Gui, Add, CheckBox, x400 y+3  h15 vFarmerDuty Checked%FarmerDuty%, Auto. Duty
+Gui, Add, CheckBox, x400 y+3  h15 vFarmerengine Checked%Farmerengine%, Auto. Engine/Ankoppeln
+Gui, Add, Text, x400 y200 w150 h150 +BackgroundTrans, Farmer - Statistik`n`nEinnahmen: $%Bauer_Einnahmen%`nTouren gemacht: %Bauer_Touren%`nDrogen gefarmt: 0
+Gui,Tab, Color Picker
+Gui, Add, Text, x31 y100 w40 h15 +Right, Red
+Gui, Add, Text, x31 y+5 w40 h15 +Right, Green
+Gui, Add, Text, x31 y+5 w40 h15 +Right, Blue
+Gui, Add, Slider, x71 y100 w190 h15 +BackgroundTrans AltSubmit +NoTicks +Range0-255 vsR gSliderSub, %Rval%
+Gui, Add, Slider, x71 y+5 w190 h15 +BackgroundTrans AltSubmit +NoTicks +Range0-255 vsG gSliderSub, %Gval%
+Gui, Add, Slider, x71 y+5 w190 h15 +BackgroundTrans AltSubmit +NoTicks +Range0-255 vsB gSliderSub, %Bval%
+Gui, Add, Edit, x261 y100 w45 h15 +BackgroundTrans gEditSub veR +Limit3 +Number, %Rval%
+Gui, Add, UpDown, Range0-255 vuR +BackgroundTrans gUpDownSub, %Rval%
+Gui, Add, Edit, x261 y+5 w45 h15 +BackgroundTrans gEditSub veG +Limit3 +Number, %Gval%
+Gui, Add, UpDown, Range0-255 vuG +BackgroundTrans gUpDownSub, %Gval%
+Gui, Add, Edit, x261 y+5 w45 h15 +BackgroundTrans gEditSub veB +Limit3 +Number, %Bval%
+Gui, Add, UpDown, Range0-255 vuB +BackgroundTrans gUpDownSub, %Bval%
+Gui, Add, Progress, x370 y83 w160 h106 +Border Background%RGBval% vpC
+Gui, Add, Text, x370 y83 w160 h106 +Border vtP cWhite +BackgroundTrans CWhite, Preview
+Gui, Add, Button, x41 y170  h20 +BackgroundTrans vbS gButtonSub, FarbCode in Zwischenablage Speichern
+Gui, Add, Text, x41 y+25 h15 , Der Colorpicker ist ein kleines Tool um dir die Farben zu generieren.`nDamit kannst dir dann dein Overlay/Keybinder-Chat ausgabe einfÃ¤rben nach deinen wÃ¼nschen.`nWerte sind zb. Zahlen die Summe aus ATM Robs. Mit SÃ¤tze ist alles andere gemeint.
+Gui, Add, CheckBox, x41 y330 vOverlay_Status Checked%Overlay_Status%,
+Gui, Add, Text, x+1 y330 , Overlay Aktiv?
+Gui, Add, Text, x41 y284 w90 h15 +BackgroundTrans, Farbe1 (SÃ¤tze)
+Gui, Add, Text, x41 y304 w90 h15 +BackgroundTrans, Farbe2 (Werte)
+Gui, Add, Edit, x131 y284 w50 h15 vGang_Ov_Color1, %Gang_Ov_Color1%
+Gui, Add, Edit, x131 y304 w50 h15 vGang_Ov_Color2, %Gang_Ov_Color2%
+Gui, Add, Edit, x191 y284 w50 h15 vAdmin_Ov_Color1, %Admin_Ov_Color1%
+Gui, Add, Edit, x191 y304 w50 h15 vAdmin_Ov_Color2, %Admin_Ov_Color2%
+Gui, Add, Edit, x251 y284 w50 h15 vKeybinder_Color1, %Keybinder_Color1%
+Gui, Add, Edit, x251 y304 w50 h15 vKeybinder_Color2, %Keybinder_Color2%
+Gui, Add, Text, x131 y268 w60 h15 +BackgroundTrans, Robber
+Gui, Add, Text, x+0 y268 w60 h15 +BackgroundTrans, Admin
+Gui, Add, Text, x+0 y268 w100 h15 +BackgroundTrans, Keybinder-Chat
+Gui, Color, 2C9DFF
+Gui, Show, x134 y279, GCT-Binder | Â©Renz
+Return
+EditSub:
+GuiControlGet,Rval,,eR
+GuiControlGet,Gval,,eG
+GuiControlGet,Bval,,eB
+gosub set
+GuiControl,,uR,%Rval%
+GuiControl,,uG,%Gval%
+GuiControl,,uB,%Bval%
+GuiControl,,sR,%Rval%
+GuiControl,,sG,%Gval%
+GuiControl,,sB,%Bval%
+return
+UpDownSub:
+GuiControlGet,Rval,,uR
+GuiControlGet,Gval,,uG
+GuiControlGet,Bval,,uB
+gosub set
+GuiControl,,eR,%Rval%
+GuiControl,,eG,%Gval%
+GuiControl,,eB,%Bval%
+GuiControl,,sR,%Rval%
+GuiControl,,sG,%Gval%
+GuiControl,,sB,%Bval%
+return
+SliderSub:
+GuiControlGet,Rval,,sR
+GuiControlGet,Gval,,sG
+GuiControlGet,Bval,,sB
+gosub set
+GuiControl,,eR,%Rval%
+GuiControl,,eG,%Gval%
+GuiControl,,eB,%Bval%
+GuiControl,,uR,%Rval%
+GuiControl,,uG,%Gval%
+GuiControl,,uB,%Bval%
+return
+set:
+RGBval:=RGB(Rval,Gval,Bval)
+ToolTip Red: %Rval%`nGreen: %Gval%`nBlue: %Bval%`nHex: %RGBval%
+SetTimer, RemoveToolTip, 375
+GuiControl,+Background%RGBval%,pC
+return
+RemoveToolTip:
+SetTimer, RemoveToolTip, Off
+ToolTip
+return
+ButtonSub:
+StringReplace,Clipboard,RGBval,0x
+Return
+Save:
+Gui, Submit, NoHide
+IniWrite, %Prod_Auto_duty%, Main.ini, Checkboxen:, Prod_Auto_duty
+IniWrite, %Laufscript%, Main.ini, Checkboxen:, Laufscript
+IniWrite, %Prokauf%, Main.ini, Checkboxen:, Prokauf
+IniWrite, %Proverkauf%, Main.ini, Checkboxen:, Proverkauf
+IniWrite, %Matsladen%, Main.ini, Checkboxen:, Matsladen
+IniWrite, %Matsabladen%, Main.ini, Checkboxen:, Matsabladen
+IniWrite, %FarmerDuty%, Main.ini, Checkboxen:, FarmerDuty
+IniWrite, %Farmerengine%, Main.ini, Checkboxen:, Farmerengine
+IniWrite, %Auto_Anwalt%, Main.ini, Checkboxen:, Auto_Anwalt
+IniWrite, %Lokal_Robber_GangZoneMess%, Main.ini, Checkboxen:, Lokal_Robber_GangZoneMess
+IniWrite, %Frak_Robber_GangZoneMess%, Main.ini, Checkboxen:, Frak_Robber_GangZoneMess
+IniWrite, %Frak_Robber_KMess%, Main.ini, Checkboxen:, Frak_Robber_KMess
+IniWrite, %Frak_Robber_DeadMess%, Main.ini, Checkboxen:, Frak_Robber_DeadMess
+IniWrite, %Gang_Armor%, Main.ini, Checkboxen:,Gang_Armor
+IniWrite, %Gang_Deagle%, Main.ini, Checkboxen:, Gang_Deagle
+IniWrite, %Gang_Shotgun%, Main.ini, Checkboxen:, Gang_Shotgun
+IniWrite, %Gang_Mp5%, Main.ini, Checkboxen:, Gang_Mp5
+IniWrite, %Gang_Ak47%, Main.ini, Checkboxen:, Gang_Ak47
+IniWrite, %Gang_M4%, Main.ini, Checkboxen:, Gang_M4
+IniWrite, %Gang_Rifle%, Main.ini, Checkboxen:, Gang_Rifle
+IniWrite, %Gang_Sniper%, Main.ini, Checkboxen:, Gang_Sniper
+IniWrite, %Gang_Katana%, Main.ini, Checkboxen:, Gang_Katana
+IniWrite, %Gang_Baseball%, Main.ini, Checkboxen:, Gang_Baseball
+IniWrite, %Frak_Robber_KMess%, Main.ini, Checkboxen:, Frak_Robber_KMess
+IniWrite, %Gang_KillMess%, Main.ini, Messages:, Gang_KillMess
+IniWrite, %GangZone_KillMess%, Main.ini, Messages:, GangZone_KillMess
+IniWrite, %Gang_DeathMess%, Main.ini, Messages:, Gang_DeathMess
+IniWrite, %Anwalt_Bis%, Main.ini, Allgemein:, Anwalt_Bis
+IniWrite, %Admin_ATAA%, Main.ini, Checkboxen:,Admin_ATAA
+IniWrite, %Admin_Sup_OV%, Main.ini, Checkboxen:,Admin_Sup_OV
+IniWrite, %Admin_Sup_Hi%, Main.ini, Messages:,Admin_Sup_Hi
+IniWrite, %Admin_Sup_wkt%, Main.ini, Messages:,Admin_Sup_wkt
+IniWrite, %Admin_Sup_nwf%, Main.ini, Messages:,Admin_Sup_nwf
+IniWrite, %Admin_Sup_nd%, Main.ini, Messages:,Admin_Sup_nd
+IniWrite, %Admin_Sup_bye%, Main.ini, Messages:,Admin_Sup_bye
+IniWrite, %Overlay_Status% , Main.ini, Checkboxen:, Overlay_Status
+IniWrite, %Lokal_Robber_KMess% , Main.ini, Checkboxen:, Lokal_Robber_KMess
+IniWrite, %Keybinder_Color1% , Main.ini, Farben:, Keybinder_Color1
+IniWrite, %Keybinder_Color2% , Main.ini, Farben:, Keybinder_Color2
+IniWrite, %Admin_Ov_Color1%, Main.ini, Farben:,Admin_Ov_Color1
+IniWrite, %Admin_Ov_Color2%, Main.ini, Farben:,Admin_Ov_Color2
+IniWrite, %Gang_Ov_Color1%, Main.ini, Farben:, Gang_Ov_Color1
+IniWrite, %Gang_Ov_Color2%, Main.ini, Farben:, Gang_Ov_Color2
+Loop, 92
+{
+HHotkey := Hotkey%A_Index%
+IniWrite, %HHotkey%, Main.ini, Hotkeys, Hotkey%A_Index%
+HTexte := Text%A_Index%
+IniWrite, %HTexte%, Main.ini, Texte, Text%A_Index%
+}
+return
+Hotkeydefine:
+Loop, 92
+{
+HHotkey := Hotkey%A_Index%
+Hotkey, ~%HHotkey%, Label%A_Index%, UseErrorlevel
+}
+return
+Label1:
+If(IsInChat() or !CopSkin(Skin))
+return
+SendChat("/Equip")
+sleep 1050
+return
+Label2:
+If(IsInChat() or !CopSkin(Skin))
+return
+Sendinput, t/Cuff{Space}
+sleep 1050
+return
+Label3:
+If(IsInChat() or !CopSkin(Skin))
+return
+Sendinput, t/Arrest{Space}
+sleep 1050
+return
+Label4:
+If(IsInChat() or !CopSkin(Skin))
+return
+Sendinput, t/Grab{Space}
+sleep 1050
+return
+Label5:
+If(IsInChat() or !CopSkin(Skin))
+return
+SendChat("/Tor")
+sleep 1050
+return
+Label6:
+If(IsInChat() or !CopSkin(Skin))
+return
+Sendchat("/OArrest")
+sleep 1050
+return
+Label7:
+If(IsInChat())
+return
+IniRead, Text7, Main.ini, Texte, Text7
+Sendchat("/Ticketlist")
+sleep 1050
+return
+Label8:
+If(IsInChat())
+return
+IniRead, Text8, Main.ini, Texte, Text8
+Sendchat("" Text8 "")
+sleep 1050
+return
+Label9:
+If(IsInChat())
+return
+IniRead, Text9, Main.ini, Texte, Text9
+Sendchat("" Text9 "")
+sleep 1050
+return
+Label10:
+If(IsInChat())
+return
+IniRead, Text10, Main.ini, Texte, Text10
+Sendchat("" Text10 "")
+sleep 1050
+return
+Label11:
+If(IsInChat())
+return
+IniRead, Text11, Main.ini, Texte, Text11
+Sendchat("" Text11 "")
+sleep 1050
+return
+Label12:
+If(IsInChat())
+return
+IniRead, Text12, Main.ini, Texte, Text12
+Sendchat("" Text12 "")
+sleep 1050
+return
+Label13:
+If(IsInChat())
+return
+IniRead, Text13, Main.ini, Texte, Text13
+Sendchat("" Text13 "")
+sleep 1050
+return
+Label14:
+If(IsInChat())
+return
+IniRead, Text14, Main.ini, Texte, Text14
+Sendchat("" Text14 "")
+sleep 1050
+return
+Label15:
+If(IsInChat())
+return
+IniRead, Text15, Main.ini, Texte, Text15
+Sendchat("" Text15 "")
+sleep 1050
+return
+Label16:
+If(IsInChat())
+return
+IniRead, Text16, Main.ini, Texte, Text16
+Sendchat("" Text16 "")
+sleep 1050
+return
+Label17:
+If(IsInChat())
+return
+IniRead, Text17, Main.ini, Texte, Text17
+Sendchat("" Text17 "")
+sleep 1050
+return
+Label18:
+If(IsInChat())
+return
+IniRead, Text18, Main.ini, Texte, Text18
+Sendchat("" Text18 "")
+sleep 1050
+return
+Label19:
+If(IsInChat())
+return
+IniRead, Text19, Main.ini, Texte, Text19
+Sendchat("" Text19 "")
+sleep 1050
+return
+Label20:
+If(IsInChat())
+return
+IniRead, Text20, Main.ini, Texte, Text20
+Sendchat("" Text20 "")
+sleep 1050
+return
+Label21:
+If(IsInChat())
+return
+IniRead, Text21, Main.ini, Texte, Text21
+Sendchat("" Text21 "")
+sleep 1050
+return
+Label22:
+If(IsInChat())
+return
+IniRead, Text22, Main.ini, Texte, Text22
+Sendchat("" Text22 "")
+sleep 1050
+return
+Label23:
+If(IsInChat())
+return
+IniRead, Text23, Main.ini, Texte, Text23
+Sendchat("" Text23 "")
+sleep 1050
+return
+Label24:
+If(IsInChat())
+return
+IniRead, Text24, Main.ini, Texte, Text24
+Sendchat("" Text24 "")
+sleep 1050
+return
+Label25:
+If(IsInChat())
+return
+IniRead, Text25, Main.ini, Texte, Text25
+Sendchat("" Text25 "")
+sleep 1050
+return
+Label26:
+If(IsInChat())
+return
+IniRead, Text26, Main.ini, Texte, Text26
+Sendchat("" Text26 "")
+sleep 1050
+return
+Label27:
+If(IsInChat())
+return
+IniRead, Text27, Main.ini, Texte, Text27
+Sendchat("" Text27 "")
+sleep 1050
+return
+Label28:
+If(IsInChat())
+return
+IniRead, Text28, Main.ini, Texte, Text28
+Sendchat("" Text28 "")
+sleep 1050
+return
+Label29:
+If(IsInChat())
+return
+IniRead, Text29, Main.ini, Texte, Text29
+Sendchat("" Text29 "")
+sleep 1050
+return
+Label30:
+If(IsInChat())
+return
+IniRead, Text30, Main.ini, Texte, Text30
+Sendchat("" Text30 "")
+sleep 1050
+return
+Label31:
+If(IsInChat())
+return
+IniRead, Text31, Main.ini, Texte, Text31
+Sendchat("" Text31 "")
+sleep 1050
+return
+Label33:
+If(IsInChat())
+return
+IniRead, Text33, Main.ini, Texte, Text33
+Sendchat("" Text33 "")
+sleep 1050
+return
+Label34:
+If(IsInChat())
+return
+IniRead, Text34, Main.ini, Texte, Text34
+Sendchat("" Text34 "")
+sleep 1050
+return
+Label35:
+If(IsInChat())
+return
+addchatmessage("/Ticketlist")
+sleep 1050
+return
+Label36:
+If(IsInChat())
+return
+IniRead, Text36, Main.ini, Texte, Text36
+Sendchat("" Text36 "")
+sleep 1050
+return
+Label37:
+If(IsInChat())
+return
+IniRead, Text37, Main.ini, Texte, Text37
+Sendchat("" Text37 "")
+sleep 1050
+return
+Label38:
+If(IsInChat())
+return
+IniRead, Text38, Main.ini, Texte, Text38
+Sendchat("" Text38 "")
+sleep 1050
+return
+Label39:
+If(IsInChat())
+return
+IniRead, Text39, Main.ini, Texte, Text39
+Sendchat("" Text39 "")
+sleep 1050
+return
+Label40:
+If(IsInChat())
+return
+IniRead, Text40, Main.ini, Texte, Text40
+Sendchat("" Text40 "")
+sleep 1050
+return
+Label41:
+If(IsInChat())
+return
+IniRead, Text41, Main.ini, Texte, Text41
+Sendchat("" Text41 "")
+sleep 1050
+return
+Label42:
+If(IsInChat())
+return
+IniRead, Text42, Main.ini, Texte, Text42
+Sendchat("" Text42 "")
+sleep 1050
+return
+Label43:
+If(IsInChat())
+return
+IniRead, Text43, Main.ini, Texte, Text43
+Sendchat("" Text43 "")
+sleep 1050
+return
+Label44:
+If(IsInChat())
+return
+IniRead, Text44, Main.ini, Texte, Text44
+Sendchat("" Text44 "")
+sleep 1050
+return
+Label45:
+If(IsInChat())
+return
+IniRead, Text45, Main.ini, Texte, Text45
+Sendchat("" Text45 "")
+sleep 1050
+return
+Label46:
+If(IsInChat())
+return
+IniRead, Text46, Main.ini, Texte, Text46
+Sendchat("" Text46 "")
+sleep 1050
+return
+Label47:
+If(IsInChat() == 1)
+Return
+Suspend Permit
+IniRead, Keybinder_Color1 , Main.ini, Farben:, Keybinder_Color1
+IniRead, Keybinder_Color2 , Main.ini, Farben:, Keybinder_Color2
+IniRead, Gang_Armor , Main.ini, Checkboxen:,Gang_Armor
+IniRead, Gang_Deagle , Main.ini, Checkboxen:, Gang_Deagle
+IniRead, Gang_Shotgun , Main.ini, Checkboxen:, Gang_Shotgun
+IniRead, Gang_Mp5 , Main.ini, Checkboxen:, Gang_Mp5
+IniRead, Gang_Ak47 , Main.ini, Checkboxen:, Gang_Ak47
+IniRead, Gang_M4 , Main.ini, Checkboxen:, Gang_M4
+IniRead, Gang_Rifle , Main.ini, Checkboxen:, Gang_Rifle
+IniRead, Gang_Sniper , Main.ini, Checkboxen:, Gang_Sniper
+IniRead, Gang_Katana , Main.ini, Checkboxen:, Gang_Katana
+IniRead, Gang_Baseball , Main.ini, Checkboxen:, Gang_Baseball
+Waffen := "Waffen gekauft ("
+Preis := "0"
+IF(Gang_Armor == 1)
+{
+SendChat("/buygun 0 1")
+Waffen .= "Armor,"
+Preis += 500
+sleep 50
+}
+IF(Gang_Deagle == 1)
+{
+SendChat("/buygun 24 1")
+Waffen .= "Deagle,"
+Preis += 1160
+sleep 50
+}
+IF(Gang_Shotgun == 1)
+{
+SendChat("/buygun 25 1")
+Waffen .= "Shotgun,"
+Preis += 1280
+sleep 50
+}
+IF(Gang_Mp5 == 1)
+{
+SendChat("/buygun 29 1")
+Waffen .= "Mp5,"
+Preis += 2000
+sleep 50
+}
+IF(Gang_Ak47 == 1)
+{
+SendChat("/buygun 30 1")
+Waffen .= "Ak47,"
+Preis += 2800
+sleep 50
+}
+IF(Gang_M4 == 1)
+{
+SendChat("/buygun 31 1")
+Waffen .= "M4,"
+Preis += 7200
+sleep 50
+}
+IF(Gang_Rifle == 1)
+{
+SendChat("/buygun 33 1")
+Waffen .= "Rifle,"
+Preis += 7600
+sleep 50
+}
+IF(Gang_Sniper == 1)
+{
+SendChat("/buygun 34 1")
+Waffen .= "Sniper,"
+Preis += 20000
+sleep 50
+}
+IF(Gang_Katana == 1)
+{
+SendChat("/buygun 8 1")
+Waffen .= "Katana,"
+Preis += 400
+sleep 50
+}
+IF(Gang_Baseball == 1)
+{
+SendChat("/buygun 5 1")
+Waffen .= "Baseball Bat"
+Preis += 400
+sleep 50
+}
+Waffen .= ")"
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Waffenpaket gekauft - Preis: $%Preis%`n, %A_Scriptdir%\Log.txt
+Ausgaben =
+IniRead, Waffen_Ausgabe, Main.ini, Ausgaben:, Waffen_Ausgabe
+Waffen_Ausgabe += Preis
+IniWrite, %Waffen_Ausgabe%, Main.ini, Ausgabe:, Waffen_Ausgabe
+sleep 1050
+Suspend off
+return
+Label48:
+If(IsInChat())
+return
+SendChat("Hi, Mein Name ist " GetUsername() ", Wie kann ich dir helfen?")
+sleep 1050
+return
+Label49:
+If(IsInChat())
+return
+SendChat("Ich wÃ¼nsche dir noch einen Angenehmen Tag. Bye")
+sleep 1050
+return
+Label50:
+If(IsInChat())
+Return
+SendChat("/Members")
+sleep 1050
+return
+Label51:
+If(IsInChat())
+Return
+addChatMessage("{FFFFFF}Folgt....")
+sleep 1050
+return
+Label52:
+If(IsInChat())
+Return
+SendChat("")
+sleep 1050
+return
+Label53:
+If(IsInChat())
+Return
+SendChat("")
+sleep 1050
+return
+Label54:
+If(IsInChat())
+Return
+SendChat("Verkaufe Drogen! Bei bedarf Schreibt mich an!")
+sleep 1050
+return
+Label55:
+If(IsInChat())
+Return
+Sendinput, Wieviel Gramm willst du Verkaufen?: {Space}
+Input, Gramm, V I M, {Enter}
+Sell_Gramm := Gramm
+sleep 500
+Sendinput, Wieviel Geld mÃ¶chtest du pro Gramm?: {Space}
+Input, Betrag, V I M, {Enter}
+Sell_Geld := Betrag
+Entgeld := Sell_Gramm * Sell_Geld
+addChatmessage("Verkaufe " Sell_Gramm "g Drogen fÃ¼r $" Entgeld)
+addChatmessage("MÃ¶chtest du diese Werbung absenden? Wenn ja DrÃ¼cke die # Taste.")
+Keywait, #, D T10
+IF !ERRORLEVEL
+{
+SendChat("Verkaufe " Sell_Gramm "g Drogen fÃ¼r $" Enteld " | Meldet euch per Pn!")
+}
+else
+{
+addChatmessage("Senden der Werbung wurde Abgebrochen, keine BestÃ¤tigung erhalten!")
+}
+sleep 1050
+return
+Label56:
+If(IsInChat())
+Return
+FileRead, Chatlog, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+If !InStr(Chatlog, "Pn von")
+{
+addChatMessage("{" Keybinder_Color1 "}[{" Keybinder_Color2 "}Info{" Keybinder_Color1 "}] - {" Keybinder_Color1 "}Niemand hat dir eine Pn geschrieben")
+return
+}
+RegExMatch(Chatlog, "PN von (.*) \((.*)\)\:",Re_Sms)
+Sendinput, /pn %Re_Sms1%{Space}
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+sleep 1050
+return
+Label57:
+If(IsInChat())
+Return
+Sendinput, /showfinances{Space}
+Username := getUsername()
+sleep 1050
+return
+Label58:
+If(IsInChat())
+Return
+SendChat("/Spawnchange")
+Username := getUsername()
+sleep 1050
+return
+Label59:
+If(IsInChat())
+Return
+SendChat("/fahrzeugradio")
+Username := getUsername()
+sleep 1050
+return
+Label60:
+If(IsInChat())
+Return
+Sendinput, /Contract{Space}
+Username := getUsername()
+sleep 1050
+return
+----------------------------------
+Label61:
+Skin := getPlayerSkinId()
+If(IsInChat() or CopSkin(Skin))
+return
+SendChat("/g BenÃ¶tige einen Anwalt!")
+Username := getUsername()
+sleep 1050
+return
+Label62:
+Skin := getPlayerSkinId()
+If(IsInChat() or CopSkin(Skin))
+return
+health := getPlayerHealth() + getPlayerArmor()
+SendChat("/g Stehe unter Beschuss in " getPlayerZone() " | HP: " health)
+Username := getUsername()
+sleep 1050
+return
+Label63:
+Skin := getPlayerSkinId()
+If(IsInChat() or CopSkin(Skin))
+return
+ws := getPlayerWanteds()
+If(ws == 0)
+{
+SendChat("/g Ich habe keine Wanteds!")
+Username := getUsername()
+sleep 1050
+return
+}
+else
+{
+IniRead, Wanteds, Main.ini,  Crime:, Wanteds
+SendChat("/g Meine Wanteds betragen: " Wanteds)
+Username := getUsername()
+sleep 1050
+}
+return
+Label64:
+Skin := getPlayerSkinId()
+If(IsInChat() or CopSkin(Skin))
+return
+health := getPlayerHealth() + getPlayerArmor()
+SendChat("/g Ich bin in " getPlayerZone() " mit " health " HP")
+Username := getUsername()
+sleep 1050
+return
+Label65:
+Skin := getPlayerSkinId()
+If(IsInChat() or CopSkin(Skin))
+return
+SendChat("/g Bei mir in " getPlayerZone() " sind gegner! Kommt schnell!")
+Username := getUsername()
+sleep 1050
+return
+Label66:
+Skin := getPlayerSkinId()
+If(IsInChat() or CopSkin(Skin))
+return
+SendChat("/g Bin Unterwegs in " getPlayerZone() " | Hilfe kommt!")
+Username := getUsername()
+sleep 1050
+return
+Label67:
+Skin := getPlayerSkinId()
+If(IsInChat() or CopSkin(Skin))
+return
+SendChat("/g Ich bin in " getPlayerZone())
+Username := getUsername()
+sleep 1050
+return
+Label68:
+Skin := getPlayerSkinId()
+If(IsInChat() or CopSkin(Skin))
+return
+health := getPlayerHealth() + getPlayerArmor()
+SendChat("/g Brauche dringend UnterstÃ¼tzung! in " getPlayerZone() " | HP: " health)
+Username := getUsername()
+sleep 1050
+return
+Label69:
+Skin := getPlayerSkinId()
+If(IsInChat() or CopSkin(Skin))
+return
+SendChat("/g Alles geregelt! | Keine Hilfe mehr benÃ¶tigt")
+Username := getUsername()
+sleep 1050
+return
+Label70:
+Skin := getPlayerSkinId()
+If(IsInChat() or CopSkin(Skin))
+return
+SendChat("/g Wo sind Gegner? Bitte Melden!")
+Username := getUsername()
+sleep 1050
+return
+Label71:
+If(IsInChat())
+return
+SendChat("Countdown Startet!")
+sleep 1050
+SendChat(">>>>> 3 <<<<<")
+sleep 1050
+SendChat(">>>>> 2 <<<<<")
+sleep 1050
+SendChat(">>>>> 1 <<<<<")
+sleep 1050
+SendChat("Los Gehts!")
+Username := getUsername()
+return
+Label72:
+Skin := getPlayerSkinId()
+If(IsInChat() or CopSkin(Skin))
+return
+name := getUserNAme()
+ID := getPlayerIDbyName(name)
+Ping := getPlayerPingById(ID)
+Score := getPlayerScoreById(ID)
+IniRead, Wanteds, Main.ini,  Crime:, Wanteds
+health := getPlayerHealth() + getPlayerArmor()
+SendChat("/g Infos - HP: " health " | ID: " ID " | Ping: " Ping " | Lvl: " Score " | WÂ´s: " Wanteds)
+Username := getUsername()
+sleep 1050
+return
+Label73:
+Skin := getPlayerSkinId()
+If(IsInChat() or CopSkin(Skin))
+return
+health := getPlayerHealth() + getPlayerArmor()
+SendChat("/g Ich bin fast Down | Beeilung bitte! HP: " health)
+Username := getUsername()
+sleep 1050
+return
+Label74:
+If(IsInChat())
+return
+IniRead, Kills, Main.ini,  Allgemein:, Kills,0
+IniRead, Tode, Main.ini , Allgemein:, Tode,0
+KD := Kills/Tode
+StringTrimRight, Form_KD, KD, 4
+Sendchat("/g Meine KD: " Form_KD)
+Username := getUsername()
+sleep 1050
+return
+Label75:
+If(IsInChat())
+return
+Sendchat("/Usedrugs")
+Username := getUsername()
+sleep 1050
+return
+Label76:
+If(IsInChat())
+return
+Sendinput, t/put drugs{Space}
+Username := getUsername()
+sleep 1050
+return
+Label77:
+If(IsInChat())
+return
+Sendchat("/take Drugs 10")
+Username := getUsername()
+sleep 1050
+return
+Label78:
+If(IsInChat())
+return
+Sendchat("/Conquer")
+Username := getUsername()
+sleep 1050
+return
+Label79:
+If(IsInChat())
+return
+Sendchat("/ctf")
+Username := getUsername()
+sleep 1050
+return
+Label80:
+If(IsInChat())
+return
+Sendchat("/gruppe")
+sleep 200
+Send {Down 2}
+sleep 200
+Send {Enter}
+sleep 200
+Send {Enter}
+sleep 1050
+Username := getUsername()
+return
+Label81:
+If(IsInChat())
+return
+Sendchat("/buygun 0 1")
+IniRead, Waffen_Ausgabe, Main.ini, Ausgaben:, Waffen_Ausgabe
+Waffen_Ausgabe += 500
+IniWrite, %Waffen_Ausgabe%, Main.ini, Ausgabe, Waffen_Ausgabe
+Username := getUsername()
+sleep 1050
+return
+Label82:
+If(IsInChat())
+return
+Sendchat("/buygun 24 1")
+IniRead, Waffen_Ausgabe, Main.ini, Ausgaben:, Waffen_Ausgabe
+Waffen_Ausgabe += 1160
+IniWrite, %Waffen_Ausgabe%, Main.ini, Ausgabe, Waffen_Ausgabe
+Username := getUsername()
+sleep 1050
+return
+Label83:
+If(IsInChat())
+return
+Sendchat("/buygun 25 1")
+IniRead, Waffen_Ausgabe, Main.ini, Ausgaben:, Waffen_Ausgabe
+Waffen_Ausgabe += 1280
+IniWrite, %Waffen_Ausgabe%, Main.ini, Ausgabe, Waffen_Ausgabe
+Username := getUsername()
+sleep 1050
+return
+Label84:
+If(IsInChat())
+return
+Sendchat("/buygun 29 1")
+IniRead, Waffen_Ausgabe, Main.ini, Ausgaben:, Waffen_Ausgabe
+Waffen_Ausgabe += 2000
+IniWrite, %Waffen_Ausgabe%, Main.ini, Ausgabe, Waffen_Ausgabe
+Username := getUsername()
+sleep 1050
+return
+Label85:
+If(IsInChat())
+return
+Sendchat("/buygun 30 1")
+IniRead, Waffen_Ausgabe, Main.ini, Ausgaben:, Waffen_Ausgabe
+Waffen_Ausgabe += 2800
+IniWrite, %Waffen_Ausgabe%, Main.ini, Ausgabe, Waffen_Ausgabe
+Username := getUsername()
+sleep 1050
+return
+Label86:
+If(IsInChat())
+return
+Sendchat("/buygun 31 1")
+IniRead, Waffen_Ausgabe, Main.ini, Ausgaben:, Waffen_Ausgabe
+Waffen_Ausgabe += 7200
+IniWrite, %Waffen_Ausgabe%, Main.ini, Ausgabe, Waffen_Ausgabe
+Username := getUsername()
+sleep 1050
+return
+Label87:
+If(IsInChat())
+return
+Sendchat("/buygun 33 1")
+IniRead, Waffen_Ausgabe, Main.ini, Ausgaben:, Waffen_Ausgabe
+Waffen_Ausgabe += 7600
+IniWrite, %Waffen_Ausgabe%, Main.ini, Ausgabe, Waffen_Ausgabe
+Username := getUsername()
+sleep 1050
+return
+Label88:
+If(IsInChat())
+return
+Sendchat("/buygun 34 1")
+IniRead, Waffen_Ausgabe, Main.ini, Ausgaben:, Waffen_Ausgabe
+Waffen_Ausgabe += 20000
+IniWrite, %Waffen_Ausgabe%, Main.ini, Ausgabe, Waffen_Ausgabe
+Username := getUsername()
+sleep 1050
+return
+Label89:
+If(IsInChat())
+return
+Sendchat("")
+Username := getUsername()
+sleep 1050
+return
+Label90:
+If(IsInChat())
+return
+Sendchat("")
+Username := getUsername()
+sleep 1050
+return
+Label91:
+If(IsInChat())
+return
+If(IsPlayerinanyVehicle())
+{
+SendChat("/lock")
+return
+}
+else
+{
+SendChat("/carlock")
+return
+}
+sleep 1050
+Username := getUsername()
+return
+Label92:
+If(IsInChat())
+return
+Money := getPlayerMoney()
+Send {Alt down}
+Send {Alt up}
+sleep 200
+Send {Enter}
+sleep 200
+SendInput %Money% {Enter}
+Send {Enter}
+Sleep 200
+Send {Esc}
+Sleep 200
+Send {Esc}
+sleep 1050
+Username := getUsername()
+return
+GuiClose:
+ExitApp
+return
+Chatlog:
+IfWinNotExist, GTA:SA:MP
+return
+User := GetUsername()
+Skin := getPlayerSkinId()
+IniRead, Keybinder_Color1 , Main.ini, Farben:, Keybinder_Color1
+IniRead, Keybinder_Color2 , Main.ini, Farben:, Keybinder_Color2
+IniRead, Prod_Auto_duty, Main.ini, Checkboxen:, Prod_Auto_duty
+IniRead, Prokauf , Main.ini, Checkboxen:, Prokauf
+IniRead, Proverkauf , Main.ini, Checkboxen:, Proverkauf
+IniRead, Matsladen , Main.ini, Checkboxen:, Matsladen
+IniRead, Matsabladen , Main.ini, Checkboxen:, Matsabladen
+IniRead, FarmerDuty , Main.ini, Checkboxen:, FarmerDuty
+IniRead, Farmerengine , Main.ini, Checkboxen:, Farmerengine
+IniRead, Admin_ATAA, Main.ini, Checkboxen:,Admin_ATAA
+IniRead, Auto_Anwalt , Main.ini, Checkboxen:, Auto_Anwalt
+IniRead, Frak_Robber_DeadMess , Main.ini, Checkboxen:, Frak_Robber_DeadMess
+IniRead, Lokal_Robber_KMess , Main.ini, Checkboxen:, Lokal_Robber_KMess
+FileRead, Chatlog, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+ReadGametext(0, gametext0)
+If InStr(Chatlog, " Du hast dich erfolgreich eingeloggt")
+{
+go := 1
+addChatMessage("{FFFFFF}Herzlich Willkommen auf GCT!")
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+}
+If InStr(Chatlog, " hat ein neues Ticket erstellt.")
+{
+If(Admin_ATAA == 1)
+{
+RegExMatch(Chatlog, "\* (.*) hat ein neues Ticket erstellt\.", Sup_Kunde)
+SendChat("/Ticketlist")
+IfNotExist, %A_Scriptdir%\Logs\Sup_von_%Sup_Kunde%_%A_DD%%A_MM%%A_YYYY%.txt
+{
+FormatTime, Time, HH:MM:SS tt
+FileAppend,`n`n[Support Beginn: %Time% von %Sup_Kunde1%]`n`n, %A_Scriptdir%\Logs\Sup_von_%Sup_Kunde1%_%A_DD%%A_MM%%A_YYYY%.txt
+}
+Iniwrite, %Sup_Kunde1%, Main.ini,  Kunde:, Sup_Kunde
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+Username := getUsername()
+}
+}
+If InStr(Chatlog, " [ SUPPORT ] Du bearbeitest nun das Ticket")
+{
+RegExMatch(Chatlog, " \[ SUPPORT \] Du bearbeitest nun das Ticket \((.*)\) von (.*) \((.*)\).", Sup_Kunde)
+Iniwrite, %Sup_Kunde2%, Main.ini,  Kunde:, Sup_Kunde
+Iniwrite, %Sup_Kunde1%, Main.ini,  Kunde:, Sup_Kunde_Ticket_ID
+IniRead, Admin_Ticket_Anzahl, Main.ini,  A_Stats:, Admin_Ticket_Anzahl
+Admin_Ticket_Anzahl++
+Iniwrite, %Admin_Ticket_Anzahl%, Main.ini,  A_Stats:, Admin_Ticket_Anzahl
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+Username := getUsername()
+goto Check_Channel
+}
+If InStr(Chatlog, "[ SUPPORT 0 ]") OR If InStr(Chatlog, "[ SUPPORT 1 ]") OR If InStr(Chatlog, "[ SUPPORT 2 ]") OR If InStr(Chatlog, "[ SUPPORT 3 ]") OR If InStr(Chatlog, "[ SUPPORT 4 ]")
+{
+Me := getUserNAme()
+RegExMatch(Chatlog, ".* SUPPORT (.*) \] (.*): (.*)", Sup_Log)
+IfNotInString, Sup_Log2, %Me%
+{
+Fileappend,`n[%A_Hour%:%A_Min%:%A_Sec%|[%Me% -> %Sup_Kunde%] - %Sup_Log2%, %A_Scriptdir%\Logs\Sup_von_%Sup_Kunde%_%A_DD%%A_MM%%A_YYYY%.txt
+}
+else
+{
+Fileappend,`n[%A_Hour%:%A_Min%:%A_Sec%|[%Me% <- %Sup_Kunde%] - %Sup_Log2%, %A_Scriptdir%\Logs\Sup_von_%Sup_Kunde%_%A_DD%%A_MM%%A_YYYY%.txt
+}
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+Username := getUsername()
+}
+If InStr(Chatlog, "Du hast erfolgreich eine Werbung fÃ¼r ")
+{
+RegExMatch(Chatlog, "Du hast erfolgreich eine Werbung fÃ¼r \$(.*) geschaltet\.",Werbung)
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Ausgaben - Grund: Werbung | Ausgabe: ($%Werbung1%/$%Werbe_Ausgabe%) `n, %A_Scriptdir%\Log.txt
+addChatMessage("{" Keybinder_Color1 "}Werbe Ausgaben gesamt: ${" Keybinder_Color2 "}" Werbe_Ausgabe)
+IniRead, Werbe_Ausgaben, Main.ini,  Ausgaben:, Werbe_Ausgaben
+Werbe_Ausgaben += Werbung1
+Iniwrite, %Werbe_Ausgaben%, Main.ini,  Ausgaben:, Werbe_Ausgaben
+addChatMessage("{" Keybinder_Color1 "}[{" Keybinder_Color2 "}Ausgaben - Werbung{" Keybinder_Color1 "}] -> {" Keybinder_Color1 "}Geld: {" Keybinder_Color2 "}$" Werbe_Ausgaben)
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+Username := getUsername()
+}
+If InStr(Chatlog, "Du hast einen Beutel aufgesammelt")
+{
+RegExMatch(Chatlog, "Du hast einen Beutel aufgesammelt \((.*) \/ (.*)\)",saecke)
+IniRead, geldsaeckeaddieren, Main.ini,  Allgemein:, geldsaeckeaddieren
+geldsaeckeaddieren += saecke1
+Iniwrite, %geldsaeckeaddieren%, Main.ini,  Allgemein:, geldsaeckeaddieren
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+Username := getUsername()
+}
+If InStr(Chatlog, "Verdacht von") && If InStr(Chatlog, "auf Beleidigung")
+{
+RegExMatch(Chatlog, "Verdacht von (.*) auf Beleidigung \((.*)\)\:",verdacht)
+belID := getPlayerIDbyName(verdacht1)
+addchatmessage("{" Keybinder_Color2 "}" verdacht1 " {" Keybinder_Color1 "}hat die ID: {" Keybinder_Color2 "}" belID)
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+}
+If InStr(Chatlog, " Du hast den Job als Bauer beendet.") && InStr(Chatlog, "Deine Entlohnung betrÃ¤gt:")
+{
+RegExMatch(Chatlog, "Deine Entlohnung betrÃ¤gt: \$(.*)",Bauer_Lohn)
+StringReplace, bLohn, Bauer_Lohn1, .,, A
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Einnahme - Grund: Bauer | Ausgabe: ($%Lohn%/$%Bauer_Einnahme%) `n, %A_Scriptdir%\Log.txt
+IniRead, Bauer_Touren, Main.ini, Jobs:, Bauer_Touren
+Bauer_Touren++
+Iniwrite, %Bauer_Touren%, Main.ini,  Jobs:, Bauer_Touren
+IniRead, Bauer_Einnahmen, Main.ini,  Einnahmen:, Bauer_Einnahmen
+Bauer_Einnahmen += bLohn
+Iniwrite, %Bauer_Einnahmen%, Main.ini,  Einnahmen:, Bauer_Einnahmen
+addChatMessage("{" Keybinder_Color1 "}[{" Keybinder_Color2 "}Info{" Keybinder_Color1 "}] - {" Keybinder_Color1 "}Geld: {" Keybinder_Color2 "}$" Bauer_Einnahmen " {" Keybinder_Color1 "}| Touren: {" Keybinder_Color2 "}" Bauer_Touren)
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+Username := getUsername()
+}
+If InStr(Chatlog, "[ Rob ] Es wurden ") && InStr(Chatlog, "aus deinem Tresor geraubt.")
+{
+RegExMatch(Chatlog, "Es wurden \$(.*) aus deinem Tresor geraubt\.",Verlust_Hrob)
+StringReplace, verlust, Verlust_Hrob1, .,, A
+IniRead, HRob_lost, Main.ini,  Verlust:, HRob_lost
+HRob_Lost += verlust
+Iniwrite, %HRob_lost%, Main.ini,  Verlust:, HRob_lost
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Verlust - Grund: Hausraub | (-$%verlust%/$%HRob_Lost%) `n, %A_Scriptdir%\Log.txt
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Verlust - Grund: Hausraub | $%verlust%`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+}
+If InStr(Chatlog, "Wanteds erhalten, Verbrechen:") && InStr(Chatlog, "Derzeitige Wantedstufe:")
+{
+RegExMatch(Chatlog, "Du hast (.*) Wanteds erhalten, Verbrechen: (.*). Derzeitige Wantedstufe: (.*)",Wanteds)
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - [Wanted] | %Wanteds1% Wanteds erhalten - Grund: %Wanteds2% `n, %A_Scriptdir%\Log.txt
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Wantedlevel - %Wanteds2%`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+}
+If InStr(Chatlog, "[ LAGER ] Du hast") && InStr(Chatlog, "Produkt(e) fÃ¼r ")
+{
+RegExMatch(Chatlog, "\[ LAGER \] Du hast (.*) Produkt\(e\) fÃ¼r \$(.*) gekauft\.",Prods)
+StringReplace, Prod_ein, Prods2, .,, A
+Iniwrite, %Prods1%, Main.ini, TruckStatus, Ladung_Prods_Truck
+IniRead, Prod_Ausgaben, Main.ini, Ausgaben:, Prod_Ausgaben
+Prod_Ausgaben += Prod_ein
+Iniwrite, %Prod_Ausgaben%, Main.ini, Ausgaben:, Prod_Ausgaben
+IniRead, Prods_Gekauft, Main.ini,  Jobs:, Prods_Gekauft
+Prods_Gekauft += Prods1
+Iniwrite, %Prods_Gekauft%, Main.ini,  Jobs:, Prods_Gekauft
+addChatMessage("{" Keybinder_Color1 "}[{" Keybinder_Color2 "}Info{" Keybinder_Color1 "}] - {" Keybinder_Color1 "}Geld: {" Keybinder_Color2 "}-$" Prod_Ausgaben " {" Keybinder_Color1 "}| Prods: {" Keybinder_Color2 "}" Prods1)
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Einnahme - Grund: Prods | ($%Prod_ein%/$%Prods_Einnahme%) `n, %A_Scriptdir%\Log.txt
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+Username := getUsername()
+}
+If InStr(Chatlog, " * In diesem Geldbeutel befanden sich ")
+{
+RegExMatch(Chatlog, " \* In diesem Geldbeutel befanden sich \$(.*) und (.*) EXP\.",ATM_Lohn)
+StringReplace, Lohn, ATM_Lohn1, .,, A
+IniRead, geldsaeckeaddieren, Main.ini,  Allgemein:, geldsaeckeaddieren
+IniRead, GeldsÃ¤cke, Main.ini, Allgemein:, GeldsÃ¤cke
+GeldsÃ¤cke += geldsaeckeaddieren
+Iniwrite, %GeldsÃ¤cke%, Main.ini, Allgemein:, GeldsÃ¤cke
+IniRead, XP_Einnahmen, Main.ini,  Allgemein:, XP_Einnahmen
+XP_Einnahmen += ATM_Lohn2
+Iniwrite, %XP_Einnahmen%, Main.ini,  Allgemein:, XP_Einnahmen
+IniRead, Geldsack_Einnahmen, Main.ini,  Allgemein:, Geldsack_Einnahmen
+Geldsack_Einnahmen += Lohn
+Iniwrite, %Geldsack_Einnahmen%, Main.ini,  Allgemein:, Geldsack_Einnahmen
+addChatMessage("{" Keybinder_Color1 "}[{" Keybinder_Color2 "}Info{" Keybinder_Color1 "}] - {" Keybinder_Color1 "}Geld: {" Keybinder_Color2 "}$" Geldsack_Einnahmen " {" Keybinder_Color1 "}| XP: {" Keybinder_Color2 "}" XP_Einnahmen " {" Keybinder_Color1 "}| SÃ¤cke: {" Keybinder_Color2 "}" GeldsÃ¤cke )
+Iniwrite, 0, Main.ini,  Allgemein:, geldsaeckeaddieren
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Einnahme - Grund: Geldsack | Einnahme: ($%Lohn%/%ATM_Lohn2% EXP) `n, %A_Scriptdir%\Log.txt
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+Username := getUsername()
+return
+}
+If InStr(Chatlog, " * Bringe den Geldbeutel schnellstmÃ¶glichst zu einem Geldabgabepunkt.")
+{
+If(IsPlayerInRangeOfPoint(-1984.8475,-418.3796,35.5313,15))
+{
+Zone := "Foster Valley (Stadion)"
+FormatTime, TimeString,, HHmmss
+Zeit := StrSplit(timeString)
+Std := Zeit[1] "" Zeit[2]
+Min := Zeit[3] "" Zeit[4]
+Sek := Zeit[5] "" Zeit[6]
+Time_1_Min := Std * 60
+Time_1_Sec := Time_1_Min * 60
+Time_2_Sec := Min * 60
+Sekunden := Time_2_Sec + Time_1_Sec
+gesamt := Sekunden + 900 + Sek
+loaduptime := SecToHHMMSS(gesamt)
+imp_write("ATM_Zeiten", Zone, "zeit","" loaduptime "")
+ATMcount := imp_read("ATM_Zeiten", Zone, "Count")
+ATMcount++
+imp_write("ATM_Zeiten", Zone, "Count", "" ATMcount "")
+addChatMessage("{" Keybinder_Color1 "}ATM - {" Keybinder_Color2 "}" Zone "{" Keybinder_Color1 "} | Wieder bereit um {" Keybinder_Color2 "}" loaduptime)
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - ATM | NÃ¤chster Termin: %loaduptime% in gebiet %Zone%`n, %A_Scriptdir%\Log.txt
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+Username := getUsername()
+return
+}
+else If(!IsPlayerInRangeOfPoint(-1984.8475,-418.3796,35.5313,15))
+{
+Zone := getPlayerZone()
+FormatTime, TimeString,, HHmmss
+Zeit := StrSplit(timeString)
+Std := Zeit[1] "" Zeit[2]
+Min := Zeit[3] "" Zeit[4]
+Sek := Zeit[5] "" Zeit[6]
+Time_1_Min := Std * 60
+Time_1_Sec := Time_1_Min * 60
+Time_2_Sec := Min * 60
+Sekunden := Time_2_Sec + Time_1_Sec
+gesamt := Sekunden + 900 + Sek
+loaduptime := SecToHHMMSS(gesamt)
+imp_write("ATM_Zeiten", Zone, "zeit","" loaduptime "")
+ATMcount := imp_read("ATM_Zeiten", Zone, "Count")
+ATMcount++
+imp_write("ATM_Zeiten", Zone, "Count", "" ATMcount "")
+addChatMessage("{" Keybinder_Color1 "}ATM - {" Keybinder_Color2 "}" Zone "{" Keybinder_Color1 "} | Wieder bereit um {" Keybinder_Color2 "}" loaduptime)
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - ATM | NÃ¤chster Termin: %loaduptime% in gebiet %Zone%`n, %A_Scriptdir%\Log.txt
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+Username := getUsername()
+return
+}
+}
+If InStr(Chatlog, " [ INVENTAR ] Du hast ") && If InStr(Chatlog, " Drogen verloren.")
+{
+RegExMatch(Chatlog, " \[ INVENTAR \] Du hast (.*)g Drogen verloren\.",  Drogen)
+IniRead, Drogen_Verloren, Main.ini,  Verlust:, Drogen_Verloren
+Drogen_Verloren += Drogen1
+Iniwrite, %Drogen_Verloren%, Main.ini,  Verlust:, Drogen_Verloren
+inGeld := Drogen1 * 625
+IniRead, Drogen_Verloren_in_Geld, Main.ini,  Verlust:, Drogen_Verloren_in_Geld
+Drogen_Verloren_in_Geld += inGeld
+Iniwrite, %Drogen_Verloren_in_Geld%, Main.ini,  Verlust:, Drogen_Verloren_in_Geld
+addChatMessage("{" Keybinder_Color1 "}[{" Keybinder_Color2 "}Info{" Keybinder_Color1 "}] - {" Keybinder_Color1 "}Drogen verloren: {" Keybinder_Color2 "}" Drogen_Verloren "g {" Keybinder_Color1 "}| Wert: {" Keybinder_Color2 "}$" Drogen_Verloren_in_Geld "{" Keybinder_Color1 "}")
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Verlust - %Drogen1%g verloren `n, %A_Scriptdir%\Log.txt
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+Username := getUsername()
+}
+If InStr(Chatlog, " getÃ¶tet ( +1 EXP).")
+{
+RegExMatch(Chatlog, " \* Du hast (.*) getÃ¶tet \( +(.*) EXP\)\.", toter)
+Opfer := toter1
+IniRead, Kills, Main.ini,  Allgemein:, Kills
+Kills++
+Iniwrite, %Kills%, Main.ini,  Allgemein:, Kills
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Kill - Opfer: %Opfer%`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+}
+If InStr(Chatlog, "Anwalt David Boies bietet dir Ã¼berteuert eine Kaution fÃ¼r")
+{
+If(Auto_Anwalt == 1)
+{
+RegExMatch(Chatlog, "Anwalt David Boies bietet dir Ã¼berteuert eine Kaution fÃ¼r \$(.*) an\.", Boies)
+StringReplace, Anwalt_aus, Boies1, .,, A
+IniRead, Anwalt_Bis, Main.ini,  Allgemein:, Anwalt_Bis
+IniRead, Anwalt_Ausgaben, Main.ini,  Ausgaben:, Anwalt_Ausgaben
+Anwalt_Ausgaben += Anwalt_aus
+Iniwrite, %Anwalt_Ausgaben%, Main.ini,  Ausgaben:, Anwalt_Ausgaben
+If(Anwalt_Bis > Anwalt_aus)
+{
+sleep 5000
+SendChat("/Annehmen anwalt David Boies")
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Verlust - -$%Anwalt_aus% | Anwaltkosten! `n, %A_Scriptdir%\Log.txt
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Ausgabe - Grund: Anwalt | $%Anwalt_aus%`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+return
+}
+else
+{
+sleep 3000
+addChatMessage("{" Keybinder_Color1 "}Der Anwalt ist zuteuer!")
+addChatMessage("{" Keybinder_Color1 "}MÃ¶chtest du dennoch annehmen, DrÃ¼cke die {" Keybinder_Color2 "}# {" Keybinder_Color1 "}Taste!")
+Keywait, #, D T10
+IF !ERRORLEVEL
+{
+SendChat("/annehmen anwalt David Boies")
+}
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Verlust - -$%Anwalt_aus% | Anwaltkosten! `n, %A_Scriptdir%\Log.txt
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Ausgabe - Grund: Anwalt | $%Anwalt_aus%`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+}
+}
+}
+If InStr(Chatlog, " [ ROB ] Du hast $")
+{
+RegExMatch(Chatlog, " \[ ROB \] Du hast \$(.*) geraubt\.", Rob)
+StringReplace, gerobbt, Rob1, .,, A
+IniRead, Taschendieb_Einnahmen, Main.ini,  Jobs:, Taschendieb_Einnahmen
+Taschendieb_Einnahmen += gerobbt
+Iniwrite, %Taschendieb_Einnahmen%, Main.ini,  Jobs:, Taschendieb_Einnahmen
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Einnahme - Grund: Raub | $%gerobbt%`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+}
+If InStr(Chatlog, " [ ROB ] Du bist in das Haus eingebrochen.")
+{
+IniRead, Hrobs, Main.ini,  Crime:, Hrobs
+Hrobs++
+Iniwrite, %Hrobs%, Main.ini,  Crime:, Hrobs
+addChatMessage("{" Keybinder_Color1 "}[{" Keybinder_Color2 "}Info{" Keybinder_Color1 "}] - {" Keybinder_Color1 "}Du bist bereits in {" Keybinder_Color2 "}" Hrobs "{" Keybinder_Color1 "} GebÃ¤ude eingebrochen.")
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Statistik - Hausraub | Gesamt: %Hrobs%`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+}
+If InStr(Chatlog, "[ NAMECHANGE ] " getUsername() " hat sich in")
+{
+oldname := getusername()
+RegExMatch(Chatlog,"[ NAMECHANGE ] " getUsername() " hat sich in (.*) umbenannt.",Nameswitch)
+Username := getUsername()
+imp_write("Nutzer", Username, "Name", "" Nameswitch1 "")
+addChatMessage("{" Keybinder_Color1 "}Namechange wurde Ã¼bernommen.")
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\gametexts.txt
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Namechange | Von %oldname% zu %Nameswitch1%`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+sleep 3000
+}
+If InStr(Chatlog, "[ BANK ] Es wurden dir ") && If InStr(Chatlog, "Zinsen gutgeschrieben.")
+{
+RegExMatch(Chatlog, "\[ BANK \] Es wurden dir \$(.*) Zinsen gutgeschrieben.", Bank)
+StringReplace, Bank_zins, Bank1, .,, A
+IniRead, Zinsen, Main.ini,  Allgemein:, Zinsen
+Zinsen += Bank_zins
+Iniwrite, %Zinsen%, Main.ini,  Allgemein:, Zinsen
+addChatMessage("{" Keybinder_Color1 "}[{" Keybinder_Color2 "}Info{" Keybinder_Color1 "}] - {" Keybinder_Color1 "}Du hast bereits ${" Keybinder_Color2 "}" Zinsen "{" Keybinder_Color1 "} Zinsen erhalten.")
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Einnahme - Grund: Zinsen | +$%Bank_zins%`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+}
+If InStr(Chatlog, "Dir wurden") && If InStr(Chatlog, "Wanted(s) erlassen, aktuelle Wanteds:")
+{
+RegExMatch(Chatlog, "Dir wurden (.*) Wanted\(s\) erlassen\, aktuelle Wanteds\: (.*)", erlassen)
+Iniwrite, %erlassen2%, Main.ini,  Crime:, Wanteds
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Wantedlevel - | -%erlassen1% | WÂ´s: %erlassen2%`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+}
+If InStr(Chatlog, "Derzeitige Wantedstufe") && If InStr(Chatlog, "Verbrechen")
+{
+RegExMatch(Chatlog, "Verbrechen\: (.*)\. Derzeitige Wantedstufe\: (.*)", crime)
+Iniwrite, %Crime2%, Main.ini , Crime:, Wanteds
+If(crime1 == "Ladenraub")
+{
+If InStr(Countline, "\[ ROB \] Du hast \$(.*) geraubt\.",LRaub)
+StringReplace, Biz_Rob, LRaub1, .,, A
+IniRead, LRob_Einnahmen, Main.ini , Crime:, LRob_Einnahmen
+LRob_Einnahmen += Biz_Rob
+Iniwrite, %LRob_Einnahmen%, Main.ini , Crime:, LRob_Einnahmen
+IniRead, LRobs, Main.ini , Crime:, LRobs
+LRobs++
+Iniwrite, %LRobs%, Main.ini , Crime:, LRobs
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Statistik | Ladenraub | Gesamt: %Biz_Rob%`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+}
+else If(crime1 == "Transporterraub")
+{
+IniRead, TRobs, Main.ini , Crime:, TRobs
+TRobs++
+Iniwrite, %TRobs%, Main.ini , Crime:, TRobs
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Statistik | Transporter-Raub | Gesamt: %TRobs%`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+}
+else If(crime1 == "Angriff auf einen ATM")
+{
+IniRead, ATMRobs, Main.ini , Crime:, ATMRobs
+ATMRobs++
+Iniwrite, %ATMRobs%, Main.ini , Crime:, ATMRobs
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Statistik | ATM-Raub | Gesamt: %ATMRobs%`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+}
+else If(crime1 == "Ausrauben der Bank")
+{
+IniRead, BRobs, Main.ini , Crime:, BRobs
+BRobs++
+Iniwrite, %BRobs%, Main.ini , Crime:, BRobs
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Statistik | Bank-Raub | Gesamt: %BRobs%`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+}
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+}
+If InStr(Chatlog, "Du hast") && If InStr(Chatlog, "getÃ¶tet") && !InStr(gametext0, "GANGWARKILL")
+{
+RegExMatch(Chatlog, "Du hast (.*) getÃ¶tet\.", crime)
+IniRead, Killstreak, Main.ini , Allgemein:, Killstreak
+Killstreak++
+Iniwrite, %Killstreak%, Main.ini , Allgemein:, Killstreak
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+IniRead, Wanteds, Main.ini,  Crime:, Wanteds
+IniRead, Kills, Main.ini,  Allgemein:, Kills
+IniRead, Tode, Main.ini,  Allgemein:, Tode
+IniRead, Gang_KillMess , Main.ini, Messages:, Gang_KillMess
+oldlokalgz = %Gang_KillMess%
+KD := Kills / Tode
+StringTrimRight, Form_KD, KD, 4
+Gang_KillMess := RegExReplace(Gang_KillMess, "<Opfer>", "" toter1 "")
+Gang_KillMess := RegExReplace(Gang_KillMess, "<Streak>", "" KillStreak "")
+Gang_KillMess := RegExReplace(Gang_KillMess, "<wanteds>", "" crime2 "")
+Gang_KillMess := RegExReplace(Gang_KillMess, "<HP>", "" getPlayerHealth() "")
+Gang_KillMess := RegExReplace(Gang_KillMess, "<AR>", "" getPlayerArmor() "")
+Gang_KillMess := RegExReplace(Gang_KillMess, "<Geld>", "" getPlayerMoney() "")
+Gang_KillMess := RegExReplace(Gang_KillMess, "<Zone>", "" getPlayerZone() "")
+Gang_KillMess := RegExReplace(Gang_KillMess, "<City>", "" getPlayerCity() "")
+Gang_KillMess := RegExReplace(Gang_KillMess, "<Kills>", "" Kills "")
+Gang_KillMess := RegExReplace(Gang_KillMess, "<Tode>", "" Tode "")
+Gang_KillMess := RegExReplace(Gang_KillMess, "<KD>", "" Form_KD "")
+If(Frak_Robber_KMess == "1")
+{
+SendChat("/g " Gang_KillMess)
+sleep 1050
+}
+If(Lokal_Robber_KMess == "1")
+{
+SendChat(Gang_KillMess)
+}
+Iniwrite, %oldlokalgz% , Main.ini, Messages:, Gang_KillMess
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+Username := getUsername()
+}
+If InStr(gametext0, "GANGWARKILL") && If InStr(Chatlog, "getÃ¶tet ( +1 EXP).")
+{
+RegExMatch(Chatlog,"Du hast (.*) getÃ¶tet",GZDown)
+IniRead, Lokal_Robber_GangZoneMess , Main.ini, Checkboxen:, Lokal_Robber_GangZoneMess
+IniRead, Frak_Robber_GangZoneMess , Main.ini, Checkboxen:, Frak_Robber_GangZoneMess
+IniRead, GangZone_KillMess , Main.ini, Messages:, GangZone_KillMess
+OldGangzone = %GangZone_KillMess%
+IniRead, Killstreak, Main.ini , Allgemein:, Killstreak
+Killstreak++
+Iniwrite, %Killstreak%, Main.ini , Allgemein:, Killstreak
+IniRead, GZ_Kills, Main.ini , Allgemein:, GZ_Kills
+GZ_Kills++
+Iniwrite, %GZ_Kills%, Main.ini , Allgemein:, GZ_Kills
+IniRead, Wanteds, Main.ini,  Crime:, Wanteds
+IniRead, Kills, Main.ini,  Allgemein:, Kills
+IniRead, Tode, Main.ini,  Allgemein:, Tode
+Sterne := Wanteds
+Opfer := GZDown1
+KD := Kill / Tode
+StringTrimRight, Form_KD, KD, 4
+City := getPlayerCity()
+Zone := getPlayerZone()
+HP := getPlayerHealth()
+Armor := getPlayerArmor()
+Geld := getPlayerMoney()
+GangZone_KillMess := RegExReplace(GangZone_KillMess, "<Opfer>", "" Opfer "")
+GangZone_KillMess := RegExReplace(GangZone_KillMess, "<Streak>", "" KillStreak "")
+GangZone_KillMess := RegExReplace(GangZone_KillMess, "<wanteds>", "" Sterne "")
+GangZone_KillMess := RegExReplace(GangZone_KillMess, "<HP>", "" HP "")
+GangZone_KillMess := RegExReplace(GangZone_KillMess, "<AR>", "" Armor "")
+GangZone_KillMess := RegExReplace(GangZone_KillMess, "<Geld>", "" Geld "")
+GangZone_KillMess := RegExReplace(GangZone_KillMess, "<Zone>", "" Zone "")
+GangZone_KillMess := RegExReplace(GangZone_KillMess, "<City>", "" City "")
+GangZone_KillMess := RegExReplace(GangZone_KillMess, "<Kills>", "" Kills "")
+GangZone_KillMess := RegExReplace(GangZone_KillMess, "<GZKills>", "" GZ_Kills "")
+GangZone_KillMess := RegExReplace(GangZone_KillMess, "<Tode>", "" Tode "")
+GangZone_KillMess := RegExReplace(GangZone_KillMess, "<KD>", "" Form_KD "")
+If(Frak_Robber_GangZoneMess == "1")
+{
+SendChat("/g " GangZone_KillMess)
+sleep 1050
+}
+If(Lokal_Robber_GangZoneMess == "1")
+{
+SendChat(GangZone_KillMess)
+}
+Iniwrite, %OldGangzone% , Main.ini, Messages:, GangZone_KillMess
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\gametexts.txt
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+Username := getUsername()
+sleep 3000
+}
+If InStr(gametext0, "GANGWARPOINT")
+{
+IniRead, GZ_Point, Main.ini , Allgemein:, GZ_Point
+GZ_Point++
+Iniwrite, %GZ_Point%, Main.ini , Allgemein:, GZ_Point
+addChatMessage("{" Keybinder_Color1 "}Das war GangWarPoint Nr. {" Keybinder_Color2 "}" GZ_Point)
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Gangfight | CTF-Punkt geholt | Gesamt: %GZ_Point%`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\gametexts.txt
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+sleep 3000
+}
+Dialog := getDialogText()
+If InStr(Dialog, "Du mÃ¶chtest gerne BlÃ¼ten von mir kaufen?")
+{
+Sendinput 25{Enter}
+verballert := 625*25
+IniRead, Drogen_Ausgaben, Main.ini , Ausgaben:, Drogen_Ausgaben
+Drogen_Ausgaben += verballert
+Iniwrite, %Drogen_Ausgaben%, Main.ini , Ausgaben:, Drogen_Ausgaben
+IniRead, Drogen_Gekauft, Main.ini , Allgemein:, Drogen_Gekauft
+Drogen_Gekauft += 25
+Iniwrite, %Drogen_Gekauft%, Main.ini , Allgemein:, Drogen_Gekauft
+addChatMessage("{" Keybinder_Color1 "}Drogen gekauft {" Keybinder_Color2 "}" Drogen_Gekauft "g {" Keybinder_Color1 "}| Ausgabe gesamt: {" Keybinder_Color2 "}" Drogen_Ausgaben)
+Ausgabe =
+Send {Enter}
+Username := getUsername()
+sleep 10000
+}
+FileRead, LogVar, %A_Scriptdir%\Log.txt
+Log_Array := StrSplit(LogVar , "`n")
+LÃ¤nge := Log_Array.Length()
+eins := LÃ¤nge - 1
+zwei := LÃ¤nge - 2
+drei := LÃ¤nge - 3
+vier := LÃ¤nge - 4
+fÃ¼nf := LÃ¤nge - 5
+Sechs := LÃ¤nge - 6
+sieben := LÃ¤nge - 7
+acht := LÃ¤nge - 8
+neun := LÃ¤nge - 9
+TextSetString(Log_Ov, Log_Array[neun] "" Log_Array[acht] "`n" Log_Array[sieben] "`n" Log_Array[sechs] "`n" Log_Array[fÃ¼nf] "`n" Log_Array[vier] "`n" Log_Array[Drei] "`n" Log_Array[zwei] "`n" Log_Array[eins] "`n" Log_Array[lÃ¤nge])
+return
+Death:
+If(getPlayerHealth() == 0)
+{
+IniRead, Tode, Main.ini , Allgemein:, Tode
+Tode++
+Iniwrite, %Tode%, Main.ini , Allgemein:, Tode
+IniRead, Wanteds, Main.ini,  Crime:, Wanteds
+IniRead, Kills, Main.ini,  Allgemein:, Kills
+IniRead, Gang_DeathMess , Main.ini, Messages:, Gang_DeathMess
+olddeadmes = %Gang_DeathMess%
+Wanteds := Verbrechen2
+KD := Kills/Tode
+City := getPlayerCity()
+Zone := getPlayerZone()
+HP := getPlayerHealth()+getPlayerArmor()
+Carhp := getVehicleHealth()
+Money := getPlayerMoney()
+Gang_DeathMess := RegExReplace(Gang_DeathMess, "<Geld>", "" Money "")
+Gang_DeathMess := RegExReplace(Gang_DeathMess, "<Streak>", "" KillStreak "")
+Gang_DeathMess := RegExReplace(Gang_DeathMess, "<wanteds>", "" Wanteds "")
+Gang_DeathMess := RegExReplace(Gang_DeathMess, "<HP>", "" HP "")
+Gang_DeathMess := RegExReplace(Gang_DeathMess, "<Zone>", "" Zone "")
+Gang_DeathMess := RegExReplace(Gang_DeathMess, "<City>", "" City "")
+Gang_DeathMess := RegExReplace(Gang_DeathMess, "<Kills>", "" Kills "")
+Gang_DeathMess := RegExReplace(Gang_DeathMess, "<Tode>", "" Tode "")
+Gang_DeathMess := RegExReplace(Gang_DeathMess, "<KD>", "" KD "")
+If(Frak_Robber_DeadMess == "1")
+{
+SendChat("/g " Gang_DeathMess)
+}
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+Iniwrite, %olddeadmes% , Main.ini, Messages:, Gang_DeathMess
+Iniwrite, 0, Main.ini , Allgemein:, Killstreak
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Statistik | Tod | Gesamt: %Tode%`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+Sleep 10000
+}
+return
+Check_Channel:
+Keys := "29"
+IniRead, Sup_Kunde_Ticket_ID, Main.ini,  Kunde:, Sup_Kunde_Ticket_ID
+IniRead, Sup_Kunde, Main.ini, Kunde:, Sup_Kunde
+Loop, 5
+{
+Count := A_Index
+IniRead, Channel_%Count%_Kunde, Main.ini, Sup_Channels:, Channel_%Count%_Kunde
+Keys++
+hkey := Hotkey%Keys%
+If(Channel_%Count%_Kunde == "Nicht Besetzt")
+{
+IniRead, Sup_Kunde, Main.ini, Kunde:, Sup_Kunde
+Eintragen := Sup_Kunde
+Iniwrite, %Eintragen%, Main.ini, Sup_Channels:, Channel_%Count%_Kunde
+IniRead, Sup_Kunde_Ticket_ID, Main.ini, Kunde:, Sup_Kunde_Ticket_ID
+Eintragen_ID := Sup_Kunde_Ticket_ID
+Iniwrite, %Eintragen_ID%, Main.ini, Sup_Channels:, Channel_%Count%_Kunde_ID
+addChatMessage("{" Keybinder_Color2 "}" Sup_Kunde " {" Keybinder_Color1 "}wurde Channel {" Keybinder_Color2 "}Nr." Count " {" Keybinder_Color1 "}zugewiesen.")
+addChatMessage("{" Keybinder_Color1 "}Du kannst ihn per {" Keybinder_Color2 "}/C" Count "{" Keybinder_Color1 "} erreichen.")
+Break
+}
+sleep 50
+If(Loop == 5)
+{
+Break
+return
+}
+}
+return
+CreateOverlay:
+IniRead, Overlay_Status , Main.ini, Checkboxen:, Overlay_Status
+If(Overlay_Status == 0)
+{
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Overlay | Deaktiviert!`n, %A_Scriptdir%\Log.txt
+Return
+}
+else
+{
+IniRead, Mainy, Main.ini, Overlay:, Mainy
+IniRead, Mainx, Main.ini, Overlay:, Mainx
+IniRead, HPy, Main.ini, Overlay:, HPy
+IniRead, HPx, Main.ini, Overlay:, HPx
+IniRead, Zoney, Main.ini, Overlay:, Zoney
+IniRead, Zonex, Main.ini, Overlay:, Zonex
+IniRead, Logy, Main.ini, Overlay:, Logy
+IniRead, Logx, Main.ini, Overlay:, Logx
+IniRead, Adminy, Main.ini, Overlay:, Adminy
+IniRead, Adminx, Main.ini, Overlay:, Adminx
+Log_ov := TextCreate("Arial", 6, true, false, Logx, Logy, 0xFFFFFFFF, "", true, False)
+Main_Ov := TextCreate("Arial", 6, true, false, Mainx, Mainy, 0xFFFFFFFF, "", true, False)
+Admin_Ov := TextCreate("Arial", 6, true, false, Adminx, Adminy, 0xFFFFFFFF, "", true, False)
+Zone_OV := TextCreate("Arial", 6, true, false, Zonex, Zoney, 0xFFFFFFFF, "", true, False)
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Overlay | Wurde Erstellt`n, %A_Scriptdir%\Log.txt
+}
+return
+Overlay:
+IniRead, Overlay_Status , Main.ini, Checkboxen:, Overlay_Status
+If(Overlay_Status == 0)
+{
+Return
+}
+else
+{
+skin := getPlayerSkinId()
+waffe := getPlayerWeaponName()
+HP := getPlayerHealth()
+AR := getPlayerArmor()
+IniRead, Channel_1_Kunde, Main.ini, Sup_Channels:,Channel_1_Kunde
+IniRead, Channel_2_Kunde, Main.ini, Sup_Channels:,Channel_2_Kunde
+IniRead, Channel_3_Kunde, Main.ini, Sup_Channels:,Channel_3_Kunde
+IniRead, Channel_4_Kunde, Main.ini, Sup_Channels:,Channel_4_Kunde
+IniRead, Channel_5_Kunde, Main.ini, Sup_Channels:,Channel_5_Kunde
+IniRead, GZ_Point, Main.ini , Allgemein:, GZ_Point
+IniRead, Kills, Main.ini,  Allgemein:, Kills
+IniRead, Tode, Main.ini , Allgemein:, Tode
+IniRead, GZ_Kills, Main.ini , Allgemein:, GZ_Kills,0
+IniRead, GZ_Tode, Main.ini , Allgemein:, GZ_Tode,0
+IniRead, Killstreak, Main.ini , Allgemein:, Killstreak
+IniRead, Box_OV, Main.ini, Checkboxen:,Box_OV
+IniRead, Gang_Ov_Color1 , Main.ini, Farben:, Gang_Ov_Color1
+IniRead, Gang_Ov_Color2 , Main.ini, Farben:, Gang_Ov_Color2
+IniRead, Admin_Ov_Color1, Main.ini, Farben:,Admin_Ov_Color1
+IniRead, Admin_Ov_Color2, Main.ini, Farben:,Admin_Ov_Color2
+IniRead, Keybinder_Color1 , Main.ini, Farben:, Keybinder_Color1
+IniRead, Keybinder_Color2 , Main.ini, Farben:, Keybinder_Color2
+IfWinNotActive, GTA:SA:MP
+return
+Skin := getPlayerSkinId()
+if(Skin != "165" || Skin != "166" || Skin != "286" || Skin != "322699324" || Skin != "60" || Skin != "322699514" || Skin != "250" || Skin != "322699529" || Skin != "265" || Skin != "322699530" || Skin != "266" || Skin != "322699531" || Skin != "267" || Skin != "322699544" || Skin != "280" || Skin != "322699545" || Skin != "281" || Skin != "322699546" || Skin != "282" || Skin != "322699547" || Skin != "283" || Skin != "322699548" || Skin != "284" || Skin != "322699552" || Skin != "288" || Skin != "322699564" || Skin != "300" || Skin != "322699565" || Skin != "301" || Skin != "322699566" || Skin != "302" || Skin != "322699570" || Skin != "306" || Skin != "322699571" || Skin != "301" || Skin != "322699573" || Skin != "309" || Skin != "322699574" || Skin != "310" || Skin != "322699575" || Skin != "311")
+{
+TextSetString(Main_Ov,"{" Gang_Ov_Color1 "}HP: {" Gang_Ov_Color2 "}" getPlayerHealth() + GetPlayerArmor() "`n{" Gang_Ov_Color1 "}Kills: {" Gang_Ov_Color2 "}" Kills "{" Gang_Ov_Color1 "} | {" Gang_Ov_Color1 "}Tode: {" Gang_Ov_Color2 "}" Tode "`n{" Gang_Ov_Color1 "}Gz Kills:{" Gang_Ov_Color2 "} " GZ_Kills " {" Gang_Ov_Color1 "}| {" Gang_Ov_Color1 "}Gz Tode: {" Gang_Ov_Color2 "}" GZ_Tode "{" Gang_Ov_Color1 "}`nCTF-Punkte: {" Gang_Ov_Color2 "}" GZ_Point "`n{" Gang_Ov_Color1 "}Killstreak: {" Gang_Ov_Color2 "}" KillStreak  )
+TextSetString(Zone_OV,"{" Gang_Ov_Color1 "}Zone: {" Gang_Ov_Color2 "}" getPlayerZone() "`n{" Gang_Ov_Color1 "}City: {" Gang_Ov_Color2 "}" getPlayerCity())
+TextSetShown(Main_Ov, 1)
+TextSetShown(Zone_OV, 1)
+}
+If(Channel_1_Kunde != "Nicht Besetzt" || Channel_2_Kunde != "Nicht Besetzt" || Channel_3_Kunde != "Nicht Besetzt" || Channel_4_Kunde != "Nicht Besetzt" || Channel_5_Kunde != "Nicht Besetzt" || )
+{
+TextSetString(Admin_Ov,"{" Admin_Ov_Color1 "}`n#C1: {" Admin_Ov_Color2 "}" Channel_1_Kunde "{" Admin_Ov_Color1 "}`n#C2: {" Admin_Ov_Color2 "}" Channel_2_Kunde "{" Admin_Ov_Color1 "}`n#C3: {" Admin_Ov_Color2 "}" Channel_3_Kunde "{" Admin_Ov_Color1 "}`n#C4: {" Admin_Ov_Color2 "}" Channel_4_Kunde "{" Admin_Ov_Color1 "}`n#C5: {" Admin_Ov_Color2 "}" Channel_5_Kunde )
+TextSetShown(Admin_Ov, 1)
+}
+else
+{
+TextSetString(Admin_Ov,"")
+TextSetShown(Admin_Ov, 0)
+}
+}
+return
+Reload:
+Reload
+return
+Minimieren:
+Gui, Minimize
+Gui, Minimize
+return
+Move:
+PostMessage, 0xA1, 2,,, A
+Return
+Slideout:
+MsgBox, 4,, Bist du dir sicher dass du den GCT - Binder beenden willst?
+IfMsgBox Yes
+{
+ExitApp
+}
+else
+{
+Gui, Show
+}
+return
+forum:
+run, http://www.German-Crimetime.de
+return
+ucp:
+return
+server:
+RegRead GTA_SA_EXE, HKEY_CURRENT_USER, Software\SAMP, gta_sa_exe
+SplitPath, GTA_SA_EXE,, PFAD
+run, %PFAD%\samp.exe sv1.cops-robbers.de:7787, %PFAD%
+return
+ts:
+run, ts3server://ts.Cops-Robbers.de
+return
+Label32:
+If(IsInChat() == 1)
+return
+IniRead, Ladung_Prods_Truck, Main.ini, TruckStatus, Ladung_Prods_Truck
+SendChat("/Sellprods " Ladung_Prods_Truck)
+Loop
+{
+FileRead, Chatlog, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+If InStr(Chatlog, "Du hast ") && InStr(Chatlog, "Produkte an ") && InStr(Chatlog, "verkauft") && Lieferrant_Duty = 1
+{
+RegExMatch(Chatlog, "Du hast (.*) Produkte an (.*) fÃ¼r \$(.*) verkauft\.",Liefer_Lohn)
+StringReplace, pLohn, Liefer_Lohn3, .,, A
+Ladung_Rest := Liefer_Lohn1 - 100
+Iniwrite, %Ladung_Rest%, Main.ini, TruckStatus, Ladung_Prods_Truck
+IniRead, Prods_Einnahmen, Main.ini , Einnahmen:, Prods_Einnahmen
+Prods_Einnahmen += pLohn
+Iniwrite, %Prods_Einnahmen%, Main.ini , Einnahmen:, Prods_Einnahmen
+IniRead, Prods_Verkauft, Main.ini , Jobs:, Prods_Verkauft
+Prods_Verkauft += Liefer_Lohn1
+Iniwrite, %Prods_Verkauft%, Main.ini , Jobs:, Prods_Verkauft
+addChatMessage("{" Keybinder_Color1 "}[{" Keybinder_Color2 "}Info{" Keybinder_Color1 "}] - {" Keybinder_Color1 "}Geld: {" Keybinder_Color2 "}$" output1 " {" Keybinder_Color1 "}| Touren: {" Keybinder_Color2 "}" output2 )
+FileRead,log_Backup, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+Backup := log_Backup
+Filedelete, %A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog.txt
+FileAppEnd,`n%Backup%,%A_MyDocuments%\GTA San Andreas User Files\SAMP\Chatlog_backup.txt
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Einnahme - Grund: Lieferant | Ausgabe: ($%Lohn%/$%Lieferant_Einnahme%) | Prods: (%Liefer_Lohn1%/%Verkaufte_Prods%) `n, %A_Scriptdir%\Log.txt
+addChatMessage("{" Keybinder_Color1 "}Einnahme: ${" Keybinder_Color2 "}" Lohn " {" Keybinder_Color1 "}| Gesamt: ${" Keybinder_Color2 "}" Lieferant_Einnahme)
+Break
+return
+}
+}
+Username := getUsername()
+return
+:?:/Kcheck::
+Suspend Permit
+IniRead, Keybinder_Color1 , Main.ini, Farben:, Keybinder_Color1
+IniRead, Keybinder_Color2 , Main.ini, Farben:, Keybinder_Color2
+LÃ¤nge := "5"
+Loop % LÃ¤nge
+{
+IniRead, Channel_%A_Index%_Kunde, Main.ini, Sup_Channels:, Channel_%A_Index%_Kunde
+ID := getPlayerIDbyName(Channel_%A_Index%_Kunde)
+If(Channel_%A_Index%_Kunde = "Nicht Besetzt")
+{
+Anzahl_Kunden_Nicht_besetzt++
+addChatMessage("{" Keybinder_Color1 "}({" Keybinder_Color2 "}" A_Index "{" Keybinder_Color1 "}. Channel) ist " Channel_%A_Index%_Kunde ".")
+}
+If(ID = -1 && Channel_%A_Index%_Kunde != "Nicht Besetzt")
+{
+Anzahl_Kunden_besetzt++
+Con_Status := "{F80A0A}Offline"
+addChatMessage("{" Keybinder_Color1 "}({" Keybinder_Color2 "}" A_Index "{" Keybinder_Color1 "}. Channel) Name: {" Keybinder_Color2 "}" Channel_%A_Index%_Kunde "{" Keybinder_Color1 "}({" Keybinder_Color2 "}" ID "{" Keybinder_Color1 "}) | Status: " Con_Status )
+}
+If(ID == 1 && Channel_%A_Index%_Kunde != "Nicht Besetzt")
+{
+Anzahl_Kunden_besetzt++
+Con_Status := "{0AF80E}Online"
+addChatMessage("{" Keybinder_Color1 "}({" Keybinder_Color2 "}" A_Index "{" Keybinder_Color1 "}. Channel) Name: {" Keybinder_Color2 "}" Channel_%A_Index%_Kunde "{" Keybinder_Color1 "}({" Keybinder_Color2 "}" ID "{" Keybinder_Color1 "}) | Status: " Con_Status )
+}
+If(A_Index => LÃ¤nge)
+{
+addChatMessage("______| " Anzahl_Kunden_Nicht_besetzt " Channels Frei! | " Anzahl_Kunden_besetzt " User im Support!")
+Break
+}
+sleep 150
+}
+Suspend Off
+return
+:?:/goback::
+Suspend Permit
+IniRead, LastpositionX, Main.ini, Lastposition:, LastpositionX
+IniRead, LastpositionY, Main.ini, Lastposition:, LastpositionY
+IniRead, LastpositionZ, Main.ini, Lastposition:, LastpositionZ
+SendChat("/gotocoords " LastpositionX " " LastpositionY " " LastpositionZ)
+Suspend off
+return
+:?:/log::
+Suspend Permit
+SendInput {end}+{home}{Del}{Esc}
+TextSetShown(Log_Ov, 1)
+addChatMessage("{" Keybinder_Color1 "}Log wurde aktiviert.")
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Log | Aktiviert`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+suspend off
+return
+:?:/logoff::
+Suspend Permit
+SendInput {end}+{home}{Del}{Esc}
+TextSetShown(Log_Ov, 0)
+addChatMessage("{" Keybinder_Color1 "}Log wurde deaktiviert.")
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Log | Deaktiviert`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+suspend off
+return
+:?:/Moveinfo::
+Suspend Permit
+SendInput {end}+{home}{Del}{Esc}
+addchatmessage("{FFFFFF}Um die Overlays zuverschieben schreibe{2CC559} /Mainmove {FFFFFF}fÃ¼r das Overlay der Kills etc.")
+addchatmessage("{FFFFFF}Um die Overlays zuverschieben schreibe{2CC559} /Mapmove {FFFFFF}fÃ¼r das Overlay der Stadt/Zone etc.")
+addchatmessage("{FFFFFF}Um die Overlays zuverschieben schreibe{2CC559} /Logmove {FFFFFF}fÃ¼r das Overlay des Logs.")
+addchatmessage("{FFFFFF}Um die gwÃ¼nschte Overlay Position zu speichern nutze {2CC559}/ovsave")
+addchatmessage("{FFFFFF}Um die Overlays zu zerstÃ¶ren und neu zu erstellen nutze {2CC559}/desov")
+Username := getUsername()
+suspend off
+return
+:?:/Mainmove::
+Suspend Permit
+SendInput {end}+{home}{Del}{Esc}
+Sendinput {enter}
+Move := 1
+MainMove := 1
+addChatMessage("{" Keybinder_Color2 "}Main {" Keybinder_Color1 "}Overlay kann jetzt verschoben werden.")
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Overlay | Main Overlay | Positionierung gestartet!`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+suspend off
+return
+:?:/Mapmove::
+Suspend Permit
+SendInput {end}+{home}{Del}{Esc}
+Sendinput {enter}
+Move := 1
+MapMove := 1
+addChatMessage("{" Keybinder_Color2 "}Map {" Keybinder_Color1 "}Overlay kann jetzt verschoben werden.")
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Overlay | Map Overlay | Positionierung gestartet!`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+suspend off
+return
+:?:/Logmove::
+Suspend Permit
+SendInput {end}+{home}{Del}{Esc}
+Sendinput {enter}
+Move := 1
+LogMove := 1
+addChatMessage("{" Keybinder_Color2 "}Log {" Keybinder_Color1 "}Overlay kann jetzt verschoben werden.")
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Overlay | Log Overlay | Positionierung gestartet!`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+suspend off
+return
+:?:/Amove::
+Suspend Permit
+SendInput {end}+{home}{Del}{Esc}
+Sendinput {enter}
+Move := 1
+AMove := 1
+addChatMessage("{" Keybinder_Color2 "}Admin {" Keybinder_Color1 "}Overlay kann jetzt verschoben werden.")
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Overlay | Admin Overlay | Positionierung gestartet!`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+Iniwrite, Test1, Main.ini, Sup_Channels:,Channel_1_Kunde
+Iniwrite, Test2, Main.ini, Sup_Channels:,Channel_2_Kunde
+Iniwrite, Test3, Main.ini, Sup_Channels:,Channel_3_Kunde
+Iniwrite, Test4, Main.ini, Sup_Channels:,Channel_4_Kunde
+Iniwrite, Test5, Main.ini, Sup_Channels:,Channel_5_Kunde
+suspend off
+return
+!up::
+If(MainMove == 1)
+{
+Mainy--
+IniWrite, %Mainy%, Main.ini, Overlay:, Mainy
+TextSetPos(Main_OV, Mainx, Mainy)
+}
+If(MapMove == 1)
+{
+Zoney--
+IniWrite, %Zoney%, Main.ini, Overlay:, Zoney
+TextSetPos(Zone_OV, Zonex, Zoney)
+}
+If(LogMove == 1)
+{
+Logy--
+IniWrite, %Logy%, Main.ini, Overlay:, Logy
+TextSetPos(Log_OV, Logx, Logy)
+}
+If(AMove == 1)
+{
+Adminy--
+IniWrite, %Adminy%, Main.ini, Overlay:, Adminy
+TextSetPos(Admin_Ov, Adminx, Adminy)
+}
+return
+!down::
+If(MainMove == 1)
+{
+Mainy++
+IniWrite, %Mainy%, Main.ini, Overlay:, Mainy
+TextSetPos(Main_OV, Mainx, Mainy)
+}
+If(MapMove == 1)
+{
+Zoney++
+IniWrite, %Zoney%, Main.ini, Overlay:, Zoney
+TextSetPos(Zone_OV, Zonex, Zoney)
+}
+If(LogMove == 1)
+{
+Logy++
+IniWrite, %Logy%, Main.ini, Overlay:, Logy
+TextSetPos(Log_OV, Logx, Logy)
+}
+If(AMove == 1)
+{
+Adminy++
+IniWrite, %Adminy%, Main.ini, Overlay:, Adminy
+TextSetPos(Admin_Ov, Adminx, Adminy)
+}
+return
+!Left::
+If(MainMove == 1)
+{
+Mainx--
+IniWrite, %Mainx%, Main.ini, Overlay:, Mainx
+TextSetPos(Main_OV, Mainx, Mainy)
+}
+If(MapMove == 1)
+{
+Zonex--
+IniWrite, %Zonex%, Main.ini, Overlay:, Zonex
+TextSetPos(Zone_OV, Zonex, Zoney)
+}
+If(LogMove == 1)
+{
+Logx--
+IniWrite, %Logx%, Main.ini, Overlay:, Logx
+TextSetPos(Log_OV, Logx, Logy)
+}
+If(AMove == 1)
+{
+Adminx--
+IniWrite, %Adminx%, Main.ini, Overlay:, Adminx
+TextSetPos(Admin_Ov, Adminx, Adminy)
+}
+return
+!right::
+If(MainMove == 1)
+{
+Mainx++
+IniWrite, %Mainx%, Main.ini, Overlay:, Mainx
+TextSetPos(Main_OV, Mainx, Mainy)
+}
+else If(MapMove == 1)
+{
+Zonex++
+IniWrite, %Zonex%, Main.ini, Overlay:, Zonex
+TextSetPos(Zone_OV, Zonex, Zoney)
+}
+else If(LogMove == 1)
+{
+Logx++
+IniWrite, %Logx%, Main.ini, Overlay:, Logx
+TextSetPos(Log_OV, Logx, Logy)
+}
+else If(AMove == 1)
+{
+Adminx++
+IniWrite, %Adminx%, Main.ini, Overlay:, Adminx
+TextSetPos(Admin_Ov, Adminx, Adminy)
+}
+return
+:?:/ovsave::
+Suspend Permit
+Sendinput {enter}
+If(Move == 1)
+{
+If(Mainmove == 1)
+{
+MainMove := 0
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Main Overlay Position gespeichert | X: %Mainx% Y: %Mainy%`n, %A_Scriptdir%\Log.txt
+addChatMessage("{" Keybinder_Color1 "}Main Overlay Position wurde gespeichert!")
+return
+}
+If(Logmove == 1)
+{
+LogMove := 0
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Log Overlay Position gespeichert | X: %Logx% Y: %Logy%`n, %A_Scriptdir%\Log.txt
+addChatMessage("{" Keybinder_Color1 "}Log Overlay Position wurde gespeichert!")
+return
+}
+If(MapMove == 1)
+{
+MapMove := 0
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Map Overlay Position gespeichert | X: %Zonex% Y: %Zoney%`n, %A_Scriptdir%\Log.txt
+addChatMessage("{" Keybinder_Color1 "}Map Overlay Position wurde gespeichert!")
+return
+}
+If(AMove == 1)
+{
+AMove := 0
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Admin Overlay Position gespeichert | X: %Adminx% Y: %Adminy%`n, %A_Scriptdir%\Log.txt
+addChatMessage("{" Keybinder_Color1 "}Admin Overlay Position wurde gespeichert!")
+Iniwrite, Nicht Besetzt, Main.ini, Sup_Channels:,Channel_1_Kunde
+Iniwrite, Nicht Besetzt, Main.ini, Sup_Channels:,Channel_2_Kunde
+Iniwrite, Nicht Besetzt, Main.ini, Sup_Channels:,Channel_3_Kunde
+Iniwrite, Nicht Besetzt, Main.ini, Sup_Channels:,Channel_4_Kunde
+Iniwrite, Nicht Besetzt, Main.ini, Sup_Channels:,Channel_5_Kunde
+return
+}
+Move := 0
+}
+Username := getUsername()
+suspend off
+return
+:?:/Desov::
+Suspend Permit
+Sendinput {enter}
+DestroyallVisual()
+addChatMessage("{" Keybinder_Color1 "}Overlay zerstÃ¶rt und neu erstellt!")
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Overlay wurde Neugeladen`n, %A_Scriptdir%\Log.txt
+Username := getUsername()
+goto CreateOverlay
+suspend off
+return
+~Space::
+If(isPlayerDriver() == 0 or isInChat() == 1 or Laufscript == 0)
+return
+Loop,
+{
+If !GetKeyState("Space", "p")
+break
+SendInput {Space down}
+sleep, 25
+SendInput {Space up}
+sleep, 40
+}
+return
+:?:/c1::
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Admin_Sup_Hi, Main.ini, Messages:,Admin_Sup_Hi, Guten Tag wie kann ich dir weiterhelfen?
+IniRead, Admin_Sup_wkt, Main.ini, Messages:,Admin_Sup_wkt, Was kann ich fÃ¼r dich tun?
+IniRead, Admin_Sup_nd, Main.ini, Messages:,Admin_Sup_nd, Bist du noch da?
+IniRead, Admin_Sup_bye, Main.ini, Messages:,Admin_Sup_bye, Ich WÃ¼nsche dir noch viel SpaÃŸ!
+IniRead, Channel_1_Kunde, Main.ini, Sup_Channels:, Channel_1_Kunde
+IniRead, Channel_1_Kunde_ID, Main.ini, Sup_Channels:, Channel_1_Kunde_ID
+If(Channel_1_Kunde == "Nicht Besetzt")
+{
+addChatMessage("{" Keybinder_Color1 "}Channel 1 ist nicht besetzt!")
+return
+}
+else
+{
+addChatMessage("{" Keybinder_Color1 "}Kunde: " Channel_1_Kunde " | 1 = Hi | 2 = Antworten | 3 = Weitere Fragen?")
+addChatMessage("{" Keybinder_Color1 "}Kunde: " Channel_1_Kunde " | 4 = Noch da? | 5 = goto | 6 = Ciao | 7 = Release")
+Loop
+{
+KeyWait, 1, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Admin_Sup_Hi, Main.ini, Messages:,Admin_Sup_Hi, Guten Tag wie kann ich dir weiterhelfen?
+IniRead, Admin_Sup_wkt, Main.ini, Messages:,Admin_Sup_wkt, Was kann ich fÃ¼r dich tun?
+SendChat("/Sup " Channel_1_Kunde_ID " Guten Tag, " Channel_1_Kunde)
+SendChat("/Sup " Channel_1_Kunde_ID " " Admin_Sup_wkt)
+Break
+}
+KeyWait, 2, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Channel_1_Kunde_ID, Main.ini, Sup_Channels:, Channel_1_Kunde_ID
+Sendinput t/Sup %Channel_1_Kunde_ID%{Space}
+Break
+}
+KeyWait, 3, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Channel_1_Kunde_ID, Main.ini, Sup_Channels:, Channel_1_Kunde_ID
+Iniread, Admin_Sup_nwf, Main.ini, Messages:,Admin_Sup_nwf, Hast du noch weitere Fragen?
+SendChat("/Sup " Channel_1_Kunde_ID " " Admin_Sup_nwf)
+Break
+}
+KeyWait, 4, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Channel_1_Kunde_ID, Main.ini, Sup_Channels:, Channel_1_Kunde_ID
+IniRead, Admin_Sup_nd, Main.ini, Messages:,Admin_Sup_nd, Bist du noch da?
+SendChat("/Sup " Channel_1_Kunde_ID " " Admin_Sup_nd)
+Break
+}
+KeyWait, 5, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+Ppos := getCoordinates()
+X := Ppos[1]
+Y := Ppos[2]
+Z := Ppos[3]
+IniWrite, %X%, Main.ini, Lastposition:, LastpositionX
+IniWrite, %Y%, Main.ini, Lastposition:, LastpositionY
+IniWrite, %Z%, Main.ini, Lastposition:, LastpositionZ
+X =
+Y =
+Z =
+SendChat("/goto " Channel_1_Kunde)
+Break
+}
+KeyWait, 6, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Channel_1_Kunde_ID, Main.ini, Sup_Channels:, Channel_1_Kunde_ID
+IniRead, Admin_Sup_bye, Main.ini, Messages:,Admin_Sup_bye, Ich WÃ¼nsche dir noch viel SpaÃŸ!
+SendChat("/Sup " Channel_1_Kunde_ID " " Admin_Sup_bye)
+SendChat("/ct " Channel_1_Kunde_ID)
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_1_Kunde
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_1_Kunde_ID
+Break
+}
+KeyWait, 7, D T0.02
+If !ErrorLevel
+{
+IniRead, Channel_1_Kunde_ID, Main.ini, Sup_Channels:, Channel_1_Kunde_ID
+IniRead, Admin_Sup_bye, Main.ini, Messages:,Admin_Sup_bye, Ich WÃ¼nsche dir noch viel SpaÃŸ!
+SendInput, tGrund:{Space}
+Input, ReGrund, V I M, {Enter}
+SendInput {end}+{home}{Del}{Esc}
+SendChat("/Sup " Channel_1_Kunde_ID " Dein Ticket wurde soeben weitergeleitet.")
+SendChat("/Sup " Channel_1_Kunde_ID " " Admin_Sup_bye)
+SendChat("/Releasesup " Channel_1_Kunde_ID " " ReGrund)
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_1_Kunde
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_1_Kunde_ID
+Break
+}
+}
+}
+Suspend off
+return
+:?:/c2::
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Admin_Sup_Hi, Main.ini, Messages:,Admin_Sup_Hi, Guten Tag wie kann ich dir weiterhelfen?
+IniRead, Admin_Sup_wkt, Main.ini, Messages:,Admin_Sup_wkt, Was kann ich fÃ¼r dich tun?
+IniRead, Admin_Sup_nd, Main.ini, Messages:,Admin_Sup_nd, Bist du noch da?
+IniRead, Admin_Sup_bye, Main.ini, Messages:,Admin_Sup_bye, Ich WÃ¼nsche dir noch viel SpaÃŸ!
+IniRead, Channel_2_Kunde, Main.ini, Sup_Channels:, Channel_2_Kunde
+IniRead, Channel_2_Kunde_ID, Main.ini, Sup_Channels:, Channel_2_Kunde_ID
+If(Channel_2_Kunde == "Nicht Besetzt")
+{
+addChatMessage("{" Keybinder_Color1 "}Channel 2 ist nicht besetzt!")
+return
+}
+else
+{
+addChatMessage("{" Keybinder_Color1 "}Kunde: " Channel_2_Kunde " | 1 = Hi | 2 = Antworten | 3 = Weitere Fragen?")
+addChatMessage("{" Keybinder_Color1 "}Kunde: " Channel_2_Kunde " | 4 = Noch da? | 5 = goto | 6 = Ciao | 7 = Release")
+Loop
+{
+KeyWait, 1, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Admin_Sup_Hi, Main.ini, Messages:,Admin_Sup_Hi, Guten Tag wie kann ich dir weiterhelfen?
+IniRead, Admin_Sup_wkt, Main.ini, Messages:,Admin_Sup_wkt, Was kann ich fÃ¼r dich tun?
+SendChat("/Sup " Channel_2_Kunde_ID " Guten Tag, " Channel_2_Kunde)
+SendChat("/Sup " Channel_2_Kunde_ID " " Admin_Sup_wkt)
+Break
+}
+KeyWait, 2, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Channel_2_Kunde_ID, Main.ini, Sup_Channels:, Channel_2_Kunde_ID
+Sendinput t/Sup %Channel_2_Kunde_ID%{Space}
+Break
+}
+KeyWait, 3, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Channel_2_Kunde_ID, Main.ini, Sup_Channels:, Channel_2_Kunde_ID
+Iniread, Admin_Sup_nwf, Main.ini, Messages:,Admin_Sup_nwf, Hast du noch weitere Fragen?
+Sendchat("/Sup " Channel_2_Kunde_ID " " Admin_Sup_nwf)
+Break
+}
+KeyWait, 4, D T0.02
+If !ErrorLevel
+{
+IniRead, Channel_2_Kunde_ID, Main.ini, Sup_Channels:, Channel_2_Kunde_ID
+IniRead, Admin_Sup_nd, Main.ini, Messages:,Admin_Sup_nd, Bist du noch da?
+Sendchat("/Sup " Channel_2_Kunde_ID " " Admin_Sup_nd)
+Break
+}
+KeyWait, 5, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+Ppos := getCoordinates()
+X := Ppos[1]
+Y := Ppos[2]
+Z := Ppos[3]
+IniWrite, %X%, Main.ini, Lastposition:, LastpositionX
+IniWrite, %Y%, Main.ini, Lastposition:, LastpositionY
+IniWrite, %Z%, Main.ini, Lastposition:, LastpositionZ
+X =
+Y =
+Z =
+SendChat("/goto " Channel_2_Kunde)
+Break
+}
+KeyWait, 6, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Channel_2_Kunde_ID, Main.ini, Sup_Channels:, Channel_2_Kunde_ID
+IniRead, Admin_Sup_bye, Main.ini, Messages:,Admin_Sup_bye, Ich WÃ¼nsche dir noch viel SpaÃŸ!
+Sendchat("/Sup " Channel_2_Kunde_ID " " Admin_Sup_bye)
+SendChat("/ct " Channel_2_Kunde_ID)
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_2_Kunde
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_2_Kunde_ID
+Break
+}
+KeyWait, 7, D T0.02
+If !ErrorLevel
+{
+IniRead, Channel_2_Kunde_ID, Main.ini, Sup_Channels:, Channel_2_Kunde_ID
+IniRead, Admin_Sup_bye, Main.ini, Messages:,Admin_Sup_bye, Ich WÃ¼nsche dir noch viel SpaÃŸ!
+SendInput, tGrund:{Space}
+Input, ReGrund, V I M, {Enter}
+SendInput {end}+{home}{Del}{Esc}
+SendChat("/Sup " Channel_2_Kunde_ID " Dein Ticket wurde soeben weitergeleitet.")
+SendChat("/Sup " Channel_2_Kunde_ID " " Admin_Sup_bye)
+SendChat("/Releasesup " Channel_2_Kunde_ID " " ReGrund)
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_2_Kunde
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_2_Kunde_ID
+Break
+}
+}
+}
+Suspend off
+return
+:?:/c3::
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Admin_Sup_Hi, Main.ini, Messages:,Admin_Sup_Hi, Guten Tag wie kann ich dir weiterhelfen?
+IniRead, Admin_Sup_wkt, Main.ini, Messages:,Admin_Sup_wkt, Was kann ich fÃ¼r dich tun?
+IniRead, Admin_Sup_nd, Main.ini, Messages:,Admin_Sup_nd, Bist du noch da?
+IniRead, Admin_Sup_bye, Main.ini, Messages:,Admin_Sup_bye, Ich WÃ¼nsche dir noch viel SpaÃŸ!
+IniRead, Channel_3_Kunde, Main.ini, Sup_Channels:, Channel_3_Kunde
+IniRead, Channel_3_Kunde_ID, Main.ini, Sup_Channels:, Channel_3_Kunde_ID
+If(Channel_3_Kunde == "Nicht Besetzt")
+{
+addChatMessage("{" Keybinder_Color1 "}Channel 3 ist nicht besetzt!")
+return
+}
+else
+{
+addChatMessage("{" Keybinder_Color1 "}Kunde: " Channel_3_Kunde " | 1 = Hi | 2 = Antworten | 3 = Weitere Fragen?")
+addChatMessage("{" Keybinder_Color1 "}Kunde: " Channel_3_Kunde " | 4 = Noch da? | 5 = goto | 6 = Ciao | 7 = Release")
+Loop
+{
+KeyWait, 1, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Admin_Sup_Hi, Main.ini, Messages:,Admin_Sup_Hi, Guten Tag wie kann ich dir weiterhelfen?
+IniRead, Admin_Sup_wkt, Main.ini, Messages:,Admin_Sup_wkt, Was kann ich fÃ¼r dich tun?
+SendChat("/Sup " Channel_3_Kunde_ID " Guten Tag, " Channel_3_Kunde)
+SendChat("/Sup " Channel_3_Kunde_ID " " Admin_Sup_wkt)
+Break
+}
+KeyWait, 2, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Channel_3_Kunde_ID, Main.ini, Sup_Channels:, Channel_3_Kunde_ID
+Sendinput t/Sup %Channel_3_Kunde_ID%{Space}
+Break
+}
+KeyWait, 3, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Channel_3_Kunde_ID, Main.ini, Sup_Channels:, Channel_3_Kunde_ID
+Iniread, Admin_Sup_nwf, Main.ini, Messages:,Admin_Sup_nwf, Hast du noch weitere Fragen?
+Sendchat("/Sup " Channel_3_Kunde_ID " " Admin_Sup_nwf)
+Break
+}
+KeyWait, 4, D T0.02
+If !ErrorLevel
+{
+IniRead, Channel_3_Kunde_ID, Main.ini, Sup_Channels:, Channel_3_Kunde_ID
+IniRead, Admin_Sup_nd, Main.ini, Messages:,Admin_Sup_nd, Bist du noch da?
+Sendchat("/Sup " Channel_3_Kunde_ID " " Admin_Sup_nd)
+Break
+}
+KeyWait, 5, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+Ppos := getCoordinates()
+X := Ppos[1]
+Y := Ppos[2]
+Z := Ppos[3]
+IniWrite, %X%, Main.ini, Lastposition:, LastpositionX
+IniWrite, %Y%, Main.ini, Lastposition:, LastpositionY
+IniWrite, %Z%, Main.ini, Lastposition:, LastpositionZ
+X =
+Y =
+Z =
+SendChat("/goto " Channel_3_Kunde)
+Break
+}
+KeyWait, 6, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Channel_3_Kunde_ID, Main.ini, Sup_Channels:, Channel_3_Kunde_ID
+IniRead, Admin_Sup_bye, Main.ini, Messages:,Admin_Sup_bye, Ich WÃ¼nsche dir noch viel SpaÃŸ!
+Sendchat("/Sup " Channel_3_Kunde_ID " " Admin_Sup_bye)
+SendChat("/ct " Channel_3_Kunde_ID)
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_3_Kunde
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_3_Kunde_ID
+Break
+}
+KeyWait, 7, D T0.02
+If !ErrorLevel
+{
+IniRead, Channel_3_Kunde_ID, Main.ini, Sup_Channels:, Channel_3_Kunde_ID
+IniRead, Admin_Sup_bye, Main.ini, Messages:,Admin_Sup_bye, Ich WÃ¼nsche dir noch viel SpaÃŸ!
+SendInput, tGrund:{Space}
+Input, ReGrund, V I M, {Enter}
+SendInput {end}+{home}{Del}{Esc}
+SendChat("/Sup " Channel_3_Kunde_ID " Dein Ticket wurde soeben weitergeleitet.")
+SendChat("/Sup " Channel_3_Kunde_ID " " Admin_Sup_bye)
+SendChat("/Releasesup " Channel_3_Kunde_ID " " ReGrund)
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_3_Kunde
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_3_Kunde_ID
+Break
+}
+}
+}
+Suspend off
+return
+:?:/c4::
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Admin_Sup_Hi, Main.ini, Messages:,Admin_Sup_Hi, Guten Tag wie kann ich dir weiterhelfen?
+IniRead, Admin_Sup_wkt, Main.ini, Messages:,Admin_Sup_wkt, Was kann ich fÃ¼r dich tun?
+IniRead, Admin_Sup_nd, Main.ini, Messages:,Admin_Sup_nd, Bist du noch da?
+IniRead, Admin_Sup_bye, Main.ini, Messages:,Admin_Sup_bye, Ich WÃ¼nsche dir noch viel SpaÃŸ!
+IniRead, Channel_4_Kunde, Main.ini, Sup_Channels:, Channel_4_Kunde
+IniRead, Channel_4_Kunde_ID, Main.ini, Sup_Channels:, Channel_4_Kunde_ID
+If(Channel_4_Kunde == "Nicht Besetzt")
+{
+addChatMessage("{" Keybinder_Color1 "}Channel 4 ist nicht besetzt!")
+return
+}
+else
+{
+addChatMessage("{" Keybinder_Color1 "}Kunde: " Channel_4_Kunde " | 1 = Hi | 2 = Antworten | 3 = Weitere Fragen?")
+addChatMessage("{" Keybinder_Color1 "}Kunde: " Channel_4_Kunde " | 4 = Noch da? | 5 = goto | 6 = Ciao | 7 = Release")
+Loop
+{
+KeyWait, 1, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Admin_Sup_Hi, Main.ini, Messages:,Admin_Sup_Hi, Guten Tag wie kann ich dir weiterhelfen?
+IniRead, Admin_Sup_wkt, Main.ini, Messages:,Admin_Sup_wkt, Was kann ich fÃ¼r dich tun?
+SendChat("/Sup " Channel_4_Kunde_ID " Guten Tag, " Channel_4_Kunde)
+SendChat("/Sup " Channel_4_Kunde_ID " " Admin_Sup_wkt)
+Break
+}
+KeyWait, 2, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Channel_4_Kunde_ID, Main.ini, Sup_Channels:, Channel_4_Kunde_ID
+Sendinput t/Sup %Channel_4_Kunde_ID%{Space}
+Break
+}
+KeyWait, 3, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Channel_4_Kunde_ID, Main.ini, Sup_Channels:, Channel_4_Kunde_ID
+Iniread, Admin_Sup_nwf, Main.ini, Messages:,Admin_Sup_nwf, Hast du noch weitere Fragen?
+Sendchat("/Sup " Channel_4_Kunde_ID " " Admin_Sup_nwf)
+Break
+}
+KeyWait, 4, D T0.02
+If !ErrorLevel
+{
+IniRead, Channel_4_Kunde_ID, Main.ini, Sup_Channels:, Channel_4_Kunde_ID
+IniRead, Admin_Sup_nd, Main.ini, Messages:,Admin_Sup_nd, Bist du noch da?
+Sendchat("/Sup " Channel_4_Kunde_ID " " Admin_Sup_nd)
+Break
+}
+KeyWait, 5, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+Ppos := getCoordinates()
+X := Ppos[1]
+Y := Ppos[2]
+Z := Ppos[3]
+IniWrite, %X%, Main.ini, Lastposition:, LastpositionX
+IniWrite, %Y%, Main.ini, Lastposition:, LastpositionY
+IniWrite, %Z%, Main.ini, Lastposition:, LastpositionZ
+X =
+Y =
+Z =
+SendChat("/goto " Channel_4_Kunde)
+Break
+}
+KeyWait, 6, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Channel_4_Kunde_ID, Main.ini, Sup_Channels:, Channel_4_Kunde_ID
+IniRead, Admin_Sup_bye, Main.ini, Messages:,Admin_Sup_bye, Ich WÃ¼nsche dir noch viel SpaÃŸ!
+Sendchat("/Sup " Channel_4_Kunde_ID " " Admin_Sup_bye)
+SendChat("/ct " Channel_4_Kunde_ID)
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_4_Kunde
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_4_Kunde_ID
+Break
+}
+KeyWait, 7, D T0.02
+If !ErrorLevel
+{
+IniRead, Channel_4_Kunde_ID, Main.ini, Sup_Channels:, Channel_4_Kunde_ID
+IniRead, Admin_Sup_bye, Main.ini, Messages:,Admin_Sup_bye, Ich WÃ¼nsche dir noch viel SpaÃŸ!
+SendInput, tGrund:{Space}
+Input, ReGrund, V I M, {Enter}
+SendInput {end}+{home}{Del}{Esc}
+SendChat("/Sup " Channel_4_Kunde_ID " Dein Ticket wurde soeben weitergeleitet.")
+SendChat("/Sup " Channel_4_Kunde_ID " " Admin_Sup_bye)
+SendChat("/Releasesup " Channel_4_Kunde_ID " " ReGrund)
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_4_Kunde
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_4_Kunde_ID
+Break
+}
+}
+}
+Suspend off
+return
+:?:/c5::
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Admin_Sup_Hi, Main.ini, Messages:,Admin_Sup_Hi, Guten Tag wie kann ich dir weiterhelfen?
+IniRead, Admin_Sup_wkt, Main.ini, Messages:,Admin_Sup_wkt, Was kann ich fÃ¼r dich tun?
+IniRead, Admin_Sup_nd, Main.ini, Messages:,Admin_Sup_nd, Bist du noch da?
+IniRead, Admin_Sup_bye, Main.ini, Messages:,Admin_Sup_bye, Ich WÃ¼nsche dir noch viel SpaÃŸ!
+IniRead, Channel_5_Kunde, Main.ini, Sup_Channels:, Channel_5_Kunde
+IniRead, Channel_5_Kunde_ID, Main.ini, Sup_Channels:, Channel_5_Kunde_ID
+If(Channel_5_Kunde == "Nicht Besetzt")
+{
+addChatMessage("{" Keybinder_Color1 "}Channel 5 ist nicht besetzt!")
+return
+}
+else
+{
+addChatMessage("{" Keybinder_Color1 "}Kunde: " Channel_5_Kunde " | 1 = Hi | 2 = Antworten | 3 = Weitere Fragen?")
+addChatMessage("{" Keybinder_Color1 "}Kunde: " Channel_5_Kunde " | 4 = Noch da? | 5 = goto | 6 = Ciao | 7 = Release")
+Loop
+{
+KeyWait, 1, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Admin_Sup_Hi, Main.ini, Messages:,Admin_Sup_Hi, Guten Tag wie kann ich dir weiterhelfen?
+IniRead, Admin_Sup_wkt, Main.ini, Messages:,Admin_Sup_wkt, Was kann ich fÃ¼r dich tun?
+SendChat("/Sup " Channel_5_Kunde_ID " Guten Tag, " Channel_5_Kunde)
+SendChat("/Sup " Channel_5_Kunde_ID " " Admin_Sup_wkt)
+Break
+}
+KeyWait, 2, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Channel_5_Kunde_ID, Main.ini, Sup_Channels:, Channel_5_Kunde_ID
+Sendinput t/Sup %Channel_5_Kunde_ID%{Space}
+Break
+}
+KeyWait, 3, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Channel_5_Kunde_ID, Main.ini, Sup_Channels:, Channel_5_Kunde_ID
+Iniread, Admin_Sup_nwf, Main.ini, Messages:,Admin_Sup_nwf, Hast du noch weitere Fragen?
+Sendchat("/Sup " Channel_5_Kunde_ID " " Admin_Sup_nwf)
+Break
+}
+KeyWait, 4, D T0.02
+If !ErrorLevel
+{
+IniRead, Channel_5_Kunde_ID, Main.ini, Sup_Channels:, Channel_5_Kunde_ID
+IniRead, Admin_Sup_nd, Main.ini, Messages:,Admin_Sup_nd, Bist du noch da?
+Sendchat("/Sup " Channel_5_Kunde_ID " " Admin_Sup_nd)
+Break
+}
+KeyWait, 5, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+Ppos := getCoordinates()
+X := Ppos[1]
+Y := Ppos[2]
+Z := Ppos[3]
+IniWrite, %X%, Main.ini, Lastposition:, LastpositionX
+IniWrite, %Y%, Main.ini, Lastposition:, LastpositionY
+IniWrite, %Z%, Main.ini, Lastposition:, LastpositionZ
+X =
+Y =
+Z =
+SendChat("/goto " Channel_5_Kunde)
+Break
+}
+KeyWait, 6, D T0.02
+If !ErrorLevel
+{
+SendInput {end}+{home}{Del}{Esc}
+IniRead, Channel_5_Kunde_ID, Main.ini, Sup_Channels:, Channel_5_Kunde_ID
+IniRead, Admin_Sup_bye, Main.ini, Messages:,Admin_Sup_bye, Ich WÃ¼nsche dir noch viel SpaÃŸ!
+Sendchat("/Sup " Channel_5_Kunde_ID " " Admin_Sup_bye)
+SendChat("/ct " Channel_5_Kunde_ID)
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_5_Kunde
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_5_Kunde_ID
+Break
+}
+KeyWait, 7, D T0.02
+If !ErrorLevel
+{
+IniRead, Channel_5_Kunde_ID, Main.ini, Sup_Channels:, Channel_5_Kunde_ID
+IniRead, Admin_Sup_bye, Main.ini, Messages:,Admin_Sup_bye, Ich WÃ¼nsche dir noch viel SpaÃŸ!
+SendInput, tGrund:{Space}
+Input, ReGrund, V I M, {Enter}
+SendInput {end}+{home}{Del}{Esc}
+SendChat("/Sup " Channel_5_Kunde_ID " Dein Ticket wurde soeben weitergeleitet.")
+SendChat("/Sup " Channel_5_Kunde_ID " " Admin_Sup_bye)
+SendChat("/Releasesup " Channel_5_Kunde_ID " " ReGrund)
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_5_Kunde
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_5_Kunde_ID
+Break
+}
+}
+}
+Suspend off
+return
+:?:/cc1::
+Suspend Permit
+SendInput {end}+{home}{Del}{Esc}
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_1_Kunde
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_1_Kunde_ID
+Suspend off
+return
+:?:/cc2::
+Suspend Permit
+SendInput {end}+{home}{Del}{Esc}
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_2_Kunde
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_2_Kunde_ID
+Suspend off
+return
+:?:/cc3::
+Suspend Permit
+SendInput {end}+{home}{Del}{Esc}
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_3_Kunde
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_3_Kunde_ID
+Suspend off
+return
+:?:/cc4::
+Suspend Permit
+SendInput {end}+{home}{Del}{Esc}
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_4_Kunde
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_4_Kunde_ID
+Suspend off
+return
+:?:/cc5::
+Suspend Permit
+SendInput {end}+{home}{Del}{Esc}
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_5_Kunde
+IniWrite, Nicht Besetzt, Main.ini, Sup_Channels:, Channel_5_Kunde_ID
+Suspend off
+return
+:?:/ousers::
+Suspend Permit
+Admin_rank := imp_read("IsAdmin", Username, "rang")
+If(Admin_rank != "" || Admin_rank != 0)
+{
+Iniread, Keybinder_Color1 , Main.ini, Farben:, Keybinder_Color1
+Iniread, Keybinder_Color2 , Main.ini, Farben:, Keybinder_Color2
+Online := imp_read_where("Nutzer", "Online", "1", "Name")
+Online_User := StrSplit(Online , ",")
+Loop % Online_User.Length()
+{
+addChatMessage("{" Keybinder_Color2 "}" Online_User[A_Index] "{" Keybinder_Color1 "} ist Online")
+}
+addChatMessage("{" Keybinder_Color1 "}Ende Erreicht es sind {" Keybinder_Color2 "}" Online_User.MaxIndex() "{" Keybinder_Color1 "} Online")
+}
+Suspend off
+return
+:?:/lk::
+Suspend Permit
+Admin_rank := imp_read("IsAdmin", Username, "rang")
+If(Admin_rank != "" || Admin_rank != 0)
+SendInput, ID:{Space}
+Input, ID, V I M, {Enter}
+SendInput {end}+{home}{Del}{Esc}
+SendChat("/lastkills " ID)
+victim := getPlayernamebyID(ID)
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Admin | Lastkills von %victim% aufgerufen.`n, %A_Scriptdir%\Log.txt
+Suspend off
+return
+:?:/ld::
+Suspend Permit
+Admin_rank := imp_read("IsAdmin", Username, "rang")
+If(Admin_rank != "" || Admin_rank != 0)
+SendInput, ID:{Space}
+Input, ID, V I M, {Enter}
+SendInput {end}+{home}{Del}{Esc}
+SendChat("/lastdeath " ID)
+victim := getPlayernamebyID(ID)
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Admin | Lastdeaths von %victim% aufgerufen.`n, %A_Scriptdir%\Log.txt
+Suspend off
+return
+:?:/lbel::
+Suspend Permit
+Admin_rank := imp_read("IsAdmin", Username, "rang")
+If(Admin_rank != "" || Admin_rank != 0)
+SendInput, ID:{Space}
+Input, ID, V I M, {Enter}
+SendInput {end}+{home}{Del}{Esc}
+SendChat("/Mute " ID " 5 Leichte Beleidigung")
+victim := getPlayernamebyID(ID)
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Admin | %victim% wurde gemutet wegen Leichter Beleidigung fÃ¼r 5 Min.`n, %A_Scriptdir%\Log.txt
+Suspend off
+return
+:?:/mbel::
+Suspend Permit
+Admin_rank := imp_read("IsAdmin", Username, "rang")
+If(Admin_rank != "" || Admin_rank != 0)
+SendInput, ID:{Space}
+Input, ID, V I M, {Enter}
+SendInput {end}+{home}{Del}{Esc}
+SendChat("/Mute " ID " 50 Mittlere Beleidigung")
+victim := getPlayernamebyID(ID)
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Admin | %victim% wurde gemutet wegen Mittlerer Beleidigung fÃ¼r 50 Min.`n, %A_Scriptdir%\Log.txt
+Suspend off
+return
+:?:/sbel::
+Suspend Permit
+Admin_rank := imp_read("IsAdmin", Username, "rang")
+If(Admin_rank != "" || Admin_rank != 0)
+SendInput, ID:{Space}
+Input, ID, V I M, {Enter}
+SendInput {end}+{home}{Del}{Esc}
+SendChat("/Mute " ID " 120 Schwere Beleidigung")
+victim := getPlayernamebyID(ID)
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Admin | %victim% wurde gemutet wegen Schwerer Beleidigung fÃ¼r 50 Min.`n, %A_Scriptdir%\Log.txt
+Suspend off
+return
+:?:/surf::
+Suspend Permit
+Admin_rank := imp_read("IsAdmin", Username, "rang")
+If(Admin_rank != "" || Admin_rank != 0)
+SendInput, ID:{Space}
+Input, ID, V I M, {Enter}
+SendInput {end}+{home}{Del}{Esc}
+SendChat("/kwarn " ID " Carsurf")
+sleep 200
+SendChat("/Slap " ID)
+victim := getPlayernamebyID(ID)
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Admin | %victim% wurde geslapt + Kwarn!`n, %A_Scriptdir%\Log.txt
+Suspend off
+return
+:?:/unm::
+Suspend Permit
+Admin_rank := imp_read("IsAdmin", Username, "rang")
+If(Admin_rank != "" || Admin_rank != 0)
+SendInput, ID:{Space}
+Input, ID, V I M, {Enter}
+SendInput {end}+{home}{Del}{Esc}
+SendChat("/Mute " ID " 0 0")
+victim := getPlayernamebyID(ID)
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Admin | %victim% wurde Entmutet`n, %A_Scriptdir%\Log.txt
+Suspend off
+return
+:?:/fsup::
+Suspend Permit
+Admin_rank := imp_read("IsAdmin", Username, "rang")
+If(Admin_rank != "" || Admin_rank != 0)
+SendInput, ID:{Space}
+Input, ID, V I M, {Enter}
+SendInput {end}+{home}{Del}{Esc}
+SendChat("/forcesup " ID)
+victim := getPlayernamebyID(ID)
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Admin | Mit %victim% wurde ein Ticket erzwungen.`n, %A_Scriptdir%\Log.txt
+Suspend off
+return
+:?:/fr::
+Suspend Permit
+Admin_rank := imp_read("IsAdmin", Username, "rang")
+If(Admin_rank != "" || Admin_rank != 0)
+SendInput, ID:{Space}
+Input, ID, V I M, {Enter}
+SendInput {end}+{home}{Del}{Esc}
+SendChat("/freeze" ID)
+victim := getPlayernamebyID(ID)
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Admin | %victim% wurde gefreezt.`n, %A_Scriptdir%\Log.txt
+Suspend off
+return
+:?:/ufr::
+Suspend Permit
+Admin_rank := imp_read("IsAdmin", Username, "rang")
+If(Admin_rank != "" || Admin_rank != 0)
+SendInput, ID:{Space}
+Input, ID, V I M, {Enter}
+SendInput {end}+{home}{Del}{Esc}
+SendChat("/unfreeze" ID)
+victim := getPlayernamebyID(ID)
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Admin | %victim% wurde Entfreezt.`n, %A_Scriptdir%\Log.txt
+Suspend off
+return
+:?:/clc::
+Suspend Permit
+Admin_rank := imp_read("IsAdmin", Username, "rang")
+If(Admin_rank != "" || Admin_rank != 0)
+SendChat("/Clearchat")
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Admin | Der Chat wurde gecleared.`n, %A_Scriptdir%\Log.txt
+Suspend off
+return
+:?:/cad::
+Suspend Permit
+Admin_rank := imp_read("IsAdmin", Username, "rang")
+If(Admin_rank != "" || Admin_rank != 0)
+SendChat("/Clearad")
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Admin | Die Werbung wurde gelÃ¶scht.`n, %A_Scriptdir%\Log.txt
+Suspend off
+return
+:?:/multi::
+Suspend Permit
+Admin_rank := imp_read("IsAdmin", Username, "rang")
+If(Admin_rank != "" || Admin_rank != 0)
+SendInput, ID:{Space}
+Input, ID, V I M, {Enter}
+SendInput {end}+{home}{Del}{Esc}
+SendChat("/checkmultiacc" ID)
+victim := getPlayernamebyID(ID)
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Admin | %victim% wurde auf Multi AccÂ´s geprÃ¼ft.`n, %A_Scriptdir%\Log.txt
+Suspend off
+return
+:?:/probs::
+Suspend Permit
+SendChat("/o Bei Fragen oder Problemen | /Sup [Text] oder /help")
+sleep 100
+SendChat("/o Cheater, Hacker oder Bugs entdeckt | /a [Text]")
+Suspend off
+return
+:?:/oon::
+Suspend Permit
+SendChat("/o In wenigen Sekunden Ã¶ffnet der /O Chat.")
+SendChat("/o Bei Flame oder Beleidigungen | 1 Std. Mute!")
+SendChat("/otog")
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Admin | O-Chat geÃ¶ffnet.`n, %A_Scriptdir%\Log.txt
+Suspend off
+return
+:?:/ooff::
+Suspend Permit
+SendChat("/o Der /O Chat wird nun wieder geschlossen!")
+SendChat("/otog")
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Admin | O-Chat geschlossen.`n, %A_Scriptdir%\Log.txt
+Suspend off
+return
+:?:/reall::
+Suspend Permit
+SendChat("/respawnvehs -1 -1 1")
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Admin | Fahrzeug Respawn.`n, %A_Scriptdir%\Log.txt
+Suspend off
+return
+:?:/amk::
+Suspend Permit
+Admin_rank := imp_read("IsAdmin", Username, "rang")
+If(Admin_rank != "" || Admin_rank != 0)
+SendInput, ID:{Space}
+Input, ID, V I M, {Enter}
+SendInput {end}+{home}{Del}{Esc}
+SendChat("/Mute " ID " 70 AMK")
+victim := getPlayernamebyID(ID)
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Admin | %victim% wurde 70 Min. wegen AMK gemutet.`n, %A_Scriptdir%\Log.txt
+Suspend off
+return
+:?:/setkills::
+Suspend Permit
+Sendinput, Kills:{space}
+Input, Kills,V I M,{enter}
+SendInput t{end}+{home}{esc}
+Sendinput t{del}{enter}
+if Kills is not number
+{
+Sleep, 200
+Addchatmessage("{" Keybinder_Color1 "}Bitte gebe eine gÃ¼ltige {" Keybinder_Color2 "}Zahl {" Keybinder_Color1 "}ein!")
+return
+}else{
+Addchatmessage("{" Keybinder_Color1 "}Kills auf: {" Keybinder_Color2 "}" Kills " {" Keybinder_Color1 "}geÃ¤ndert!")
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Settings | Kills wurden auf %Kills% gesetzt.`n, %A_Scriptdir%\Log.txt
+Iniwrite, %Kills%, Main.ini, Allgemein:, Kills
+}
+Username := getUsername()
+return
+:?:/settode::
+Suspend Permit
+Sendinput, Tode:{space}
+Input, Tode,V I M,{enter}
+SendInput t{end}+{home}{esc}
+Sendinput t{del}{enter}
+if Tode is not number
+{
+Sleep, 200
+Addchatmessage("{" Keybinder_Color1 "}Bitte gebe eine gÃ¼ltige {" Keybinder_Color2 "}Zahl {" Keybinder_Color1 "}ein!")
+return
+}else{
+Addchatmessage("{" Keybinder_Color1 "}Tode auf: {" Keybinder_Color2 "}" Tode " {" Keybinder_Color1 "}geÃ¤ndert!")
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Settings | Tode wurden auf %Tode% gesetzt.`n, %A_Scriptdir%\Log.txt
+Iniwrite, %Tode%, Main.ini, Allgemein:, Tode
+}
+Username := getUsername()
+return
+Gametextinject:
+If ProcessExist("gta_sa.exe")
+{
+Sleep 5000
+if(!DllCall("Gametext.dll\Load")){
+FileAppend , %A_Hour%:%A_Min%:%A_Sec% - Gametext.dll wurde nicht geladen. Keybinder Neustarten!`n, %A_Scriptdir%\Log.txt
+}
+Settimer, Gametextinject, off
+}
+return
