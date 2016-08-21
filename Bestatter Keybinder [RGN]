@@ -1,0 +1,1084 @@
+IfNotExist, %A_MyDocuments%\Bestatter-Keybinder
+{
+    FileCreateDir, %A_MyDocuments%\Bestatter-Keybinder
+	 TrayTip, Info!, Ordner Erstellt! `n(Haupt-Ordner)`n%A_MyDocuments%\Bestatter-Keybinder , 3, 1
+}
+IfNotExist, %A_ScriptDir%\dx9_overlay.dll
+{
+    UrlDownloadToFile, https://www.dropbox.com/s/uk8k25d1c59rrqa/dx9_overlay.dll?dl=1, %A_ScriptDir%\dx9_overlay.dll
+	 TrayTip, Info!, dx9_overlay.dll wurde Runtergeladen!, 3, 1
+}
+IfNotExist, %A_ScriptDir%\libmysql.dll
+{
+    UrlDownloadToFile, https://www.dropbox.com/s/g7idvirby8ffj1n/libmysql.dll?dl=1, %A_ScriptDir%\libmysql.dll
+	 TrayTip, Info!, libmysql.dll wurde Runtergeladen!, 3, 1
+}
+IfNotExist, %A_ScriptDir%\RGN-Stats-API.dll
+{
+    UrlDownloadToFile, https://www.dropbox.com/s/02lp53q3dt6hzb4/RGN-Stats-API.dll?dl=1, %A_ScriptDir%\RGN-Stats-API.dll
+	 TrayTip, Info!, RGN-Stats-API.dll wurde Runtergeladen!, 3, 1
+}
+IfNotExist, %A_ScriptDir%\Bilder
+{
+	 FileCreateDir, %A_ScriptDir%\Bilder
+	 TrayTip, Info!, Ordner Erstellt! `n(Bilder) , 3, 1
+}
+IfNotExist, %A_ScriptDir%\Bilder\Minimize.png
+{
+	 UrlDownloadToFile, https://www.dropbox.com/s/rm8gdyi2ub2l3z3/Minimize.png?dl=1, %A_ScriptDir%\Bilder\Minimize.png
+	 TrayTip, Info!, Minimize.png wurde Runtergeladen!, 3, 1
+}
+IfNotExist, %A_ScriptDir%\Bilder\Bilder\Close.png
+{
+	 UrlDownloadToFile, https://www.dropbox.com/s/0ru6aml1umetwal/Close.png?dl=1, %A_ScriptDir%\Bilder\Close.png
+	 TrayTip, Info!, Close.png wurde Runtergeladen!, 3, 1
+}
+IfNotExist, %A_ScriptDir%\Bilder\Overlay.png
+{
+	 UrlDownloadToFile, https://www.dropbox.com/s/hkvpyr2bbdypc9e/Overlay.png?dl=1, %A_ScriptDir%\Bilder\Overlay.png
+	 TrayTip, Info!, Overlay.png wurde Runtergeladen!, 3, 1
+}
+IfNotExist, %A_ScriptDir%\Bilder\Optionen.png
+{
+	 UrlDownloadToFile, https://www.dropbox.com/s/p9q208eljy2fm8l/Optionen.png?dl=1, %A_ScriptDir%\Bilder\Optionen.png
+	 TrayTip, Info!, Optionen.png wurde Runtergeladen!, 3, 1
+}
+IfNotExist, %A_ScriptDir%\Bilder\Save.png
+{
+	 UrlDownloadToFile, https://www.dropbox.com/s/e1to8jesdmo9dru/Save.png?dl=1, %A_ScriptDir%\Bilder\Save.png
+	 TrayTip, Info!, Save.png wurde Runtergeladen!, 3, 1
+}
+IfNotExist, %A_ScriptDir%\Bilder\Tastenbelegung.png
+{
+	 UrlDownloadToFile, https://www.dropbox.com/s/167j8x0xk1vxo90/Tastenbelegung.png?dl=1, %A_ScriptDir%\Bilder\Tastenbelegung.png
+	 TrayTip, Info!, Tastenbelegung.png wurde Runtergeladen!, 3, 1
+}
+FileDelete, %A_ScriptDir%\Loader.exe
+
+iniwrite, Keiner, Bestatter.ini, Leiche:, Toter
+iniwrite, "", Bestatter.ini, Leiche:, Toterort
+iniwrite, "", Bestatter.ini, Leiche:, ToterID
+IniWrite, 0, Bestatter.ini, Zeit:, TimeSek
+IniWrite, 0, Bestatter.ini, Zeit: , TimeMin
+
+iniRead, Leichengesamt, Bestatter.ini, Leiche:, Leichengesamt
+iniRead, Drogenfund, Bestatter.ini, Leiche:, Drogenfund
+iniwrite, 0, Bestatter.ini, Leiche:, lastmats
+iniRead, Gewinn, Bestatter.ini, Leiche:, Gewinn
+IniRead, Orte, Bestatter.ini, Boxen:, Orte
+IniRead, MeMes, Bestatter.ini, Boxen:, MeMes
+
+#Persistent
+#UseHook
+#NoEnv
+#SingleInstance force
+#IfWinActive, GTA:SA:MP
+#include AHPi_0.3.7_R1.AHK
+#Include Overlay.ahk
+#Include Stats.ahk
+
+SetBatchLines -1
+ListLines, off
+
+Duty := 0
+Grenze := 2147483647
+
+SetParam("use_window", "1")
+SetParam("window", "GTA:SA:MP")
+
+gosub CreateGUI
+gosub CreateOverlay
+gosub UpdateFunktion
+
+global text_overlay:=-1
+Version := 0.1.2
+
+
+return
+
+CreateGui:
+Gui, +LastFound -caption
+Gui, Show, x141 y118 h345 w485, Bestatter-Binder %Version%
+Gui, Font, s7 bold
+Gui, Color, Gray
+Gui, Add, Text, x20 y20 w200 h80 +Backgroundtrans Cwhite , Bestatter Schleife mit /duty Starten, zum beenden /offduty.`nOverlay: Das Overlay wird mit /ovon aktiviert, Deaktiviert wird das Overlay mit /desov.`nWichtig: Sollte das Overlay mal nicht Starten! Erst /desov, dann /ovon Ingame.
+;Gui, Add, Text, x20 y+10 w250 h120 +Backgroundtrans Cwhite , Befehle:`n/rank, /showall, /addme, /robtime, /money, /(off)duty, /skill`n/ovon, /desov, /ovmove, /ovsave
+Gui, Add, CheckBox, x20 y+10 h10  Cwhite +Backgroundtrans  vorte Checked%orte%, -
+Gui, Add, Text, x+2 h15 Cwhite +Backgroundtrans, Markante Punkte im Overlay Zeigen?
+Gui, Add, CheckBox, x20 y+3 h10 Cwhite +Backgroundtrans  vMeMes Checked%MeMes%, -
+Gui, Add, Text, x+2 h15 +Backgroundtrans Cwhite , /me Nachrichten Aktivieren?
+Gui, Add, Picture, x20 y180  gsave, %A_ScriptDir%\Bilder\Save.png
+Gui, Add, Picture, x20 y+3  gsave, %A_ScriptDir%\Bilder\Overlay.png
+Gui, Add, Picture, x20 y+3  gsave, %A_ScriptDir%\Bilder\Tastenbelegung.png
+Gui, Add, Picture, x20 y+3  gsave, %A_ScriptDir%\Bilder\Optionen.png
+ini = %A_ScriptDir%\Bestatter.ini
+ IfNotExist, %ini%
+ {
+     Loop, 15
+     {
+         IniWrite, %A_Space%, %ini%, Texte, Text%A_Index%
+     }
+ }
+
+ Loop, 15
+ {
+ IniRead, Hotkey%A_Index%, %ini%, Hotkeys, Hotkey%A_Index%
+ IniRead, Text%A_Index%, %ini%, Texte, Text%A_Index%
+ }
+ gosub, Hotkeydefine
+
+ Gui, Add, Hotkey, x230 y45 w70 h15 vHotkey1 , %Hotkey1%
+ Gui, Add, Hotkey, x230 y+2 w70 h15 vHotkey2 , %Hotkey2%
+ Gui, Add, Hotkey, x230 y+2 w70 h15 vHotkey3 , %Hotkey3%
+ Gui, Add, Hotkey, x230 y+2 w70 h15 vHotkey4 , %Hotkey4%
+ Gui, Add, Hotkey, x230 y+2 w70 h15 vHotkey5 , %Hotkey5%
+ Gui, Add, Hotkey, x230 y+2 w70 h15 vHotkey6 , %Hotkey6%
+ Gui, Add, Hotkey, x230 y+2 w70 h15 vHotkey7 , %Hotkey7%
+ Gui, Add, Hotkey, x230 y+2 w70 h15 vHotkey8 , %Hotkey8%
+ Gui, Add, Hotkey, x230 y+2 w70 h15 vHotkey9 , %Hotkey9%
+ Gui, Add, Hotkey, x230 y+2 w70 h15 vHotkey10 , %Hotkey10%
+ Gui, Add, Hotkey, x230 y+2 w70 h15 vHotkey11 , %Hotkey11%
+ Gui, Add, Hotkey, x230 y+2 w70 h15 vHotkey12 , %Hotkey12%
+ Gui, Add, Hotkey, x230 y+2 w70 h15 vHotkey13 , %Hotkey13%
+ Gui, Add, Hotkey, x230 y+2 w70 h15 vHotkey14 , %Hotkey14%
+ Gui, Add, Hotkey, x230 y+2 w70 h15 vHotkey15 , %Hotkey15%
+
+ Gui, Add, Edit, x305 y45 w160 h15 vText1, %Text1%
+ Gui, Add, Edit, x305 y+2 w160 h15 vText2, %Text2%
+ Gui, Add, Edit, x305 y+2 w160 h15 vText3, %Text3%
+ Gui, Add, Edit, x305 y+2 w160 h15 vText4, %Text4%
+ Gui, Add, Edit, x305 y+2 w160 h15 vText5, %Text5%
+ Gui, Add, Edit, x305 y+2 w160 h15 vText6, %Text6%
+ Gui, Add, Edit, x305 y+2 w160 h15 vText7, %Text7%
+ Gui, Add, Edit, x305 y+2 w160 h15 vText8, %Text8%
+ Gui, Add, Edit, x305 y+2 w160 h15 vText9, %Text9%
+ Gui, Add, Edit, x305 y+2 w160 h15 vText10, %Text10%
+ Gui, Add, Edit, x305 y+2 w160 h15 vText11, %Text11%
+ Gui, Add, Edit, x305 y+2 w160 h15 vText12, %Text12%
+ Gui, Add, Text, x305 y+2 w160 h15 cWhite +Backgroundtrans , /Not Afk
+ Gui, Add, Text, x305 y+2 w160 h15 cWhite +Backgroundtrans , /ReserveCar
+ Gui, Add, Text, x305 y+2 w160 h15 cWhite +Backgroundtrans , /Take Corpse
+ 
+Gui, Font, s6 cBlack, Verdana
+Gui, Add, Text, x345 y15 Cwhite +backgroundtrans gMove vMove, [Move]
+Gui, Add, Text, x+1 y15 Cwhite +BackgroundTrans gReload vReload, [Reload]
+Gui, Add, Picture, x+1 y15 +backgroundtrans gMinimieren vMinimieren, %A_ScriptDir%\Bilder\Minimize.png
+Gui, Add, Picture, x+1 y15 +backgroundtrans gSlideout vSlideout, %A_ScriptDir%\Bilder\Close.png
+Random , NachrichtdesTages, 1, 6
+1 := "MOTD: Derzeit werden Member gesucht für eine Bestatter Organisation!`nMeldet euch interesse bei Renz_Sherman."
+2 := "MOTD: Herzlich Willkommen! Vielen Dank für die nutzung des Keybinders."
+3 := "MOTD: Solltest du Fehler Finden, melde es bitte umgehend Renz_Sherman."
+4 := "MOTD: Eine empfehlenswerte Stelle zum gammeln auf Leichen ist gegenüber vom Zip(Ls) "
+5 := "MOTD: Eine empfehlenswerte Stelle zum gammeln auf Leichen ist in der Nähe vom ZiviSpawn(Ls) "
+6 := "MOTD: Achtet auf B-Robs o. Tresor-Robs, da gibt es immer viele Tote mit Drogen ect. dabei!"
+Gui, Add, Text, x20 y310 w430 Cwhite +BackgroundTrans ,% %NachrichtdesTages% 
+Gui, Add, Picture, x0 y0 h345 w485 ,%A_ScriptDir%\Bilder\Bestatter.png
+ return
+ 
+Save:
+Gui, Submit, nohide
+Iniwrite, %orte%, Bestatter.ini, Boxen:, Orte
+Iniwrite, %MeMes%, Bestatter.ini, Boxen:, MeMes
+Gui, 1: Submit, NoHide
+Loop, 15 {
+HHotkey := Hotkey%A_Index%
+IniWrite, %HHotkey%, %ini%, Hotkeys, Hotkey%A_Index%
+HTexte := Text%A_Index%
+IniWrite, %HTexte%, %ini%, Texte, Text%A_Index%
+}
+gosub, Hotkeydefine
+Reload
+return
+
+Hotkeydefine:
+ Loop, 15
+ {
+ HHotkey := Hotkey%A_Index%
+ Hotkey, ~%HHotkey%, Label%A_Index%, UseErrorlevel
+ }
+return
+
+ Label1:
+If(IsInChat())
+return
+ SendChat(Text1)
+sleep 1050
+return
+
+ Label2:
+If(IsInChat())
+return
+ SendChat(Text2)
+sleep 1050
+return
+
+ Label3:
+If(IsInChat())
+return
+ SendChat(Text3)
+sleep 1050
+return
+
+ Label4:
+If(IsInChat())
+return
+ SendChat(Text4)
+sleep 1050
+return
+
+ Label5:
+If(IsInChat())
+return
+ SendChat(Text5)
+sleep 1050
+return
+
+ Label6:
+If(IsInChat())
+return
+ SendChat(Text6)
+sleep 1050
+return
+
+ Label7:
+If(IsInChat())
+return
+ SendChat(Text7)
+sleep 1050
+return
+
+ Label8:
+If(IsInChat())
+return
+ SendChat(Text8)
+sleep 1050
+return
+
+ Label9:
+If(IsInChat())
+return
+ SendChat(Text9)
+sleep 1050
+return
+
+ Label10:
+If(IsInChat())
+return
+ SendChat(Text10)
+sleep 1050
+return
+
+ Label11:
+If(IsInChat())
+return
+ SendChat(Text11)
+sleep 1050
+return
+
+ Label12:
+If(IsInChat())
+return
+SendChat(Text12)
+sleep 1050
+return
+
+ Label13:
+If(IsInChat())
+return
+Sendinput t/notafk {Space}
+sleep 1050
+return
+
+ Label14:
+If(IsInChat())
+return
+ SendChat("/reservecar")
+	 Sleep 1500
+ Sendinput {enter}
+	 Sleep 1500
+ Sendinput {enter}
+	 sleep 100
+ addchatmessage("{FFFFFF}Fahrzeug: {00E5E9}"getVehicleModelName() "{FFFFFF} Reserviert.")
+	 sleep 200
+ SendChat("/engine")
+	 sleep 1050
+ SendChat("/lock")
+ If(A_Hour > 19 && getVehicleLightState() == 0)
+ {
+ SendChat("/lights")
+ addchatmessage("{FFFFFF}Licht wurde {00E5E9}Aktiviert!")
+ }
+sleep 1050
+return
+
+ Label15:
+If(IsInChat())
+return
+ IniRead, Toter, Bestatter.ini, Leiche:, Toter
+ SendChat("/takeCorpse " Toter)
+sleep 1050
+return
+
+GuiClose:
+ExitApp
+
+t::
+Suspend On
+SendInput t
+Hotkey, Enter, On
+Hotkey, Escape, On
+Hotkey, t, Off
+return
+
+NumpadEnter::
+Enter::
+Suspend Permit
+Suspend Off
+Hotkey, t, On
+Hotkey, Enter, Off
+Hotkey, Escape, Off
+return
+
+Escape::
+Suspend Permit
+Suspend Off
+SendInput {Escape}
+Hotkey, t, On
+Hotkey, Enter, Off
+Hotkey, Escape, Off
+return 
+
+;#################################
+
+UpdateFunktion:
+BinderVer := "1.1" 
+If(CheckUpdate > BinderVer)
+{
+MsgBox , 16, Update Info!, Es wurde ein Update gefunden!`nWillst du das Update jetzt Runterladen?, 10
+	IfMsgBox, Ok
+	 TrayTip, Update-Download!,Bestätigung erhalten! `nVersion: %CheckUpdate% wird Runtergeladen..., 3, 1
+	 UrlDownloadToFile, http://renz.bplaced.net/Bestatter/Bestatter.exe, %A_ScriptDir%\Bestatter.exe
+	 TrayTip, Info!, Die Bestatter.exe wurde ersetzt!, 3, 1
+	 Return
+	IfMsgBox, Cancel
+	 TrayTip, Update Abgebrochen!,Keybinder wird beendet!, 6, 1
+		Return
+	IfMsgBox, Timeout
+	 TrayTip, Update-Timeout!, Keine Eingabe erhalten! Keybinder wird beendet!, 6, 1
+		Return
+}
+else If(CheckUpdate == BinderVer)
+{
+	 TrayTip, Info!, Es wurde kein Update gefunden!, 6, 1
+}
+
+return
+
+;#################################
+
+:?:/Duty::
+Suspend Permit
+Name := getUsername()
+If(CheckWhitelist == Name)
+{
+Sendinput {enter}
+Settimer, Bestatter, 1
+addchatmessage("Bestatter Schleife | Aktiv")
+Duty := 1
+BoxSetColor(Duty_Box,0xFF34FB02)
+gosub addme
+}
+else
+{
+Sendinput {enter}
+addchatmessage("{FF0101}" Name " {FFFFFF}wurde auf der Whitelist nicht gefunden!")
+sleep 1000
+addchatmessage("{FFFFFF}Account wird erstellt!")
+sleep 2000
+gosub addme
+}
+suspend off
+return
+
+:?:/offduty::
+Suspend Permit
+Sendinput {enter}
+Settimer, Bestatter, off
+addchatmessage("Bestatter Schleife | Inaktiv")
+Duty := 0
+suspend off
+return
+
+bestatter:
+rmarker := Redmarker()
+getchatline(1, sZone1)
+getchatline(0, Line1)
+IfInString, Line1, Gib '/accept corpse' ein, um den Auftrag anzunehmen!
+{
+	 RegExMatch(Line1, " (.*) ist in (.*) gestorben" ,Leiche)
+	 LID := getPlayerIdByName(Leiche1)
+	 LPOS := getTargetPos(LID)
+	 SendChat("/accept corpse")
+	 iniwrite, %Leiche1%, Bestatter.ini, Leiche:, Toter
+	 iniwrite, %Leiche1%, Bestatter.ini, Leiche:, lasttoter
+	 iniwrite, %Leiche2%, Bestatter.ini, Leiche:, Toterort
+	 iniwrite, %LID%, Bestatter, Leiche:, ToterID
+	If(Usercheck == Toter)
+		{
+		}
+		else
+		{
+		}
+	 sleep 1000
+	 Settimer, Schnelligkeit, 1000
+}
+IfInString, Line1, hat den Auftrag mit der Leiche 
+{
+	RegExMatch(Line1, " Bestatter (.*) hat den Auftrag mit der Leiche von (.*) angenommen!" ,Checkmotor)
+	If(Checkmotor1 == GetUserName())
+	{
+		 addchatmessage("{FF0101}Leiche gefunden in {FFFFFF}" Leiche2 " {FF0101}| Opfer: {FFFFFF}" Leiche1)
+		 addchatmessage("{FF0101}Leiche gefunden in {FFFFFF}" Leiche2 " {FF0101}| Opfer: {FFFFFF}" Leiche1)
+		 addchatmessage("{FF0101}Leiche gefunden in {FFFFFF}" Leiche2 " {FF0101}| Opfer: {FFFFFF}" Leiche1)
+	 	 
+		Sendchat("/me ´s |-PDA-| Zentrale | Opfer: " Leiche1 " Ort | " Leiche2 " | Tode: " Todecheck )
+ 	}
+}
+else IfInString, Line1, Dieser Auftrag wurde bereits von einem anderen Bestatter angenommen!
+{
+	 Settimer, Schnelligkeit, off
+	 iniwrite, Keiner, Bestatter.ini, Leiche:, Toter
+	 iniwrite, "", Bestatter.ini, Leiche:, Toterort
+	 iniwrite, "", Bestatter.ini, Leiche:, ToterID
+	 Iniwrite, 0, Bestatter.ini, Zeit:, Time
+	 sleep 1000
+}
+else IfInString, Line1, Auftrag fehlgeschlagen: Die angenommene Leiche ist soeben verwest!
+{
+	 Settimer, Schnelligkeit, off
+	 iniwrite, Keiner, Bestatter.ini, Leiche:, Toter
+	 iniwrite, "", Bestatter.ini, Leiche:, Toterort
+	 iniwrite, "", Bestatter.ini, Leiche:, ToterID
+	 Iniwrite, 0, Bestatter.ini, Zeit:, Time
+	 sleep 1000
+}
+else IfInString, Line1, konntest leider kein Geld finden!
+{
+	 iniwrite, nichts, Bestatter.ini, Leiche:, lastgeld
+	 iniwrite, nichts, Bestatter.ini, Leiche:, lastdrogen
+	 gosub erhalt
+	 sleep 1000
+}
+else IfInString, Line1, [Bonus] Du hast einen Extra-Skillpunkt erhalten!
+{
+	 GetChatline(1 , chat1)
+	 GetChatline(2 , chat2)
+	IfInString , chat1, in der Hosentasche gefunden!
+	{       
+	 RegExMatch(chat1, "Du hast die Leiche erfolgreich abgegeben und \$(.*) in der Hosentasche gefunden!" ,Fund)
+	 StringReplace, VarGewinn, Fund1, .
+	 iniwrite, %VarGewinn%, Bestatter.ini, Leiche:, lastgeld
+	 gosub erhalt
+	 sleep 5000
+	}
+	else IfInstring, chat1, Drogen gefunden!
+	{
+	 RegExMatch(chat1, " Durch Zufall hast du noch (.*)g Drogen gefunden!" ,Drogen)
+	 StringReplace, Drugs, Drogen1, .
+	 iniwrite, %Drugs%, Bestatter.ini, Leiche:, lastdrogen
+	 gosub erhalt
+	}
+	 iniRead, Leichen, Bestatter.ini, Bestatter:, Leichen
+	 Leichen--
+	 iniwrite, %Leichen%, Bestatter.ini, Bestatter:, Leichen
+}
+else IfInString, Line1, Drogen gefunden!
+{
+	{
+	 RegExMatch(Line1, " Durch Zufall hast du noch (.*)g Drogen gefunden!" ,Drogen)
+	 StringReplace, Drugs, Drogen1, .
+ 	 iniRead, Drogenfund, Bestatter.ini, Leiche:, Drogenfund
+	 dro2 := Drogenfund+Drugs
+	 iniwrite, %dro2%, Bestatter.ini, Leiche:, Drogenfund
+	 iniwrite, %Drugs%, Bestatter.ini, Leiche:, lastdrogen
+	}
+	getchatline(1, Line2)
+	IfInString, Line2,  in der Hosentasche gefunden!
+		{       
+		 RegExMatch(Line2, "Du hast die Leiche erfolgreich abgegeben und \$(.*) in der Hosentasche gefunden!" ,Fund)
+		 StringReplace, VarGewinn, Fund1, .
+		 Gewinn2 := VarGewinn
+		 iniwrite, %Gewinn2%, Bestatter.ini, Leiche:, lastgeld
+		 sleep 5000
+		}
+	 gosub erhalt
+	 sleep 1000
+}
+else IfInString, Line1, Du hast dein Ticket in Höhe von 
+{
+	RegExMatch(Line1, " * Du hast dein Ticket in Höhe von $(.*) bei (.*) (.*) bezahlt.", Ausga)
+	StringReplace, Ausgabe, Ausga1, 1,, A
+	name := getUsername()
+	}
+}
+else IfInString, Line1, wurde freigegeben und für  
+{
+	RegExMatch(Line1, "freigegeben und für \$(.*) \(\$", freigabe)
+	IfInString, Freigabe1, .
+	{
+		{
+			 StringReplace, Ausgabe, freigabe1, 1 ,, A
+			 name := getUsername()
+			  
+			 Ausgabencheck := mysql.query(db, "SELECT Ausgaben FROM Bestatter WHERE User='" name "'")
+			 addchatmessage(Ausgabe " AC: " Ausgabencheck)
+			If(Ausgabencheck != 0)
+			{
+					addchatmessage("Ausgabe: " Ausgabe " | AusgabeDB: " UpdateAusgabe)
+			}
+			else
+			{			
+			addchatmessage("Ausgabe: " Ausgabe " | AusgabeDB: " UpdateAusgabe)
+		}
+	}
+	else
+	{
+		{
+			 addchatmessage(Ausgabe)
+			  
+			 addchatmessage(Ausgabe " AC: " Ausgabencheck)
+			If(Ausgabencheck != 0)
+			{
+				addchatmessage("Ausgabe: " Ausgabe " | AusgabeDB: " UpdateAusgabe)
+			}
+			else
+			{
+			}
+			addchatmessage("Ausgabe: " Ausgabe " | AusgabeDB: " UpdateAusgabe)
+		}
+	}
+}
+else If(IsPlayerinRangeofPoint(939.9108,-1086.7275,24.1242, 2))
+{
+	sleep 200
+	GetChatline(0, Nummer1)
+	IfInString, Nummer1,  in der Hosentasche gefunden!
+	{       
+	 RegExMatch(Nummer1, "Du hast die Leiche erfolgreich abgegeben und \$(.*) in der Hosentasche gefunden!" ,Fund)
+	 StringReplace, VarGewinn, Fund1, .
+	 iniwrite, %VarGewinn%, Bestatter.ini, Leiche:, lastgeld
+	 gosub erhalt
+	}
+}
+else If(IsPlayerinRangeofPoint(932.2549,-1078.3314,24.2891, 1))
+{
+	 Random, Skin, 1,4
+	 SendChat("/Undertakerskin " Skin)
+	 sleep 5000
+}
+else If(IsPlayerinRangeofPoint(rmarker[1],rmarker[2],rmarker[3], 2) && !IsPlayerinRangeofPoint(936.3391,-1087.4691,24.2891, 15))
+{
+	 iniRead, Toter, Bestatter.ini, Leiche:, Toter
+	If(IsMarkerCreated() == 1 || Toter != "Keiner")
+	{
+	 iniRead, Toter, Bestatter.ini, Leiche:, Toter
+	 SendChat("/takeCorpse " Toter)
+	 Sleep 5000
+	}
+	If(Toter == "Keiner" )
+	{
+	 iniRead, lasttoter, Bestatter.ini, Leiche:, lasttoter
+	 SendChat("/takeCorpse " lasttoter)
+	 Sleep 5000
+	}
+}
+else IF(Engine == 0)
+{
+	If(IsPlayerInAnyVehicle() == 1 && getVehicleModelID() == 442)
+	{
+	 SendChat("/engine")
+	 global Engine := 1
+	}
+}
+return
+
+erhalt:
+iniRead, lastgeld, Bestatter.ini, Leiche:, lastgeld
+iniRead, lastdrogen, Bestatter.ini, Leiche:, lastdrogen
+iniRead, lasttoter, Bestatter.ini, Leiche:, lasttoter
+iniRead, MeMes, Bestatter.ini, Boxen:, MeMes
+If(lastgeld == "nichts")
+{
+	 iniwrite, 0, Bestatter.ini, Leiche:, lastgeld
+	 iniwrite, 0, Bestatter.ini, Leiche:, lastdrogen
+	 iniwrite, Keiner, Bestatter.ini, Leiche:, Toter
+	 iniwrite, "", Bestatter.ini, Leiche:, Toterort
+	 iniwrite, "", Bestatter.ini, Leiche:, ToterID
+ 	 Settimer, Schnelligkeit, off
+	 iniRead, Leichen, Bestatter.ini, Bestatter:, Leichen
+ 	 Leichen--
+	 iniwrite, %Leichen%, Bestatter.ini, Bestatter:, Leichen
+	 sleep 50
+	 iniRead, Leichen, Bestatter.ini, Bestatter:, Leichen
+	 SendChat("/me ´s -|PDA|- Fund bei " lasttoter " | Es wurde nicht gefunden! R.I.P")
+	 return
+}
+Name := getUsername()
+ 
+
+If(lastgeld > 1)
+{
+	winstring := "| Geld: $" lastgeld ""
+	Moneycheck := mysql.query(db, "SELECT Geld FROM Bestatter WHERE User='" Name "'")
+		sleep 50
+}
+If(lastdrogen > 1)
+{
+	winstring .= "| Drogen: " lastdrogen "g"
+	Drogencheck := mysql.query(db, "SELECT Drogen FROM Bestatter WHERE User='" Name "'")
+		 sleep 50
+}
+If(lastmats > 1)
+{
+	winstring .= " | " lastmats " Mats"
+}
+If(MeMes == 1)
+{
+	IniRead, Time, Bestatter.ini, Zeit:, Time
+	winstring .= " | Dauer: " Time
+	SendChat("/me ´s -|PDA|- Fund bei " lasttoter " " winstring )
+}
+IF(Leichen == 0)
+{
+	 iniwrite, 0, Bestatter.ini, Leiche:, lastgeld
+	 iniwrite, 0, Bestatter.ini, Leiche:, lastdrogen
+	 iniwrite, Keiner, Bestatter.ini, Leiche:, Toter
+	 iniwrite, "", Bestatter.ini, Leiche:, Toterort
+	 iniwrite, "", Bestatter.ini, Leiche:, ToterID
+	 goto Skillcheck
+}
+else
+{
+	 iniwrite, %Leichen%, Bestatter.ini, Bestatter:, Leichen
+	 iniwrite, 0, Bestatter.ini, Leiche:, lastgeld
+	 iniwrite, 0, Bestatter.ini, Leiche:, lastdrogen
+	 iniwrite, Keiner, Bestatter.ini, Leiche:, Toter
+	 iniwrite, "", Bestatter.ini, Leiche:, Toterort
+	 iniwrite, "", Bestatter.ini, Leiche:, ToterID
+}
+iniRead, Leichen, Bestatter.ini, Bestatter:, Leichen
+Leichen--
+iniwrite, %Leichen%, Bestatter.ini, Bestatter:, Leichen
+sleep 50
+iniRead, Leichen, Bestatter.ini, Bestatter:, Leichen
+Settimer, Schnelligkeit, off
+Iniwrite, 0, Bestatter.ini, Zeit:, Time
+return
+
+:?:/ovon::
+Suspend Permit
+Sendinput {enter}
+Settimer, Overlay, 200
+TextSetShown(Best_OV, 1)
+TextSetShown(Map_OV, 1)
+TextSetShown(Car_OV, 1)
+suspend off
+return
+
+CreateOverlay:
+IniRead, Bestx, Bestatter.ini, Overlay:, Bestx
+IniRead, Besty, Bestatter.ini, Overlay:, Besty
+IniRead, Mapx, Bestatter.ini, Overlay:, Mapx
+IniRead, Mapy, Bestatter.ini, Overlay:, Mapy
+IniRead, Carx, Bestatter.ini, Overlay:, Carx
+IniRead, Cary, Bestatter.ini, Overlay:, Cary
+Best_OV := TextCreate("Verdana", 6, true, false, Bestx, Besty,0xFFFFFFFF, "", true, false)
+Map_OV := TextCreate("Verdana", 6, true, false, Mapx, Mapy,0xFFFFFFFF, "", true, false)
+Car_OV := TextCreate("Verdana", 6, true, false, carx, Cary,0xFFFFFFFF, "" , true, false)
+return
+
+Overlay:
+IniRead, Leichen, Bestatter.ini, Bestatter:, Leichen
+IniRead, Skill, Bestatter.ini, Bestatter:, Skill
+iniRead, Gewinn, Bestatter.ini, Leiche:, Gewinn
+iniRead, ToterID, Bestatter.ini, Leiche:, ToterID
+iniRead, Toterort, Bestatter.ini, Leiche:, Toterort
+iniRead, Toter, Bestatter.ini, Leiche:, Toter
+IniRead, Orte, Bestatter.ini, Boxen:, Orte
+IniRead, Car_Ov, Bestatter.ini, Boxen:, Car_Ov
+IniRead, Titel, Bestatter.ini, RSS:, Titel
+IniRead, Poster, Bestatter.ini, RSS:, Poster
+ID := getPlayerIdByName(Toter)
+1 = On
+0 = Off
+If(db != "")
+{
+	 FuncString := "Datenbank - {00FF00}Verbunden{FFFFFF}`nIm Dienst?: " (Duty ? "{00FF00}({FFFFFF}({00FF00}OnDuty{FFFFFF}){00FF00})" : "{FF0000}({FFFFFF}({FF0000}OffDuty{FFFFFF}){FF0000})") "`n"
+}
+else
+{
+	 FuncString := "Datenbank - {00FF00}Getrennt{FFFFFF}`nIm Dienst?: " (Duty ? "{00FF00}({FFFFFF}({00FF00}OnDuty{FFFFFF}){00FF00})" : "{FF0000}({FFFFFF}({FF0000}OffDuty{FFFFFF}){FF0000})") "`n"
+}
+If(Duty == 1)
+{
+	If(skill == 5)
+	{
+	 Skillstring := "{FFFFFF}Bestatter Skill: {00E5E9}" Skill "{FFFFFF}({00E5E9}Max.{FFFFFF})`n"
+	}
+	else
+	{
+	 Skillstring := "{FFFFFF}Bestatter Skill: {00E5E9}" Skill "`n{FFFFFF}Leichen bis Lvlup: {00E5E9}" Leichen "`n"
+	}
+	If(Toter != "Keiner")
+	{
+		 1 = On
+		 0 = Off
+
+		 KundeString := "{FFFFFF}User: {00E5E9}" Toter "{FFFFFF}({00E5E9}" ID "{FFFFFF}) `n{FFFFFF}Tatort: {00E5E9}" Toterort " {FFFFFF}({00E5E9}" Round(getDist(Redmarker(),getCoordinates())) "m{FFFFFF})`n"
+	}
+	If(Toter == "Keiner" )
+	{
+		 KundeString := "{FFFFFF}Standby!`n"
+	}
+}
+If(IsPlayerInAnyVehicle() == 1)
+{
+	 FAhrzeugString := "{FFFFFF}Model: {00E5E9}" getVehicleModelName() "`n"
+	If(getVehicleHealth() == 1000 && getVehicleModelID() != 442)
+	 FAhrzeugString  .= "{FFFFFF}VehHP: {34FB02}" getVehicleHealth() "`n"
+	If(getVehicleHealth() == 1000 && getVehicleModelID() == 442)
+	 FAhrzeugString  .= "{FFFFFF}VehHP: {34FB02}" getVehicleHealth() "`n {00E5E9}- {FFFFFF}Zustand: {34FB02}Perfekt! `n"
+	If(getVehicleHealth() < 1000 && getVehicleModelID() == 442)
+	 FAhrzeugString  .= "{FFFFFF}VehHP: {FB0202}" getVehicleHealth() "`n {00E5E9}- {FB0202}Zustand: {FB0202}Warnung! `n"
+    If(getVehicleHealth() < 1000 && getVehicleModelID() != 442)
+	 FAhrzeugString  .= "{FFFFFF}VehHP: {00E5E9}" getVehicleHealth() "`n"
+    If(!getVehicleLockState())
+	 FAhrzeugString  .= "{FFFFFF}Lock: {FB0202}Offen! `n"
+	If(getVehicleLockState())
+	 FAhrzeugString  .= "{FFFFFF}Lock: {34FB02}Abgeschlossen `n"
+	If(getVehicleEngineState())
+	 FAhrzeugString  .= "{FFFFFF}Motor: {FB0202}An! `n"
+	If(!getVehicleEngineState())
+	 FAhrzeugString  .= "{FFFFFF}Motor: {34FB02}Aus! `n"
+	If(getVehicleLightState())
+	 FAhrzeugString  .= "{FFFFFF}Licht: {34FB02}An `n"
+	If(!getVehicleLightState())
+	 FAhrzeugString  .= "{FFFFFF}Licht: {FB0202}Aus `n`n"
+}
+else
+{
+	TextSetString(Car_OV,"" )
+} 
+If(Orte == 1)
+{
+TextSetString(Map_OV, "{FFFFFF}Zone: {00E5E9}" GetPlayerZone() "`n{FFFFFF}City: {00E5E9}" GetPlayerCity() "`n" RGN_Location() )
+}
+else
+{
+TextSetString(Map_OV, "{FFFFFF}Zone: {00E5E9}" GetPlayerZone() "`n{FFFFFF}City: {00E5E9}" GetPlayerCity())
+}
+TextSetString(Car_OV, FAhrzeugString )
+TextSetString(Best_OV,FuncString " " KundeString " " Skillstring)
+return
+
+
+
+:?:/ovmove::
+Suspend Permit
+Sendinput {enter}
+Move := 1
+suspend off
+return
+
+:?:/Mapmove::
+Suspend Permit
+Sendinput {enter}
+MapMove := 1
+suspend off
+return
+
+~up::
+If(Move == 1)
+{
+Besty--
+IniWrite, %Besty%, Bestatter.ini, Overlay:, Besty
+TextSetPos(Best_OV, Bestx, Besty)
+}
+If(MapMove == 1)
+{
+Mapy--
+IniWrite, %Mapy%, Bestatter.ini, Overlay:, Mapy
+TextSetPos(Map_OV, Mapx, Mapy)
+}
+If(CarMove == 1)
+{
+Cary--
+IniWrite, %Cary%, Bestatter.ini, Overlay:, Cary
+TextSetPos(Car_OV, Carx, Cary)
+}
+return
+
+~down::
+If(Move == 1)
+{
+Besty++
+IniWrite, %Besty%, Bestatter.ini, Overlay:, Besty
+TextSetPos(Best_OV, Bestx, Besty)
+}
+If(MapMove == 1)
+{
+Mapy++
+IniWrite, %Mapy%, Bestatter.ini, Overlay:, Mapy
+TextSetPos(Map_OV, Mapx, Mapy)
+}
+If(CarMove == 1)
+{
+Cary++
+IniWrite, %Cary%, Bestatter.ini, Overlay:, Cary
+TextSetPos(Car_OV, Carx, Cary)
+}
+return
+
+~Left::
+If(Move == 1)
+{
+Bestx--
+IniWrite, %Bestx%, Bestatter.ini, Overlay:, Bestx
+TextSetPos(Best_OV, Bestx, Besty)
+}
+If(MapMove == 1)
+{
+Mapx--
+IniWrite, %Mapx%, Bestatter.ini, Overlay:, Mapx
+TextSetPos(Map_OV, Mapx, Mapy)
+}
+If(CarMove == 1)
+{
+Carx--
+IniWrite, %Carx%, Bestatter.ini, Overlay:, Carx
+TextSetPos(Car_OV, Carx, Cary)
+}
+return
+
+~right::
+If(Move == 1)
+{
+Bestx++
+IniWrite, %Bestx%, Bestatter.ini, Overlay:, Bestx
+TextSetPos(Best_OV, Bestx, Besty)
+}
+If(MapMove == 1)
+{
+Mapx++
+IniWrite, %Mapx%, Bestatter.ini, Overlay:, Mapx
+TextSetPos(Map_OV, Mapx, Mapy)
+}
+If(CarMove == 1)
+{
+Carx++
+IniWrite, %Carx%, Bestatter.ini, Overlay:, Carx
+TextSetPos(Car_OV, Carx, Cary)
+}
+return
+
+~Numpadadd::
+If(Move == 1)
+{
+OvSize++
+IniWrite, %OvSize%, Bestatter.ini, Overlay:, OvSize
+TextUpdate(Best_Ov,"Verdana",OVSize,1,0)
+}
+If(MapMove == 1)
+{
+MapSize++
+IniWrite, %MapSize%, Bestatter.ini, Overlay:, MapSize
+TextUpdate(Map_Ov,"Verdana",MapSize,1,0)
+}
+If(CarMove == 1)
+{
+CarSize++
+IniWrite, %MapSize%, Bestatter.ini, Overlay:, CarSize
+TextUpdate(Car_Ov,"Verdana",CarSize,1,0)
+}
+return
+
+~Numpadsub::
+If(Move == 1)
+{
+OvSize--
+IniWrite, %OvSize%, Bestatter.ini, Overlay:, OvSize
+TextUpdate(Best_Ov,"Verdana",OVSize,1,0)
+}
+If(MapMove == 1)
+{
+MapSize--
+IniWrite, %MapSize%, Bestatter.ini, Overlay:, MapSize
+TextUpdate(Map_Ov,"Verdana",MapSize,1,0)
+}
+If(CarMove == 1)
+{
+CarSize--
+IniWrite, %MapSize%, Bestatter.ini, Overlay:, CarSize
+TextUpdate(Car_Ov,"Verdana",CarSize,1,0)
+}
+return
+
+:?:/ovsave::
+Suspend Permit
+Sendinput {enter}
+Move := 0
+MapMove := 0
+suspend off
+return
+
+:?:/Desov::
+Suspend Permit
+Sendinput {enter}
+DestroyallVisual()
+goto CreateOverlay
+suspend off
+return
+
+skillcheck:
+:?:/Skill::
+Suspend Permit
+SendChat("/skill 8")
+sleep 100
+Getchatline(1, Chatln1)
+Getchatline(0, Chatln0)
+IfInstring, Chatln0, Skill als Bestatter
+{
+RegExMatch(Chatln1," Dein Skill als Bestatter\: (.*)\.",Skill)
+sleep 100
+IniWrite, Max. Skilllevel, Bestatter.ini, Bestatter:, Leichen
+IniWrite, %Skill1%, Bestatter.ini, Bestatter:, Skill
+}
+IfInstring, Chatln0, Leichen abgeben
+{
+RegExMatch(Chatln1," Dein Skill als Bestatter\: (.*)\.",Skill)
+RegExMatch(Chatln0," Du musst noch (.*) Leichen abgeben\, um den nächsten",leichen)
+sleep 100
+IniWrite, %leichen1%, Bestatter.ini, Bestatter:, Leichen
+IniWrite, %Skill1%, Bestatter.ini, Bestatter:, Skill
+}
+suspend off
+return
+
+
+
+:?:/money::
+Suspend Permit
+Sendchat("/finances " getUsername())
+sleep 200
+GetChatline(0, Finanzen)
+RegExMatch(Finanzen, "(.*)", fin)
+Sendchat(" |________Finanzen von " getUsername() "________|")
+Sendchat(fin)
+return
+
+:?:/robtime::
+Sendchat("/me ´s -PDA- | Lade Daten aus dem LSPD Netzwerk! Bitte warten...") 
+sleep 1050
+
+Loop, Parse, result, `n 
+{
+    StringSplit, array, A_LoopField, | 
+
+    Ort     := array1
+    StringSplit, Time, array2, :
+	If(Ort == "Grand Hotel LS")
+	{
+		 Sendchat("Tresorraub: " array1 " war um " array2 " | Nächster Termin: " Time1 + 4 ":" Time2)
+	}
+	else
+	{
+		 Sendchat(array1 " war um " array2 " | Nächster Termin: " Time1 + 3 ":" Time2)
+	}
+	sleep 1050
+}
+Sendchat("/me ´s -PDA- | Ende des Dokuments") 
+Suspend off
+return
+
+:?:/mystats::
+Suspend Permit
+ 
+Name := getUsername()
+If(Rang == "")
+{
+	 addchatmessage("{FFFFFF}Kein Datenbankeintrag zu {00E5E9}" Name "{FFFFFF} gefunden.")
+	 addchatmessage("{FFFFFF}Mit {00E5E9}/addme {FFFFFF}selbst hinzufügen oder {00E5E9}Renz_Sherman {FFFFFF}kontaktieren.")
+	 return
+}
+If(Rang == 1 || Rang == 2 || Rang == 3 || Rang == 1337)
+{
+	StringSplit, array, rec, |  
+	
+	Geld        := array1
+	Drogen      := array2
+	Mats        := array3
+	Leichen     := array4
+	Ausgaben 	:= array5
+	
+	addchatmessage("{FFFFFF}_______________Statistik von {00E5E9}" Name "{FFFFFF}_______________")
+	addchatmessage("{FFFFFF}Geld: {00E5E9}" array1 " {FFFFFF}Drogen: {00E5E9}" array2 " {FFFFFF}Mats: {00E5E9}" array3 " {FFFFFF}Leichen: {00E5E9}" array4 " {FFFFFF}Ausgaben: {00E5E9}" array5)
+	addchatmessage("{FFFFFF}______________________________________________")
+}
+else
+{
+	 addchatmessage("{FFFFFF}Du hast nicht die Berechtigung für diesen Befehl!")
+}
+Suspend Off
+return
+
+
+Schnelligkeit:
+IniRead, Time, Bestatter.ini, Zeit:, Time
+Time++
+Zeit := SecToHHMMSS(Time)
+IniWrite, %Zeit%, Bestatter.ini, Zeit:, Time
+Return
+
+Reload:
+Reload
+return
+
+Minimieren:
+ Gui, Minimize
+ Gui, Minimize
+ return
+
+Move:
+ PostMessage, 0xA1, 2,,, A
+ Return
+
+Slideout:
+MsgBox, 4,, Bist du dir sicher dass du den Bestatter - Keybinder wirklich Beenden willst?
+IfMsgBox Yes
+{
+ ExitApp
+}
+else
+{
+ Gui, Show
+}
+return
+ 
+;~f::
+If(IsInChat())
+return 
+rmarker := Redmarker()
+IF(IsPlayerDriver() == 0 && getVehicleModelID() == 442 && getVehicleEngineState() == 1 && Engine == 1 
+&& IsPlayerinRangeofPoint(rmarker[1],rmarker[2],rmarker[3], 50) && !IsPlayerinRangeofPoint(936.3391,-1087.4691,24.2891, 15 && IsMarkerCreated() == 1)
+{
+	If() )
+	{
+			iniRead, Toter, Bestatter.ini, Leiche:, Toter
+		If(IsMarkerCreated() == 1 || Toter != "Keiner")
+		{
+		 SendChat("/engine")
+		 global Engine := 0 
+		}
+	}
+}
+return
